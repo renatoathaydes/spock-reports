@@ -1,0 +1,33 @@
+apply plugin: 'groovy'
+defaultTasks 'clean', 'jar', 'test'
+
+version = "1.0-SNAPSHOT"
+
+ext.groovyVersion = '2.1.5'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	groovy "org.codehaus.groovy:groovy-all:${ext.groovyVersion}"
+	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	testCompile files( 'buid/libs/spock-reports-1.0-SNAPSHOT.jar' )
+}
+
+test {
+	testLogging.showStandardStreams = true
+	beforeTest { descriptor ->
+		logger.lifecycle("Running test: " + descriptor)
+	}
+}
+
+jar {
+	dependsOn "compileGroovy"
+	manifest {
+		attributes(
+				"Implementation-Title": "Athaydes-Spock-Reports",
+				"Implementation-Version": version )
+	}
+}
+
