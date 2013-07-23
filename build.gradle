@@ -16,9 +16,11 @@ dependencies {
 }
 
 test {
+	exclude '**/FakeTest.class'
+	systemProperty 'project.buildDir', project.buildDir
 	testLogging.showStandardStreams = true
 	beforeTest { descriptor ->
-		logger.lifecycle("Running test: " + descriptor)
+		logger.lifecycle( "Running test: " + descriptor )
 	}
 }
 

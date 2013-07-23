@@ -1,6 +1,10 @@
-package org.spockframework.extension
+package com.athaydes.spockframework.report
 
+import org.junit.runner.notification.RunNotifier
+import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
+
+import java.nio.file.Paths
 
 /**
  *
@@ -8,32 +12,20 @@ import spock.lang.Specification
  */
 class JUnitReportExtensionSpec extends Specification {
 
-	def "A test number 1"( ) {
+	def "A correct HTML report is generated for a spec including different types of features"( ) {
 		given:
-		"we have x and y"
+		"A Specification containing different types of features is run by Spock"
+		new Sputnik( FakeTest ).run( new RunNotifier() )
 
 		and:
-		"some more things"
+		"The build folder location is known"
+		def buildDir = System.getProperty( 'project.buildDir' )
 
-		when:
-		"I do crazy things"
-
-		then:
-		"I get a lot of stuff"
-		x == y
-
-		where:
-		x   | y
-		'a' | 'a'
-		'b' | 'c'
-
-	}
-
-	def "Another feature!!!!"( ) {
-		setup:
-		"Setup block here"
 		expect:
-		"Expecting something ??"
+		"A nice HTML report to have been generated under the build directory"
+		Paths.get( buildDir, 'spock-reports',
+				FakeTest.class.name + '.html' ).toFile().exists()
+
 	}
 
 }
