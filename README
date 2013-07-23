@@ -1,1 +1,2 @@
-This file was created by IntelliJ IDEA 12.1.4 for binding GitHub repository
+This project creates a global extension to Spock to create test reports.
+Currently implementing an initial version which will just create a simple HTML report, similar to JUnit reports but including the specification in plain text for use by teams doing BDD.
