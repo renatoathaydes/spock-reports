@@ -3,6 +3,8 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
 
+import java.nio.file.Paths
+
 /**
  *
  * User: Renato
@@ -13,15 +15,11 @@ class HtmlReportCreator implements IReportCreator {
 
 	@Override
 	void createReportFor( SpecData data ) {
-
-		//TODO
-//		println """
-//				|*************************************
-//				|Output: ${System.getProperties().propertyNames().collect()}
-//				||File: ${new File( '.' ).absolutePath}
-//				|Spec Info: ${data.info}
-//				|Errors By Feature: ${data.featureRuns*.errorsByIteration}
-//				|*************************************""".stripMargin()
+		def specClassName = data.info.description.className
+		def reportsDir = new File( 'build', 'spock-reports' )
+		reportsDir.mkdirs()
+		Paths.get( reportsDir.absolutePath, specClassName + '.html' )
+				.toFile() << '<html>report goes here</html>'
 	}
 
 }
