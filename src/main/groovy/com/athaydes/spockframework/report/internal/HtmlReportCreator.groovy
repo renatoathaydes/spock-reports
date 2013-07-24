@@ -19,7 +19,17 @@ class HtmlReportCreator implements IReportCreator {
 		def reportsDir = new File( 'build', 'spock-reports' )
 		reportsDir.mkdirs()
 		Paths.get( reportsDir.absolutePath, specClassName + '.html' )
-				.toFile() << '<html>report goes here</html>'
+				.toFile().write( reportFor( data ) )
+	}
+
+	String reportFor( SpecData data ) {
+		"""<html>
+		<head>
+		</head>
+		<body>
+			<h1>Report for ${data.info.description.className}</h1>
+		</body>
+		</html>""".replaceAll( '\t', '' )
 	}
 
 }
