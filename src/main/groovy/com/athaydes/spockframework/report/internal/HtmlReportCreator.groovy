@@ -62,11 +62,16 @@ class HtmlReportCreator implements IReportCreator {
 	}
 
 	private void write( MarkupBuilder builder, SpecData data ) {
-		data.info.allFeatures.each { FeatureInfo feature ->
+		def lastFeatureIndex = data.info.allFeatures.size() - 1
+		data.info.allFeatures.eachWithIndex { FeatureInfo feature, index ->
 			feature.blocks.each { BlockInfo block ->
 				write( builder, block )
 			}
+
 			writeRun( builder, data.featureRuns.find { run -> run.feature == feature } )
+
+			if ( index < lastFeatureIndex )
+				writeFeatureSeparator( builder )
 		}
 	}
 
@@ -113,6 +118,14 @@ class HtmlReportCreator implements IReportCreator {
 			}
 		}
 
+	}
+
+	private void writeFeatureSeparator( MarkupBuilder builder ) {
+		builder.tr {
+			td( colspan: '2' ) {
+				div( 'class': 'feature-separator' )
+			}
+		}
 	}
 
 }
