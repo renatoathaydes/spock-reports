@@ -16,6 +16,7 @@ import static org.spockframework.runtime.model.BlockKind.*
 class HtmlReportCreator implements IReportCreator {
 
 	def reportAggregator = new HtmlReportAggregator()
+	def css = ''
 
 	final block2String = [
 			( SETUP ): 'Given:',
@@ -40,37 +41,78 @@ class HtmlReportCreator implements IReportCreator {
 		def writer = new StringWriter()
 		def builder = new MarkupBuilder( new IndentPrinter( new PrintWriter( writer ), "" ) )
 		builder.html {
-			head {}
+			head {
+				if ( css ) style css
+			}
 			body {
 				h1 "Report for ${data.info.description.className}"
 				h2 "Specifications:"
 				table {
+					colgroup {
+						col( 'class': 'block-kind-col' )
+						col( 'class': 'block-text-col' )
+					}
 					tbody {
-						data.info.allFeatures.each { FeatureInfo feature ->
-							feature.blocks.each { BlockInfo block ->
-								block.texts.eachWithIndex { specText, index ->
-									tr {
-										td {
-											def specHeader = block2String[ index == 0 ? block.kind : 'AND' ]
-											span( 'class': 'spec-header', specHeader )
-											span( 'class': 'spec-text', specText )
-										}
+						write( builder, data )
+					}
+				}
+			}
+		}
+		'<!DOCTYPE html>' + writer.toString()
+	}
+
+	private void write( MarkupBuilder builder, SpecData data ) {
+		data.info.allFeatures.each { FeatureInfo feature ->
+			feature.blocks.each { BlockInfo block ->
+				write( builder, block )
+			}
+			writeRun( builder, data.featureRuns.find { run -> run.feature == feature } )
+		}
+	}
+
+	private void write( MarkupBuilder builder, BlockInfo block ) {
+		block.texts.eachWithIndex { blockText, index ->
+			builder.tr {
+				writeBlockKindTd( builder, index == 0 ? block.kind : 'AND' )
+				td {
+					span( 'class': 'block-text', blockText )
+				}
+			}
+		}
+	}
+
+	private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
+		builder.td {
+			span( 'class': 'block-kind', block2String[ blockKindKey ] )
+		}
+	}
+
+	private void writeRun( MarkupBuilder builder, FeatureRun run ) {
+		if ( !run || !run.feature.parameterized ) return
+		builder.tr {
+			writeBlockKindTd( builder, WHERE )
+			td {
+				span( 'class': 'spec-examples' ) {
+					table( 'class': 'ex-table' ) {
+						thead {
+							run.feature.parameterNames.each { param ->
+								th( 'class': 'ex-header', param )
+							}
+						}
+						tbody {
+							run.errorsByIteration.each { iteration, errors ->
+								tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
+									iteration.dataValues.each { value ->
+										td( 'class': 'ex-value', value )
 									}
 								}
 							}
 						}
-
-						data.featureRuns.each { fRun ->
-							fRun.errorsByIteration.each { iteration, errors ->
-								//TODO
-							}
-						}
 					}
 				}
-
 			}
 		}
-		'<!DOCTYPE html>' + writer.toString()
+
 	}
 
 }
