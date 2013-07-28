@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report
 
-import com.athaydes.spockframework.report.internal.TestHelper
+import com.athaydes.spockframework.report.internal.HtmlReportCreator
+import groovy.text.SimpleTemplateEngine
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
@@ -26,8 +27,8 @@ class JUnitReportExtensionSpec extends Specification {
 
 		and:
 		"The expected HTML report"
-		def expectedHtml = this.class.getResource( 'FakeTestReport.html' )
-				.text.replaceAll( '\t', '' )
+		String expectedHtml = expectedHtmlReport()
+
 
 		expect:
 		"A nice HTML report to have been generated under the build directory"
@@ -39,6 +40,17 @@ class JUnitReportExtensionSpec extends Specification {
 		"The contents are functionally the same as expected"
 		minify( reportFile.text ) == minify( expectedHtml )
 
+	}
+
+	private String expectedHtmlReport( ) {
+		def rawHtml = this.class.getResource( 'FakeTestReport.html' ).text
+		def binding = [ classOnTest: FakeTest.class.name, style: defaultStyle() ]
+		def templateEngine = new SimpleTemplateEngine()
+		templateEngine.createTemplate( rawHtml ).make( binding ).toString()
+	}
+
+	private String defaultStyle( ) {
+		HtmlReportCreator.class.getResource( 'report.css' ).text
 	}
 
 }

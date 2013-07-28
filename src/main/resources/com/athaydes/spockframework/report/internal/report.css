@@ -1,0 +1,55 @@
+.feature-description {
+  font-size: large;
+  background: yellow;
+}
+
+h1 {
+  color: blue;
+}
+
+table {
+  border-collapse:collapse;
+  margin: 5px;
+}
+
+table.ex-table td, table.ex-table th {
+  border: black solid 1px;
+}
+
+table td {
+  min-width: 50px;
+}
+
+col.block-kind {
+  min-width: 100px;
+}
+
+span.spec-header {
+  font-weight: bold;
+}
+
+span.spec-text {
+  /*color: green;*/
+}
+
+div.feature-separator {
+  min-height: 10px;
+  background: blue;
+}
+
+.ignored {
+  color: gray;
+}
+
+td.ex-result {
+  border: none;
+  color: yellow;
+}
+
+.ex-pass {
+  color: green;
+}
+
+.ex-fail {
+  background: red;
+}

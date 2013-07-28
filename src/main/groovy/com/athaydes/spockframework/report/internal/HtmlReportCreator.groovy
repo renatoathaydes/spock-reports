@@ -18,7 +18,7 @@ import static org.spockframework.runtime.model.BlockKind.*
 class HtmlReportCreator implements IReportCreator {
 
 	def reportAggregator = new HtmlReportAggregator()
-	def css = ''
+	String css
 
 	final block2String = [
 			( SETUP ): 'Given:',
@@ -29,6 +29,19 @@ class HtmlReportCreator implements IReportCreator {
 			( WHERE ): 'Where:',
 			'AND': 'And:'
 	]
+
+	void setCss( String css ) {
+		if ( !css || css.trim().empty ) return
+		def cssResource = this.class.getResource( css )
+		if ( cssResource )
+			try {
+				this.@css = cssResource.text
+			} catch ( e ) {
+				println "Failed to set CSS file to $css: $e"
+			}
+		else
+			println "The CSS file does not exist: ${cssResource.file}"
+	}
 
 	@Override
 	void createReportFor( SpecData data ) {
