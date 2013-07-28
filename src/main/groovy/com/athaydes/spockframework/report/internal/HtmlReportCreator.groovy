@@ -3,7 +3,9 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.IReportCreator
 import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
+import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.runtime.model.IterationInfo
 
 import java.nio.file.Paths
 
@@ -53,7 +55,7 @@ class HtmlReportCreator implements IReportCreator {
 						col( 'class': 'block-text-col' )
 					}
 					tbody {
-						write( builder, data )
+						writeSpec( builder, data )
 					}
 				}
 			}
@@ -61,23 +63,21 @@ class HtmlReportCreator implements IReportCreator {
 		'<!DOCTYPE html>' + writer.toString()
 	}
 
-	private void write( MarkupBuilder builder, SpecData data ) {
-		def lastFeatureIndex = data.info.allFeatures.size() - 1
-		data.info.allFeatures.eachWithIndex { FeatureInfo feature, index ->
+	private void writeSpec( MarkupBuilder builder, SpecData data ) {
+		data.info.allFeatures.each { FeatureInfo feature ->
+			def run = data.featureRuns.find { run -> run.feature == feature }
+			writeFeatureDescription( builder, feature )
 			feature.blocks.each { BlockInfo block ->
-				write( builder, block )
+				writeBlock( builder, block, feature.skipped )
 			}
-
-			writeRun( builder, data.featureRuns.find { run -> run.feature == feature } )
-
-			if ( index < lastFeatureIndex )
-				writeFeatureSeparator( builder )
+			writeRun( builder, run )
 		}
 	}
 
-	private void write( MarkupBuilder builder, BlockInfo block ) {
+	private void writeBlock( MarkupBuilder builder, BlockInfo block, boolean isIgnored ) {
+		def trCssClassArg = ( isIgnored ? [ 'class': 'ignored' ] : null )
 		block.texts.eachWithIndex { blockText, index ->
-			builder.tr {
+			builder.tr( trCssClassArg ) {
 				writeBlockKindTd( builder, index == 0 ? block.kind : 'AND' )
 				td {
 					span( 'class': 'block-text', blockText )
@@ -106,24 +106,44 @@ class HtmlReportCreator implements IReportCreator {
 						}
 						tbody {
 							run.errorsByIteration.each { iteration, errors ->
-								tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
-									iteration.dataValues.each { value ->
-										td( 'class': 'ex-value', value )
-									}
-								}
+								writeIteration( builder, iteration, errors )
 							}
 						}
 					}
 				}
 			}
+			td {
+				span( 'class': 'spec-status', iterationsResult( run ) )
+			}
 		}
 
 	}
 
-	private void writeFeatureSeparator( MarkupBuilder builder ) {
+	private String iterationsResult( FeatureRun run ) {
+		def totalRuns = run.errorsByIteration.size()
+		def totalErrors = run.errorsByIteration.values().count { !it.empty }
+		"${totalRuns - totalErrors}/${totalRuns} passed"
+	}
+
+	private void writeIteration( MarkupBuilder builder, IterationInfo iteration,
+	                             List<ErrorInfo> errors ) {
+		builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
+			iteration.dataValues.each { value ->
+				td( 'class': 'ex-value', value )
+			}
+			td( 'class': 'ex-result', iterationResult( errors ) )
+		}
+	}
+
+	private String iterationResult( List<ErrorInfo> errors ) {
+		errors ? 'FAIL' : 'OK'
+	}
+
+	private void writeFeatureDescription( MarkupBuilder builder, FeatureInfo feature ) {
+		def additionalCssClass = feature.skipped ? ' ignored' : ''
 		builder.tr {
-			td( colspan: '2' ) {
-				div( 'class': 'feature-separator' )
+			td( colspan: '10' ) {
+				div( 'class': 'feature-description' + additionalCssClass, feature.name )
 			}
 		}
 	}

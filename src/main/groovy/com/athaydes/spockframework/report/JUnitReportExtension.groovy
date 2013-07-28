@@ -78,6 +78,7 @@ class SpecInfoListener implements IRunListener {
 	@Override
 	void error( ErrorInfo error ) {
 		println "There is some error: ${error.exception}"
+		println "Error at: ${error.exception.stackTrace}"
 		if ( !currentIteration ) throw new RuntimeException( 'No current iteration!' )
 		currentRun().errorsByIteration[ currentIteration ] << error
 	}
@@ -85,10 +86,12 @@ class SpecInfoListener implements IRunListener {
 	@Override
 	void specSkipped( SpecInfo spec ) {
 		// specInfo already knows if it's skipped
+		println "Spec is skipped! ${spec.name}"
 	}
 
 	@Override
 	void featureSkipped( FeatureInfo feature ) {
+		println "Feature is skipped! ${feature.name}"
 		// feature already knows if it's skipped
 	}
 
