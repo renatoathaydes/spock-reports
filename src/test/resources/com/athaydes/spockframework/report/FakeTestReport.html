@@ -8,6 +8,23 @@
 <body>
 <h1>Report for ${classOnTest}</h1>
 
+<div class='summary-report'>
+	<h2>Summary:</h2>
+	<table>
+		<thead>
+		<th>Executed Tests</th>
+		<th>Failures</th>
+		<th>Skipped</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>${executedTests}</td>
+			<td>${failures}</td>
+			<td>${skipped}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
 <h2>Specifications:</h2>
 <table>
 	<colgroup>

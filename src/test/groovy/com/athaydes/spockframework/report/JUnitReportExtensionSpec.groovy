@@ -44,7 +44,13 @@ class JUnitReportExtensionSpec extends Specification {
 
 	private String expectedHtmlReport( ) {
 		def rawHtml = this.class.getResource( 'FakeTestReport.html' ).text
-		def binding = [ classOnTest: FakeTest.class.name, style: defaultStyle() ]
+		def binding = [
+				classOnTest: FakeTest.class.name,
+				style: defaultStyle(),
+				executedTests: 4,
+				failures: 1,
+				skipped: 1
+		]
 		def templateEngine = new SimpleTemplateEngine()
 		templateEngine.createTemplate( rawHtml ).make( binding ).toString()
 	}

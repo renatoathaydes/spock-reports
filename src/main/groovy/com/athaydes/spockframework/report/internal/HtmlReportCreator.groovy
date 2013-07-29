@@ -61,19 +61,56 @@ class HtmlReportCreator implements IReportCreator {
 			}
 			body {
 				h1 "Report for ${data.info.description.className}"
-				h2 "Specifications:"
-				table {
-					colgroup {
-						col( 'class': 'block-kind-col' )
-						col( 'class': 'block-text-col' )
-					}
-					tbody {
-						writeSpec( builder, data )
+				writeSummary( builder, data )
+				writeAllSpecs( builder, data )
+			}
+		}
+		'<!DOCTYPE html>' + writer.toString()
+	}
+
+	private void writeSummary( MarkupBuilder builder, SpecData data ) {
+		builder.div( 'class': 'summary-report' ) {
+			h2 'Summary:'
+			table {
+				thead {
+					th 'Executed Tests'
+					th 'Failures'
+					th 'Skipped'
+				}
+				tbody {
+					tr {
+						td allTestsCount( data )
+						td failuresCount( data )
+						td skippedCount( data )
 					}
 				}
 			}
 		}
-		'<!DOCTYPE html>' + writer.toString()
+	}
+
+	private int allTestsCount( SpecData data ) {
+		data.info.allFeatures.size()
+	}
+
+	private int failuresCount(SpecData data) {
+		data.featureRuns.count { it.errorsByIteration.values().any{ !it.isEmpty()  } }
+	}
+
+	private int skippedCount( SpecData data ) {
+		data.info.allFeatures.count{ it.skipped }
+	}
+
+	private void writeAllSpecs( MarkupBuilder builder, SpecData data ) {
+		builder.h2 "Specifications:"
+		builder.table {
+			colgroup {
+				col( 'class': 'block-kind-col' )
+				col( 'class': 'block-text-col' )
+			}
+			tbody {
+				writeSpec( builder, data )
+			}
+		}
 	}
 
 	private void writeSpec( MarkupBuilder builder, SpecData data ) {
