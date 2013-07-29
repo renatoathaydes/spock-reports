@@ -1,6 +1,9 @@
 apply plugin: 'groovy'
+apply plugin: 'maven'
+
 defaultTasks 'clean', 'jar', 'test'
 
+group = 'com.athaydes'
 version = "1.0-SNAPSHOT"
 
 ext.groovyVersion = '2.1.5'
