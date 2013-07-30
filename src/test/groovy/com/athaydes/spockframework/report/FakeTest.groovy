@@ -54,4 +54,13 @@ class FakeTest extends Specification {
 		"Nothing happens"
 	}
 
+	def "A test with an error"( ) {
+		when:
+		"An Exception is thrown"
+		throw new RuntimeException( 'As expected' )
+
+		then:
+		"Will never succeed"
+	}
+
 }

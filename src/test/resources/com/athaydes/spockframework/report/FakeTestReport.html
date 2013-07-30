@@ -12,20 +12,26 @@
 	<h2>Summary:</h2>
 	<table>
 		<thead>
-		<th>Executed Tests</th>
+		<th>Executed features</th>
 		<th>Failures</th>
+		<th>Errors</th>
 		<th>Skipped</th>
+		<th>Success rate</th>
+		<th>Time</th>
 		</thead>
 		<tbody>
 		<tr>
-			<td>${executedTests}</td>
+			<td>${executedFeatures}</td>
 			<td>${failures}</td>
+			<td>${errors}</td>
 			<td>${skipped}</td>
+			<td>${successRate}</td>
+			<td>${time}</td>
 		</tr>
 		</tbody>
 	</table>
 </div>
-<h2>Specifications:</h2>
+<h2>Features:</h2>
 <table>
 	<colgroup>
 		<col class='block-kind-col' />
@@ -168,6 +174,27 @@
 		</td>
 		<td>
 			<span class='block-text'>Nothing happens</span>
+		</td>
+	</tr>
+	<tr>
+		<td colspan='10'>
+			<div class='feature-description'>A test with an error</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<span class='block-kind'>When:</span>
+		</td>
+		<td>
+			<span class='block-text'>An Exception is thrown</span>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<span class='block-kind'>Then:</span>
+		</td>
+		<td>
+			<span class='block-text'>Will never succeed</span>
 		</td>
 	</tr>
 	</tbody>

@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
+import org.junit.ComparisonFailure
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
@@ -37,6 +38,7 @@ class JUnitReportExtension implements IGlobalExtension {
 	}
 
 	void config( ) {
+		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		def reportCreatorClassName = config.getProperty( IReportCreator.class.name )
 		try {
@@ -75,6 +77,7 @@ class SpecInfoListener implements IRunListener {
 	final IReportCreator reportCreator
 	SpecData specData
 	IterationInfo currentIteration
+	long startT
 
 	SpecInfoListener( IReportCreator reportCreator ) {
 		this.reportCreator = reportCreator
@@ -84,6 +87,7 @@ class SpecInfoListener implements IRunListener {
 	synchronized void beforeSpec( SpecInfo spec ) {
 		//println "Before Spec ${spec.name}"
 		specData = new SpecData( info: spec )
+		startT = System.currentTimeMillis()
 	}
 
 	@Override
@@ -97,9 +101,8 @@ class SpecInfoListener implements IRunListener {
 
 	@Override
 	void beforeIteration( IterationInfo iteration ) {
-		//println "Before Iteration : ${iteration.dataValues}"
 		//println 'Iteration properties: ' + iteration.properties
-		currentRun().errorsByIteration[ iteration ] = [ ]
+		currentRun().failuresByIteration[ iteration ] = [ ]
 		currentIteration = iteration
 	}
 
@@ -116,6 +119,7 @@ class SpecInfoListener implements IRunListener {
 	@Override
 	void afterSpec( SpecInfo spec ) {
 		assert specData.info == spec
+		specData.totalTime = System.currentTimeMillis() - startT
 		reportCreator.createReportFor specData
 		specData = null
 	}
@@ -125,7 +129,16 @@ class SpecInfoListener implements IRunListener {
 		//println "There is some error: ${error.exception}"
 		//println "Error at: ${error.exception.stackTrace}"
 		if ( !currentIteration ) throw new RuntimeException( 'No current iteration!' )
-		currentRun().errorsByIteration[ currentIteration ] << error
+		switch ( classify( error ) ) {
+			case 'FAILURE': currentRun().failuresByIteration[ currentIteration ] << error
+				break
+			case 'ERROR': currentRun().error = error.exception
+		}
+	}
+
+	private classify( ErrorInfo error ) {
+		( error.exception instanceof AssertionError ||
+				error.exception instanceof ComparisonFailure ) ? 'FAILURE' : 'ERROR'
 	}
 
 	@Override

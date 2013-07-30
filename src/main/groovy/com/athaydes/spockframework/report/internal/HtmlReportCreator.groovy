@@ -18,6 +18,7 @@ import static org.spockframework.runtime.model.BlockKind.*
 class HtmlReportCreator implements IReportCreator {
 
 	def reportAggregator = new HtmlReportAggregator()
+	def stringFormatter = new StringFormatHelper()
 	String css
 
 	final block2String = [
@@ -62,7 +63,7 @@ class HtmlReportCreator implements IReportCreator {
 			body {
 				h1 "Report for ${data.info.description.className}"
 				writeSummary( builder, data )
-				writeAllSpecs( builder, data )
+				writeAllFeatures( builder, data )
 			}
 		}
 		'<!DOCTYPE html>' + writer.toString()
@@ -73,47 +74,51 @@ class HtmlReportCreator implements IReportCreator {
 			h2 'Summary:'
 			table {
 				thead {
-					th 'Executed Tests'
+					th 'Executed features'
 					th 'Failures'
+					th 'Errors'
 					th 'Skipped'
+					th 'Success rate'
+					th 'Time'
 				}
 				tbody {
 					tr {
-						td allTestsCount( data )
-						td failuresCount( data )
-						td skippedCount( data )
+						def stats = stats( data )
+						td stats.totalRuns
+						td stats.failures
+						td stats.errors
+						td stats.skipped
+						td stringFormatter.toPercentage( stats.successRate )
+						td stringFormatter.totalTime( data )
 					}
 				}
 			}
 		}
 	}
 
-	private int allTestsCount( SpecData data ) {
-		data.info.allFeatures.size()
+	private Map stats( SpecData data ) {
+		def failures = data.featureRuns.count { it.failuresByIteration.values().any { !it.isEmpty() } }
+		def errors = data.featureRuns.count { it.error }
+		def skipped = data.info.allFeatures.count { it.skipped }
+		def total = data.featureRuns.size()
+		def successRate = ( total > 0 ? ( total - errors - failures ) / total : 1.0 )
+		[ failures: failures, errors: errors, skipped: skipped, totalRuns: total, successRate: successRate ]
 	}
 
-	private int failuresCount(SpecData data) {
-		data.featureRuns.count { it.errorsByIteration.values().any{ !it.isEmpty()  } }
-	}
-
-	private int skippedCount( SpecData data ) {
-		data.info.allFeatures.count{ it.skipped }
-	}
-
-	private void writeAllSpecs( MarkupBuilder builder, SpecData data ) {
-		builder.h2 "Specifications:"
+	private void writeAllFeatures( MarkupBuilder builder, SpecData data ) {
+		builder.h2 "Features:"
 		builder.table {
 			colgroup {
 				col( 'class': 'block-kind-col' )
 				col( 'class': 'block-text-col' )
 			}
 			tbody {
-				writeSpec( builder, data )
+				writeFeature( builder, data )
 			}
 		}
 	}
 
-	private void writeSpec( MarkupBuilder builder, SpecData data ) {
+	private void writeFeature( MarkupBuilder builder, SpecData data ) {
 		data.info.allFeatures.each { FeatureInfo feature ->
 			def run = data.featureRuns.find { run -> run.feature == feature }
 			writeFeatureDescription( builder, feature )
@@ -155,7 +160,7 @@ class HtmlReportCreator implements IReportCreator {
 							}
 						}
 						tbody {
-							run.errorsByIteration.each { iteration, errors ->
+							run.failuresByIteration.each { iteration, errors ->
 								writeIteration( builder, iteration, errors )
 							}
 						}
@@ -170,8 +175,8 @@ class HtmlReportCreator implements IReportCreator {
 	}
 
 	private String iterationsResult( FeatureRun run ) {
-		def totalRuns = run.errorsByIteration.size()
-		def totalErrors = run.errorsByIteration.values().count { !it.empty }
+		def totalRuns = run.failuresByIteration.size()
+		def totalErrors = run.failuresByIteration.values().count { !it.empty }
 		"${totalRuns - totalErrors}/${totalRuns} passed"
 	}
 

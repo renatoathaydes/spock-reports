@@ -12,9 +12,11 @@ import org.spockframework.runtime.model.SpecInfo
 class SpecData {
 	SpecInfo info
 	List<FeatureRun> featureRuns = [ ]
+	long totalTime
 }
 
 class FeatureRun {
 	FeatureInfo feature
-	Map<IterationInfo, List<ErrorInfo>> errorsByIteration = [ : ]
+	Map<IterationInfo, List<ErrorInfo>> failuresByIteration = [ : ]
+	Throwable error
 }
