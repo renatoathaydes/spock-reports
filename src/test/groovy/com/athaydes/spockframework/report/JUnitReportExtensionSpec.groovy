@@ -54,8 +54,8 @@ class JUnitReportExtensionSpec extends Specification {
 		def binding = [
 				classOnTest: FakeTest.class.name,
 				style: defaultStyle(),
-				executedFeatures: 4,
-				failures: 1,
+				executedFeatures: 6,
+				failures: 2,
 				errors: 1,
 				skipped: 1,
 				successRate: '50.0%',

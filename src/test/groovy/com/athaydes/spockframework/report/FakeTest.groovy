@@ -63,4 +63,22 @@ class FakeTest extends Specification {
 		"Will never succeed"
 	}
 
+	def "A test with a failure"() {
+		when:
+		"Do nothing"
+		then:
+		"Test fails"
+		assert 3 == 2
+	}
+
+	def """An incredibly long feature description that unfortunately will popup in some cases where business
+	analysts write these too detailed overviews of what the test should be all about when what they really
+	should do is to let the details go in the body of the test using the Gherkin language which underlies BDD
+	and is proven to make it easier for all involved to understand what the test is doing, what the inputs are
+	and what the expected outcomes are in such a way that the best possible common understanding is reached"""() {
+		expect:
+		"The long description above to look good in the report"
+	}
+
+
 }
