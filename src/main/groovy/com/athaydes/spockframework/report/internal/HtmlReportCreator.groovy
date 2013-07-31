@@ -62,6 +62,7 @@ class HtmlReportCreator implements IReportCreator {
 			}
 			body {
 				h1 "Report for ${data.info.description.className}"
+				hr()
 				writeSummary( builder, data )
 				writeAllFeatures( builder, data )
 			}
@@ -121,7 +122,7 @@ class HtmlReportCreator implements IReportCreator {
 	private void writeFeature( MarkupBuilder builder, SpecData data ) {
 		data.info.allFeatures.each { FeatureInfo feature ->
 			def run = data.featureRuns.find { run -> run.feature == feature }
-			writeFeatureDescription( builder, feature )
+			writeFeatureDescription( builder, feature, run )
 			feature.blocks.each { BlockInfo block ->
 				writeBlock( builder, block, feature.skipped )
 			}
@@ -194,8 +195,12 @@ class HtmlReportCreator implements IReportCreator {
 		errors ? 'FAIL' : 'OK'
 	}
 
-	private void writeFeatureDescription( MarkupBuilder builder, FeatureInfo feature ) {
-		def additionalCssClass = feature.skipped ? ' ignored' : ''
+	private void writeFeatureDescription( MarkupBuilder builder, FeatureInfo feature, FeatureRun run ) {
+		assert feature.skipped || run
+		def additionalCssClass = feature.skipped ? ' ignored' :
+			run.error ? ' error' :
+				run.failuresByIteration.any { !it.value.isEmpty() } ? ' failure' : ''
+
 		builder.tr {
 			td( colspan: '10' ) {
 				div( 'class': 'feature-description' + additionalCssClass, feature.name )

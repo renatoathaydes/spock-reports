@@ -1,14 +1,26 @@
-.feature-description {
-  font-size: large;
-  background: yellow;
+body {
+  font-family: arial;
 }
 
-h1 {
-  color: blue;
+.feature-description {
+  font-size: large;
+  background: lightgreen;
+}
+
+.feature-description.error {
+  background: orange;
+}
+
+.feature-description.failure {
+  background: red;
+}
+
+.feature-description.ignored {
+  background: lightgray;
 }
 
 table {
-  border-collapse:collapse;
+  border-collapse: collapse;
   margin: 5px;
 }
 
@@ -43,13 +55,14 @@ div.feature-separator {
 
 td.ex-result {
   border: none;
-  color: yellow;
+  text-align: right;
 }
 
 .ex-pass {
-  color: green;
+  color: darkgreen;
 }
 
 .ex-fail {
-  background: red;
+  color: red;
+  font-weight: bold;
 }
