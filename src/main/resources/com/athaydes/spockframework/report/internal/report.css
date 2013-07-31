@@ -47,10 +47,12 @@ table.summary-table td {
 
 table.ex-table th {
   background: lightblue;
+  padding: 0px 5px 0px 5px;
 }
 
 table.ex-table td {
   background: lightgray;
+  padding: 0px 5px 0px 5px;
 }
 
 table td {
@@ -98,4 +100,9 @@ div.block-kind {
 
 div.block-text {
 
+}
+
+div.footer {
+  text-align: center;
+  font-size: small;
 }

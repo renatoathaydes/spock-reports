@@ -60,6 +60,7 @@ class JUnitReportExtensionSpec extends Specification {
 				skipped: 1,
 				successRate: '50.0%',
 				time: UNKNOWN,
+				projectUrl: JUnitReportExtension.PROJECT_URL
 		]
 		def templateEngine = new SimpleTemplateEngine()
 		try {

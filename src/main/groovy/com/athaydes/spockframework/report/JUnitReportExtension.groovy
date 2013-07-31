@@ -17,6 +17,7 @@ import org.spockframework.runtime.model.SpecInfo
  */
 class JUnitReportExtension implements IGlobalExtension {
 
+	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 	final configLoader = new ConfigLoader()
 	Class reportCreatorClass
 	final reportCreatorSettings = [ : ]
