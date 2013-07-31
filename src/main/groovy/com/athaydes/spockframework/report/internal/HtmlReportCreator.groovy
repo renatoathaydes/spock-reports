@@ -21,6 +21,7 @@ class HtmlReportCreator implements IReportCreator {
 	def reportAggregator = new HtmlReportAggregator()
 	def stringFormatter = new StringFormatHelper()
 	String css
+	String outputDir
 
 	final block2String = [
 			( SETUP ): 'Given:',
@@ -48,10 +49,19 @@ class HtmlReportCreator implements IReportCreator {
 	@Override
 	void createReportFor( SpecData data ) {
 		def specClassName = data.info.description.className
-		def reportsDir = new File( 'build', 'spock-reports' )
+		def reportsDir = new File( outputDir )
 		reportsDir.mkdirs()
-		Paths.get( reportsDir.absolutePath, specClassName + '.html' )
-				.toFile().write( reportFor( data ) )
+		if ( reportsDir.exists() ) {
+			try {
+				Paths.get( reportsDir.absolutePath, specClassName + '.html' )
+						.toFile().write( reportFor( data ) )
+			} catch ( e ) {
+				println "${this.class.name} failed to create report for $specClassName, Reason: $e"
+			}
+
+		} else {
+			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+		}
 	}
 
 	String reportFor( SpecData data ) {

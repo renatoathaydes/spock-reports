@@ -1,11 +1,13 @@
 package com.athaydes.spockframework.report
 
+import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.HtmlReportCreator
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import groovy.text.SimpleTemplateEngine
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
+import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -65,7 +67,43 @@ class JUnitReportExtensionSpec extends Specification {
 		def templateEngine = new SimpleTemplateEngine()
 		try {
 			templateEngine.createTemplate( rawHtml ).make( binding ).toString()
-		} catch ( e ) { e.printStackTrace() }
+		} catch ( e ) { e.printStackTrace(); null }
+	}
+
+	def "The settings found in the config.properties file are used to configure the report framework"( ) {
+		given:
+		"An instance of JUnitReportExtension with a mocked out config loader"
+		def extension = new JUnitReportExtension()
+		def props = new Properties()
+		extension.configLoader = [ loadConfig: { props } ] as ConfigLoader
+
+		and:
+		"A set of valid and invalid properties emulating the properties file"
+		props.setProperty( IReportCreator.class.name, MockReportCreator.class.name )
+		props.setProperty( MockReportCreator.class.name + '.customProp', 'customValue' )
+		props.setProperty( "com.athaydes.spockframework.report.outputDir", "the-output-dir" )
+		props.setProperty( "some.invalid.property", "invalid-value" )
+
+		when:
+		"This extension framework is initiated by Spock visiting a spec"
+		def listenersAdded = 0
+		extension.visitSpec( [ addListener: { SpecInfoListener _ ->
+			listenersAdded++
+		} ] as SpecInfo )
+
+		then:
+		"This extension added a SpecInfoListener to Spock's SpecInfo"
+		listenersAdded == 1
+
+		and:
+		"The ReportCreator was configured with the valid properties"
+		MockReportCreator.outputDirs == [ "the-output-dir" ]
+		MockReportCreator.customPropValues == [ 'customValue' ]
+
+		cleanup:
+		MockReportCreator.outputDirs = null
+		MockReportCreator.customPropValues = null
+
 	}
 
 	private String defaultStyle( ) {
@@ -76,4 +114,19 @@ class JUnitReportExtensionSpec extends Specification {
 	class PredictableTimeResponse {
 		String totalTime( SpecData d ) { JUnitReportExtensionSpec.UNKNOWN }
 	}
+
+	class MockReportCreator implements IReportCreator {
+
+		static List<String> outputDirs = [ ]
+		static List<String> customPropValues = [ ]
+
+		@Override
+		void createReportFor( SpecData data ) {}
+
+		@Override
+		void setOutputDir( String path ) { outputDirs << path }
+
+		void setCustomProp( String value ) { customPropValues << value }
+	}
+
 }

@@ -10,4 +10,6 @@ public interface IReportCreator {
 
 	void createReportFor( SpecData data )
 
+	void setOutputDir( String path )
+
 }

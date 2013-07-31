@@ -18,11 +18,14 @@ import org.spockframework.runtime.model.SpecInfo
 class JUnitReportExtension implements IGlobalExtension {
 
 	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
-	final configLoader = new ConfigLoader()
-	Class reportCreatorClass
-	final reportCreatorSettings = [ : ]
+	static final String DEFAULT_OUTPUT_DIR = "build/outputDir"
 
-	static firstVisit = true
+	def configLoader = new ConfigLoader()
+	Class<? extends IReportCreator> reportCreatorClass
+	final reportCreatorSettings = [ : ]
+	String outputDir
+
+	def firstVisit = true
 
 	@Override
 	void visitSpec( SpecInfo specInfo ) {
@@ -34,7 +37,8 @@ class JUnitReportExtension implements IGlobalExtension {
 			try {
 				specInfo.addListener new SpecInfoListener( instantiateReportCreator() )
 			} catch ( e ) {
-				println "Failed to create instance of $reportCreatorClass"
+				e.printStackTrace()
+				println "Failed to create instance of $reportCreatorClass: $e"
 			}
 	}
 
@@ -42,21 +46,20 @@ class JUnitReportExtension implements IGlobalExtension {
 		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		def reportCreatorClassName = config.getProperty( IReportCreator.class.name )
+		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir", DEFAULT_OUTPUT_DIR )
 		try {
 			def reportCreatorClass = Class.forName( reportCreatorClassName )
-			if ( IReportCreator.isAssignableFrom( reportCreatorClass ) ) {
-				this.reportCreatorClass = reportCreatorClass
-				reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
-			} else {
-				println "Class $reportCreatorClassName does not implement ${IReportCreator.class.name}"
-			}
+			this.reportCreatorClass = reportCreatorClass.asSubclass( IReportCreator )
+			reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
 		} catch ( e ) {
+			e.printStackTrace()
 			println "Error configuring ${this.class.name}! $e"
 		}
 	}
 
 	def instantiateReportCreator( ) {
-		def reportCreator = reportCreatorClass.newInstance()
+		IReportCreator reportCreator = reportCreatorClass.newInstance()
+		reportCreator.outputDir = outputDir
 		reportCreatorSettings.each { field, value ->
 			reportCreator."$field" = value
 		}
@@ -64,9 +67,9 @@ class JUnitReportExtension implements IGlobalExtension {
 	}
 
 	def loadSettingsFor( String prefix, Properties config ) {
-		Collections.list( config.propertyNames() ).grep { key ->
+		Collections.list( config.propertyNames() ).grep { String key ->
 			key.startsWith prefix + '.'
-		}.collect { key ->
+		}.collect { String key ->
 			[ ( key - ( prefix + '.' ) ): config.getProperty( key ) ]
 		}.collectEntries()
 	}
