@@ -1,10 +1,36 @@
 body {
-  font-family: arial;
+  font-family: Helvetica;
+}
+
+table {
+  margin: 5px;
+}
+
+table.features-table {
+  width: 800px;
+}
+
+table.summary-table {
+  width: 800px;
+  text-align: left;
+  font-weight: bold;
+  font-size: small;
+}
+
+table.summary-table th {
+  background: lightblue;
+  padding: 6px;
+}
+
+table.summary-table td {
+  background: lightgray;
+  padding: 6px;
 }
 
 .feature-description {
   font-size: large;
-  background: lightgreen;
+  background: lightblue;
+  padding: 4px;
 }
 
 .feature-description.error {
@@ -19,13 +45,12 @@ body {
   background: lightgray;
 }
 
-table {
-  border-collapse: collapse;
-  margin: 5px;
+table.ex-table th {
+  background: lightblue;
 }
 
-table.ex-table td, table.ex-table th {
-  border: black solid 1px;
+table.ex-table td {
+  background: lightgray;
 }
 
 table td {
@@ -40,13 +65,12 @@ span.spec-header {
   font-weight: bold;
 }
 
-span.spec-text {
+div.spec-text {
   /*color: green;*/
 }
 
-div.feature-separator {
-  min-height: 10px;
-  background: blue;
+div.spec-status {
+  font-style: italic;
 }
 
 .ignored {
@@ -54,8 +78,8 @@ div.feature-separator {
 }
 
 td.ex-result {
-  border: none;
-  text-align: right;
+  text-align: center;
+  background: white !important;
 }
 
 .ex-pass {
@@ -65,4 +89,13 @@ td.ex-result {
 .ex-fail {
   color: red;
   font-weight: bold;
+}
+
+div.block-kind {
+  margin: 2px;
+  font-style: italic;
+}
+
+div.block-text {
+
 }

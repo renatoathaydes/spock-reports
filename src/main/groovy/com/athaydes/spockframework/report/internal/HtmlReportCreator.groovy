@@ -61,7 +61,7 @@ class HtmlReportCreator implements IReportCreator {
 				if ( css ) style css
 			}
 			body {
-				h1 "Report for ${data.info.description.className}"
+				h2 "Report for ${data.info.description.className}"
 				hr()
 				writeSummary( builder, data )
 				writeAllFeatures( builder, data )
@@ -72,8 +72,8 @@ class HtmlReportCreator implements IReportCreator {
 
 	private void writeSummary( MarkupBuilder builder, SpecData data ) {
 		builder.div( 'class': 'summary-report' ) {
-			h2 'Summary:'
-			table {
+			h3 'Summary:'
+			table( 'class': 'summary-table' ) {
 				thead {
 					th 'Executed features'
 					th 'Failures'
@@ -107,8 +107,8 @@ class HtmlReportCreator implements IReportCreator {
 	}
 
 	private void writeAllFeatures( MarkupBuilder builder, SpecData data ) {
-		builder.h2 "Features:"
-		builder.table {
+		builder.h3 "Features:"
+		builder.table( 'class': 'features-table' ) {
 			colgroup {
 				col( 'class': 'block-kind-col' )
 				col( 'class': 'block-text-col' )
@@ -136,7 +136,7 @@ class HtmlReportCreator implements IReportCreator {
 			builder.tr( trCssClassArg ) {
 				writeBlockKindTd( builder, index == 0 ? block.kind : 'AND' )
 				td {
-					span( 'class': 'block-text', blockText )
+					div( 'class': 'block-text', blockText )
 				}
 			}
 		}
@@ -144,7 +144,7 @@ class HtmlReportCreator implements IReportCreator {
 
 	private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
 		builder.td {
-			span( 'class': 'block-kind', block2String[ blockKindKey ] )
+			div( 'class': 'block-kind', block2String[ blockKindKey ] )
 		}
 	}
 
@@ -153,7 +153,7 @@ class HtmlReportCreator implements IReportCreator {
 		builder.tr {
 			writeBlockKindTd( builder, WHERE )
 			td {
-				span( 'class': 'spec-examples' ) {
+				div( 'class': 'spec-examples' ) {
 					table( 'class': 'ex-table' ) {
 						thead {
 							run.feature.parameterNames.each { param ->
@@ -169,7 +169,7 @@ class HtmlReportCreator implements IReportCreator {
 				}
 			}
 			td {
-				span( 'class': 'spec-status', iterationsResult( run ) )
+				div( 'class': 'spec-status', iterationsResult( run ) )
 			}
 		}
 

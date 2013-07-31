@@ -6,11 +6,11 @@
 	</style>
 </head>
 <body>
-<h1>Report for ${classOnTest}</h1>
+<h2>Report for ${classOnTest}</h2>
 <hr />
 <div class='summary-report'>
-	<h2>Summary:</h2>
-	<table>
+	<h3>Summary:</h3>
+	<table class='summary-table'>
 		<thead>
 		<th>Executed features</th>
 		<th>Failures</th>
@@ -31,8 +31,8 @@
 		</tbody>
 	</table>
 </div>
-<h2>Features:</h2>
-<table>
+<h3>Features:</h3>
+<table class='features-table'>
 	<colgroup>
 		<col class='block-kind-col' />
 		<col class='block-text-col' />
@@ -45,42 +45,42 @@
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Given:</span>
+			<div class='block-kind'>Given:</div>
 		</td>
 		<td>
-			<span class='block-text'>we have x and y</span>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<span class='block-kind'>And:</span>
-		</td>
-		<td>
-			<span class='block-text'>some more things</span>
+			<div class='block-text'>we have x and y</div>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>When:</span>
+			<div class='block-kind'>And:</div>
 		</td>
 		<td>
-			<span class='block-text'>I do crazy things</span>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<span class='block-kind'>Then:</span>
-		</td>
-		<td>
-			<span class='block-text'>I get one iteration pass and another fail</span>
+			<div class='block-text'>some more things</div>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Where:</span>
+			<div class='block-kind'>When:</div>
 		</td>
 		<td>
-			<span class='spec-examples'>
+			<div class='block-text'>I do crazy things</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class='block-kind'>Then:</div>
+		</td>
+		<td>
+			<div class='block-text'>I get one iteration pass and another fail</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class='block-kind'>Where:</div>
+		</td>
+		<td>
+			<div class='spec-examples'>
 				<table class='ex-table'>
 					<thead>
 					<th class='ex-header'>x</th>
@@ -99,10 +99,10 @@
 					</tr>
 					</tbody>
 				</table>
-			</span>
+			</div>
 		</td>
 		<td>
-			<span class='spec-status'>1/2 passed</span>
+			<div class='spec-status'>1/2 passed</div>
 		</td>
 	</tr>
 	<tr>
@@ -112,18 +112,18 @@
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Given:</span>
+			<div class='block-kind'>Given:</div>
 		</td>
 		<td>
-			<span class='block-text'>Setup block here</span>
+			<div class='block-text'>Setup block here</div>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Expect:</span>
+			<div class='block-kind'>Expect:</div>
 		</td>
 		<td>
-			<span class='block-text'>Expecting something ??</span>
+			<div class='block-text'>Expecting something ??</div>
 		</td>
 	</tr>
 	<tr>
@@ -133,18 +133,18 @@
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>When:</span>
+			<div class='block-kind'>When:</div>
 		</td>
 		<td>
-			<span class='block-text'>This is the when</span>
+			<div class='block-text'>This is the when</div>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Then:</span>
+			<div class='block-kind'>Then:</div>
 		</td>
 		<td>
-			<span class='block-text'>This is the then</span>
+			<div class='block-text'>This is the then</div>
 		</td>
 	</tr>
 	<tr>
@@ -154,26 +154,26 @@
 	</tr>
 	<tr class='ignored'>
 		<td>
-			<span class='block-kind'>Given:</span>
+			<div class='block-kind'>Given:</div>
 		</td>
 		<td>
-			<span class='block-text'>Nothing</span>
-		</td>
-	</tr>
-	<tr class='ignored'>
-		<td>
-			<span class='block-kind'>When:</span>
-		</td>
-		<td>
-			<span class='block-text'>Do nothing</span>
+			<div class='block-text'>Nothing</div>
 		</td>
 	</tr>
 	<tr class='ignored'>
 		<td>
-			<span class='block-kind'>Then:</span>
+			<div class='block-kind'>When:</div>
 		</td>
 		<td>
-			<span class='block-text'>Nothing happens</span>
+			<div class='block-text'>Do nothing</div>
+		</td>
+	</tr>
+	<tr class='ignored'>
+		<td>
+			<div class='block-kind'>Then:</div>
+		</td>
+		<td>
+			<div class='block-text'>Nothing happens</div>
 		</td>
 	</tr>
 	<tr>
@@ -183,18 +183,18 @@
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>When:</span>
+			<div class='block-kind'>When:</div>
 		</td>
 		<td>
-			<span class='block-text'>An Exception is thrown</span>
+			<div class='block-text'>An Exception is thrown</div>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<span class='block-kind'>Then:</span>
+			<div class='block-kind'>Then:</div>
 		</td>
 		<td>
-			<span class='block-text'>Will never succeed</span>
+			<div class='block-text'>Will never succeed</div>
 		</td>
 	</tr>
 	</tbody>
