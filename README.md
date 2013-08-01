@@ -7,7 +7,7 @@ Currently, the only available report creator generates a *HTML report based on J
 
 ## Where to find demo reports
 
-I am using [this CodePen](http://codepen.io/renatoathaydes/details/ihGgt) to design the HTML report. If you don't like the style, you can use your own css stylesheet (see the customization section below). I welcome feedback on how to improve the report looks!
+I am using [this CodePen](http://codepen.io/renatoathaydes/full/ihGgt) to design the HTML report. If you don't like the style, you can use your own css stylesheet (see the customization section below). I welcome feedback on how to improve the report looks!
 
 ## How to use it
 
