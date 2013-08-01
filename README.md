@@ -5,6 +5,10 @@
 This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test reports.
 Currently, the only available report creator generates a *HTML report based on JUnit reports*.
 
+## Where to find demo reports
+
+I am using [this CodePen](http://codepen.io/renatoathaydes/details/ihGgt) to design the HTML report. If you don't like the style, you can use your own css stylesheet (see the customization section below). I welcome feedback on how to improve the report looks!
+
 ## How to use it
 
 > Unfortunately, for now this project is not available in Maven Central or any other repository,
