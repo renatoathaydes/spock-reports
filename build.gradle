@@ -16,6 +16,7 @@ dependencies {
 	groovy "org.codehaus.groovy:groovy-all:${ext.groovyVersion}"
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	testCompile files( 'buid/libs/spock-reports-1.0-SNAPSHOT.jar' )
+	testCompile "cglib:cglib-nodep:2.2.2"
 }
 
 test {

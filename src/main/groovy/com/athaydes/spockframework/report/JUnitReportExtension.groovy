@@ -21,7 +21,7 @@ class JUnitReportExtension implements IGlobalExtension {
 	static final String DEFAULT_OUTPUT_DIR = "build/outputDir"
 
 	def configLoader = new ConfigLoader()
-	Class<? extends IReportCreator> reportCreatorClass
+	String reportCreatorClassName
 	final reportCreatorSettings = [ : ]
 	String outputDir
 
@@ -33,23 +33,24 @@ class JUnitReportExtension implements IGlobalExtension {
 			config()
 			firstVisit = false
 		}
-		if ( reportCreatorClass )
+		if ( reportCreatorClassName )
 			try {
-				specInfo.addListener new SpecInfoListener( instantiateReportCreator() )
+				def reportCreator = instantiateReportCreator()
+				configReportCreator( reportCreator )
+				specInfo.addListener new SpecInfoListener( reportCreator )
+
 			} catch ( e ) {
 				e.printStackTrace()
-				println "Failed to create instance of $reportCreatorClass: $e"
+				println "Failed to create instance of $reportCreatorClassName: $e"
 			}
 	}
 
 	void config( ) {
 		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
-		def reportCreatorClassName = config.getProperty( IReportCreator.class.name )
+		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
 		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir", DEFAULT_OUTPUT_DIR )
 		try {
-			def reportCreatorClass = Class.forName( reportCreatorClassName )
-			this.reportCreatorClass = reportCreatorClass.asSubclass( IReportCreator )
 			reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
 		} catch ( e ) {
 			e.printStackTrace()
@@ -58,12 +59,8 @@ class JUnitReportExtension implements IGlobalExtension {
 	}
 
 	def instantiateReportCreator( ) {
-		IReportCreator reportCreator = reportCreatorClass.newInstance()
-		reportCreator.outputDir = outputDir
-		reportCreatorSettings.each { field, value ->
-			reportCreator."$field" = value
-		}
-		reportCreator
+		def reportCreatorClass = Class.forName( reportCreatorClassName )
+		reportCreatorClass.asSubclass( IReportCreator ).newInstance()
 	}
 
 	def loadSettingsFor( String prefix, Properties config ) {
@@ -72,6 +69,13 @@ class JUnitReportExtension implements IGlobalExtension {
 		}.collect { String key ->
 			[ ( key - ( prefix + '.' ) ): config.getProperty( key ) ]
 		}.collectEntries()
+	}
+
+	private void configReportCreator( IReportCreator reportCreator ) {
+		reportCreator.outputDir = outputDir
+		reportCreatorSettings.each { field, value ->
+			reportCreator."$field" = value
+		}
 	}
 
 }
