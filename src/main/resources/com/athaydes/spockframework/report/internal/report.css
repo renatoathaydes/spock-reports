@@ -45,6 +45,21 @@ table.summary-table td {
   background: lightgray;
 }
 
+div.problem-description {
+  padding: 10px;
+  background: pink;
+  border-radius: 10px;
+}
+
+div.problem-header {
+  font-weight: bold;
+  color: red;
+}
+
+div.problem-list {
+  
+}
+
 table.ex-table th {
   background: lightblue;
   padding: 0px 5px 0px 5px;

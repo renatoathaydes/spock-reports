@@ -20,6 +20,7 @@ class HtmlReportCreator implements IReportCreator {
 
 	def reportAggregator = new HtmlReportAggregator()
 	def stringFormatter = new StringFormatHelper()
+	def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
 	String css
 	String outputDir
 
@@ -56,6 +57,7 @@ class HtmlReportCreator implements IReportCreator {
 				Paths.get( reportsDir.absolutePath, specClassName + '.html' )
 						.toFile().write( reportFor( data ) )
 			} catch ( e ) {
+				e.printStackTrace()
 				println "${this.class.name} failed to create report for $specClassName, Reason: $e"
 			}
 
@@ -67,6 +69,7 @@ class HtmlReportCreator implements IReportCreator {
 	String reportFor( SpecData data ) {
 		def writer = new StringWriter()
 		def builder = new MarkupBuilder( new IndentPrinter( new PrintWriter( writer ), "" ) )
+		builder.expandEmptyElements = true
 		builder.html {
 			head {
 				if ( css ) style css
@@ -103,7 +106,7 @@ class HtmlReportCreator implements IReportCreator {
 						td stats.errors
 						td stats.skipped
 						td stringFormatter.toPercentage( stats.successRate )
-						td stringFormatter.totalTime( data )
+						td stringFormatter.toTimeDuration( data.totalTime )
 					}
 				}
 			}
@@ -140,6 +143,7 @@ class HtmlReportCreator implements IReportCreator {
 				writeBlock( builder, block, feature.skipped )
 			}
 			writeRun( builder, run )
+			if ( run ) writeProblemBlock( builder, run )
 		}
 	}
 
@@ -219,6 +223,22 @@ class HtmlReportCreator implements IReportCreator {
 				div( 'class': 'feature-description' + additionalCssClass, feature.name )
 			}
 		}
+	}
+
+	private void writeProblemBlock( MarkupBuilder builder, FeatureRun run ) {
+		def isError = run.error != null
+		def isFailure = run.failuresByIteration.values().any { !it.isEmpty() }
+		if ( isError || isFailure )
+			builder.tr {
+				td( colspan: '10' ) {
+					div( 'class': 'problem-description' ) {
+						div( 'class': 'problem-header', 'The following problems occurred:' )
+						div( 'class': 'problem-list' ) {
+							problemWriter.writeProblems( builder, run, isError )
+						}
+					}
+				}
+			}
 	}
 
 	private void writeFooter( MarkupBuilder builder ) {

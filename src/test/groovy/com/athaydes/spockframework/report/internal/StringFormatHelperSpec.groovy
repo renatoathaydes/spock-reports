@@ -30,9 +30,47 @@ class StringFormatHelperSpec extends Specification {
 		1.0       | '100.0%'
 	}
 
-	def "Time amounts should be adequate for Test Reports"( ) {
-		expect:
-		"Groovy to take care of that!"
+	def "Time amounts should look adequate for Test Reports"( ) {
+		given:
+		"The example evaluates to a number"
+		def example = Eval.me timeDurationInMillis
 
+		when:
+		"I Convert the time duration to a presentable String"
+		def result = new StringFormatHelper().toTimeDuration( example )
+
+		then:
+		"The result is as expected"
+		result == expected
+
+		where:
+		timeDurationInMillis                         | expected
+		'0'                                          | '0'
+		'1'                                          | '0.001 seconds'
+		'250'                                        | '0.250 seconds'
+		'1000'                                       | '1.000 seconds'
+		'''2 + //ms
+			4 * 1000 + // sec
+			5 * 1000 * 60 + // min
+			8 * 1000 * 60 * 60 // hour''' | '8 hours, 5 minutes, 4.002 seconds'
 	}
+
+	def "A formatted String should be converted nicely to an equivalent HTML String"( ) {
+		when:
+		"An a formatted String is converted to an HTML String"
+		def result = new StringFormatHelper().formatToHtml( formattedString )
+
+		then:
+		"The result is as expected"
+		result == expected
+
+		where:
+		formattedString | expected
+		''              | ''
+		'abc'           | 'abc'
+		'Hi\tthere'     | 'Hi<br/>there'
+		'Hi\nHo'        | 'Hi<br/>Ho'
+	}
+
+
 }

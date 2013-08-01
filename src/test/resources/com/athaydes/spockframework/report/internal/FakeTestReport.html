@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		${style}
+	</style>
+</head>
+<body>
+<h2>Report for ${classOnTest}</h2>
+<hr></hr>
+<div class='summary-report'>
+	<h3>Summary:</h3>
+	<table class='summary-table'>
+		<thead>
+		<th>Executed features</th>
+		<th>Failures</th>
+		<th>Errors</th>
+		<th>Skipped</th>
+		<th>Success rate</th>
+		<th>Time</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>${executedFeatures}</td>
+			<td>${failures}</td>
+			<td>${errors}</td>
+			<td>${skipped}</td>
+			<td>${successRate}</td>
+			<td>${time}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+<h3>Features:</h3>
+<table class='features-table'>
+<colgroup>
+	<col class='block-kind-col'></col>
+	<col class='block-text-col'></col>
+</colgroup>
+<tbody>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description failure'>A first test</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>we have x and y</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>some more things</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>I do crazy things</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>I get one iteration pass and another fail</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Where:</div>
+	</td>
+	<td>
+		<div class='spec-examples'>
+			<table class='ex-table'>
+				<thead>
+				<th class='ex-header'>x</th>
+				<th class='ex-header'>y</th>
+				</thead>
+				<tbody>
+				<tr class='ex-pass'>
+					<td class='ex-value'>a</td>
+					<td class='ex-value'>a</td>
+					<td class='ex-result'>OK</td>
+				</tr>
+				<tr class='ex-fail'>
+					<td class='ex-value'>b</td>
+					<td class='ex-value'>c</td>
+					<td class='ex-result'>FAIL</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</td>
+	<td>
+		<div class='spec-status'>1/2 passed</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>${problemList1}</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description'>Another feature!!!!</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>Setup block here</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<div class='block-text'>Expecting something ??</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description'>A when then spec</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>This is the when</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>This is the then</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description ignored'>Please ignore me</div>
+	</td>
+</tr>
+<tr class='ignored'>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>Nothing</div>
+	</td>
+</tr>
+<tr class='ignored'>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>Do nothing</div>
+	</td>
+</tr>
+<tr class='ignored'>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>Nothing happens</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description error'>A test with an error</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>An Exception is thrown</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>Will never succeed</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>${problemList2}</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description failure'>A test with a failure</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>Do nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>Test fails</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>${problemList3}</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description'>
+			An incredibly long feature description that unfortunately will popup in some cases where business
+			analysts write these too detailed overviews of what the test should be all about when what they really
+			should do is to let the details go in the body of the test using the Gherkin language which underlies BDD
+			and is proven to make it easier for all involved to understand what the test is doing, what the inputs are
+			and what the expected outcomes are in such a way that the best possible common understanding is reached
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<div class='block-text'>The long description above to look good in the report</div>
+	</td>
+</tr>
+</tbody>
+</table>
+<hr></hr>
+<div class='footer'>Generated by <a href='${projectUrl}'>Athaydes Spock Reports</a></div>
+</body>
+</html>
