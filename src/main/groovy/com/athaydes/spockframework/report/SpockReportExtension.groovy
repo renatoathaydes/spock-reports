@@ -15,7 +15,7 @@ import org.spockframework.runtime.model.SpecInfo
  *
  * User: Renato
  */
-class JUnitReportExtension implements IGlobalExtension {
+class SpockReportExtension implements IGlobalExtension {
 
 	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 	static final String DEFAULT_OUTPUT_DIR = "build/outputDir"

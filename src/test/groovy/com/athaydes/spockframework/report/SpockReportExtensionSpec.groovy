@@ -8,12 +8,12 @@ import spock.lang.Specification
  *
  * User: Renato
  */
-class JUnitReportExtensionSpec extends Specification {
+class SpockReportExtensionSpec extends Specification {
 
 	def "The settings found in the config.properties file are read only once"( ) {
 		given:
-		"An instance of JUnitReportExtension with a mocked out config loader"
-		def extension = new JUnitReportExtension()
+		"An instance of SpockReportExtension with a mocked out config loader"
+		def extension = new SpockReportExtension()
 		def callsCount = 0
 		extension.configLoader = [ loadConfig: { callsCount++; new Properties() } ] as ConfigLoader
 
@@ -50,8 +50,8 @@ class JUnitReportExtensionSpec extends Specification {
 		def mockSpecInfo = Mock( SpecInfo )
 
 		and:
-		"An instance of JUnitReportExtension with mocked out config loader and reportCreator"
-		def extension = new JUnitReportExtension() {
+		"An instance of SpockReportExtension with mocked out config loader and reportCreator"
+		def extension = new SpockReportExtension() {
 			@Override
 			def instantiateReportCreator( ) { mockReportCreator }
 		}

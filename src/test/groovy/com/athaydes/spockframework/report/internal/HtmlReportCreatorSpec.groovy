@@ -1,7 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.FakeTest
-import com.athaydes.spockframework.report.JUnitReportExtension
+import com.athaydes.spockframework.report.SpockReportExtension
 import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
 import org.junit.runner.notification.RunNotifier
@@ -68,7 +68,7 @@ class HtmlReportCreatorSpec extends Specification {
 				problemList2: UNKNOWN,
 				problemList3: UNKNOWN,
 				time: UNKNOWN,
-				projectUrl: JUnitReportExtension.PROJECT_URL
+				projectUrl: SpockReportExtension.PROJECT_URL
 		]
 		def templateEngine = new SimpleTemplateEngine()
 		try {
