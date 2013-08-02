@@ -41,7 +41,7 @@ The only dependencies of this project are on Groovy (version 2.0+) and Spock, bu
 
 ## Customizing the reports
 
-You can provide custom configuration in a properties file located at the following location (anywhere in the classpath):
+You can provide custom configuration in a properties file located at the following location (relative to the classpath):
 
 `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
@@ -50,14 +50,20 @@ Here's the default properties file:
 ```properties
 # Name of the implementation class of the report creator
 # Currently supported classes are:
-# 1. com.athaydes.spockframework.report.internal.HtmlReportCreator
+#   1. com.athaydes.spockframework.report.internal.HtmlReportCreator
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.internal.HtmlReportCreator
 
 # Set properties of the report creator
 # For the HtmlReportCreator, the only settable property
-# is the location of the css file to be used
+# is the location of the css file to be used - relative to the classpath
 com.athaydes.spockframework.report.internal.HtmlReportCreator.css=report.css
 
-# Output directory (where the spock reports will be created)
+# Output directory (where the spock reports will be created) - relative to working directory
 com.athaydes.spockframework.report.outputDir=build/spock-reports
 ```
+
+Notice that the location of the css file is relative to the classpath!
+That means that you have the freedom to place the css file in a separate jar, for example.
+
+The output directory, on the other hand, is relative to the working directory.
+For Maven project which use the defaults, you might want to change it to `target/spock-reports`.
