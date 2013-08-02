@@ -1,4 +1,5 @@
-# Spock Reports - Athaydes Extension
+# Spock Reports Extension
+*by Renato Athaydes*
 
 ## What it is
 
