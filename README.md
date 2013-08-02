@@ -4,7 +4,7 @@
 ## What it is
 
 This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test reports.
-Currently, the only available report creator generates a *HTML report based on JUnit reports*.
+Currently, the only available report creator generates a **HTML report** for each Specification.
 
 ## Where to find demo reports
 
@@ -67,4 +67,4 @@ Notice that the location of the css file is relative to the classpath!
 That means that you have the freedom to place the css file in a separate jar, for example.
 
 The output directory, on the other hand, is relative to the working directory.
-For Maven project which use the defaults, you might want to change it to `target/spock-reports`.
+For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
