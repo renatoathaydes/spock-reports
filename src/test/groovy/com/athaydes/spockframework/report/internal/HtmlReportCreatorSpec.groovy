@@ -54,6 +54,25 @@ class HtmlReportCreatorSpec extends Specification {
 		minify( reportFile.text ) == minify( expectedHtml )
 	}
 
+	def "The css file used should be loaded correctly from any file in the classpath"( ) {
+		given:
+		"A css file in the classpath with known contents"
+		def reportFile = new File( this.class.getResource( "${this.class.simpleName}.class" ).toURI() )
+		def cssFile = new File( reportFile.parentFile, 'my.css' ) << 'file-contents'
+
+		when:
+		"The css is set to the file location relative to the classpath"
+		def reportCreator = new HtmlReportCreator( css:
+				this.class.package.name.replace( '.', '/' ) + '/my.css' )
+
+		then:
+		"The css property of the report becomes the contents of the css file"
+		reportCreator.css == 'file-contents'
+
+		cleanup:
+		cssFile?.delete()
+	}
+
 	private String expectedHtmlReport( ) {
 		def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
 		def binding = [
@@ -77,7 +96,7 @@ class HtmlReportCreatorSpec extends Specification {
 	}
 
 	private String defaultStyle( ) {
-		this.class.getResource( 'report.css' ).text
+		this.class.getResource( '/report.css' ).text
 	}
 
 	@Category( StringFormatHelper )

@@ -36,7 +36,7 @@ class HtmlReportCreator implements IReportCreator {
 
 	void setCss( String css ) {
 		if ( !css || css.trim().empty ) return
-		def cssResource = this.class.getResource( css )
+		def cssResource = this.class.getResource( "/$css" )
 		if ( cssResource )
 			try {
 				this.@css = cssResource.text
@@ -44,7 +44,7 @@ class HtmlReportCreator implements IReportCreator {
 				println "Failed to set CSS file to $css: $e"
 			}
 		else
-			println "The CSS file does not exist: ${cssResource.file}"
+			println "The CSS file does not exist: ${css}"
 	}
 
 	@Override
@@ -213,7 +213,7 @@ class HtmlReportCreator implements IReportCreator {
 	}
 
 	private void writeFeatureDescription( MarkupBuilder builder, FeatureInfo feature, FeatureRun run ) {
-		assert feature.skipped || run
+		if ( !feature.skipped && !run ) return
 		def additionalCssClass = feature.skipped ? ' ignored' :
 			run.error ? ' error' :
 				run.failuresByIteration.any { !it.value.isEmpty() } ? ' failure' : ''
