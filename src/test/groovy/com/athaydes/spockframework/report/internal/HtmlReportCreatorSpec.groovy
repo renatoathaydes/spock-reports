@@ -73,6 +73,30 @@ class HtmlReportCreatorSpec extends Specification {
 		cssFile?.delete()
 	}
 
+	def "The report aggregator should be given the required information for each spec visited"( ) {
+		given:
+		"A HtmlReportCreator with mocked out stats() method"
+		def mockedStats = [ failures: 9, errors: 8, skipped: 7, totalRuns: 50, successRate: 0.1 ]
+		def reportCreator = new HtmlReportCreator() {
+			protected Map stats( SpecData data ) { mockedStats }
+		}
+
+		and:
+		"A mock report aggregator, a stubbed SpecData and an injected MarkupBuilder"
+		reportCreator.reportAggregator = Mock( HtmlReportAggregator )
+		def stubSpecData = Stub( SpecData )
+		def builder = new MarkupBuilder( Stub( Writer ) )
+
+		when:
+		"The report creator writes the summary report"
+		reportCreator.writeSummary( builder, stubSpecData )
+
+		then:
+		"The stats shown in the summary report are passed on to the mock report aggregator"
+		1 * reportCreator.reportAggregator.aggregateReport( stubSpecData, mockedStats )
+
+	}
+
 	private String expectedHtmlReport( ) {
 		def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
 		def binding = [
