@@ -73,7 +73,7 @@ implements IReportCreator {
 						td stats.errors
 						td stats.skipped
 						td stringFormatter.toPercentage( stats.successRate )
-						td stringFormatter.toTimeDuration( data.totalTime )
+						td stringFormatter.toTimeDuration( stats.time )
 						reportAggregator.aggregateReport( data.info.name, stats, outputDir )
 					}
 				}
@@ -87,10 +87,11 @@ implements IReportCreator {
 		def skipped = data.info.allFeatures.count { it.skipped }
 		def total = data.featureRuns.size()
 		def successRate = ( total > 0 ? ( total - errors - failures ) / total : 1.0 )
-		[ failures: failures, errors: errors, skipped: skipped, totalRuns: total, successRate: successRate ]
+		[ failures: failures, errors: errors, skipped: skipped, totalRuns: total,
+				successRate: successRate, time: data.totalTime ]
 	}
 
-	protected void writeAllFeatures( MarkupBuilder builder, SpecData data ) {
+	protected void writeDetails( MarkupBuilder builder, SpecData data ) {
 		builder.h3 "Features:"
 		builder.table( 'class': 'features-table' ) {
 			colgroup {

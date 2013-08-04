@@ -6,6 +6,7 @@ import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
+import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -82,9 +83,16 @@ class HtmlReportCreatorSpec extends Specification {
 		}
 
 		and:
+		"The HtmlReportCreator has a known outputDir"
+		reportCreator.outputDir = 'outputDir'
+
+		and:
 		"A mock report aggregator, a stubbed SpecData and an injected MarkupBuilder"
 		reportCreator.reportAggregator = Mock( HtmlReportAggregator )
 		def stubSpecData = Stub( SpecData )
+		def stubInfo = Stub( SpecInfo )
+		stubSpecData.info >> stubInfo
+		stubInfo.name >> 'some-name'
 		def builder = new MarkupBuilder( Stub( Writer ) )
 
 		when:
@@ -92,8 +100,8 @@ class HtmlReportCreatorSpec extends Specification {
 		reportCreator.writeSummary( builder, stubSpecData )
 
 		then:
-		"The stats shown in the summary report are passed on to the mock report aggregator"
-		1 * reportCreator.reportAggregator.aggregateReport( stubSpecData, mockedStats )
+		"The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
+		1 * reportCreator.reportAggregator.aggregateReport( 'some-name', mockedStats, 'outputDir' )
 
 	}
 

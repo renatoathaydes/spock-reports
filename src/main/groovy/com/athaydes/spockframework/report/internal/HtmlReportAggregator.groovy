@@ -1,11 +1,114 @@
 package com.athaydes.spockframework.report.internal
+
+import groovy.xml.MarkupBuilder
+
 /**
  *
  * User: Renato
  */
-class HtmlReportAggregator {
+class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
-	void aggregateReport( SpecData data, Map stats ) {
-		//TODO
+	final Map<String, Map> aggregatedData = [ : ]
+
+	def stringFormatter = new StringFormatHelper()
+
+	void aggregateReport( String specName, Map stats, String outputDir ) {
+		this.outputDir = outputDir
+		aggregatedData[ specName ] = stats
+		def reportsDir = createReportsDir()
+		if ( reportsDir.exists() ) {
+			try {
+				new File( reportsDir, 'index.html' )
+						.write( reportFor( stats ) )
+			} catch ( e ) {
+				e.printStackTrace()
+				println "${this.class.name} failed to create aggregated report, Reason: $e"
+			}
+
+		} else {
+			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+		}
+	}
+
+	@Override
+	protected String reportHeader( Map data ) {
+		'Specification run results'
+	}
+
+	@Override
+	protected void writeSummary( MarkupBuilder builder, Map stats ) {
+		def aggregateData = recomputeAggregateData()
+		builder.div( 'class': 'summary-report' ) {
+			h3 'Specifications summary:'
+			table( 'class': 'summary-table' ) {
+				thead {
+					th 'Total'
+					th 'Passed'
+					th 'Failed'
+					th 'Feature failures'
+					th 'Feature errors'
+					th 'Success rate'
+					th 'Total time'
+				}
+				tbody {
+					tr {
+						td aggregateData.total
+						td aggregateData.passed
+						td aggregateData.failed
+						td aggregateData.fFails
+						td aggregateData.fErrors
+						td stringFormatter.toPercentage( computeSuccessRate( aggregateData ) )
+						td stringFormatter.toTimeDuration( aggregateData.time )
+					}
+				}
+			}
+		}
+	}
+
+	protected Map recomputeAggregateData( ) {
+		def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
+		aggregatedData.values().each { Map stats ->
+			result.total += 1
+			result.passed += ( stats.failures || stats.errors ? 0 : 1 )
+			result.failed += ( stats.failures || stats.errors ? 1 : 0 )
+			result.fFails += stats.failures
+			result.fErrors += stats.errors
+			result.time += stats.time
+		}
+		result
+	}
+
+	protected double computeSuccessRate( Map aggregateData ) {
+		0.0
+	}
+
+	@Override
+	protected void writeDetails( MarkupBuilder builder, Map ignored ) {
+		builder.h3 'Specifications:'
+		builder.table( 'class': 'summary-table' ) {
+			thead {
+				th 'Name'
+				th 'Features'
+				th 'Failed'
+				th 'Errors'
+				th 'Skipped'
+				th 'Success rate'
+				th 'Time'
+			}
+			tbody {
+				aggregatedData.each { String specName, Map stats ->
+					tr {
+						td specName
+						td stats.totalRuns
+						td stats.failures
+						td stats.errors
+						td stats.skipped
+						td stringFormatter.toPercentage( stats.successRate )
+						td stringFormatter.toTimeDuration( stats.time )
+					}
+				}
+			}
+		}
+
 	}
 }

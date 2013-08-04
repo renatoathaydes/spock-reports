@@ -43,7 +43,7 @@ abstract class AbstractHtmlCreator<T> {
 				h2 reportHeader( data )
 				hr()
 				writeSummary( builder, data )
-				writeAllFeatures( builder, data )
+				writeDetails( builder, data )
 				hr()
 				writeFooter( builder )
 			}
@@ -62,6 +62,6 @@ abstract class AbstractHtmlCreator<T> {
 
 	abstract protected void writeSummary( MarkupBuilder builder, T data )
 
-	abstract protected void writeAllFeatures( MarkupBuilder builder, T data )
+	abstract protected void writeDetails( MarkupBuilder builder, T data )
 
 }
