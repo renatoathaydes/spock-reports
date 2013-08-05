@@ -16,7 +16,7 @@ import static org.spockframework.runtime.model.BlockKind.*
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 implements IReportCreator {
 
-	def reportAggregator = new HtmlReportAggregator()
+	def reportAggregator = HtmlReportAggregator.instance
 	def stringFormatter = new StringFormatHelper()
 	def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
 
@@ -29,6 +29,12 @@ implements IReportCreator {
 			( WHERE ): 'Where:',
 			'AND': 'And:'
 	]
+
+	@Override
+	void setCss( String css ) {
+		super.setCss( css )
+		reportAggregator?.css = css
+	}
 
 	@Override
 	void createReportFor( SpecData data ) {
@@ -74,7 +80,7 @@ implements IReportCreator {
 						td stats.skipped
 						td stringFormatter.toPercentage( stats.successRate )
 						td stringFormatter.toTimeDuration( stats.time )
-						reportAggregator.aggregateReport( data.info.name, stats, outputDir )
+						reportAggregator?.aggregateReport( data.info.description.className, stats, outputDir )
 					}
 				}
 			}
@@ -86,7 +92,7 @@ implements IReportCreator {
 		def errors = data.featureRuns.count { it.error }
 		def skipped = data.info.allFeatures.count { it.skipped }
 		def total = data.featureRuns.size()
-		def successRate = ( total > 0 ? ( total - errors - failures ) / total : 1.0 )
+		def successRate = successRate( total, ( errors + failures ).toInteger() )
 		[ failures: failures, errors: errors, skipped: skipped, totalRuns: total,
 				successRate: successRate, time: data.totalTime ]
 	}

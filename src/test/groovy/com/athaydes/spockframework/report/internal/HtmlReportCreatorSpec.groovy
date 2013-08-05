@@ -4,6 +4,7 @@ import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.SpockReportExtension
 import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
+import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import org.spockframework.runtime.model.SpecInfo
@@ -77,7 +78,7 @@ class HtmlReportCreatorSpec extends Specification {
 	def "The report aggregator should be given the required information for each spec visited"( ) {
 		given:
 		"A HtmlReportCreator with mocked out stats() method"
-		def mockedStats = [ failures: 9, errors: 8, skipped: 7, totalRuns: 50, successRate: 0.1 ]
+		def mockedStats = [ failures: 9, errors: 8, skipped: 7, totalRuns: 50, successRate: 0.1, time: 10 ]
 		def reportCreator = new HtmlReportCreator() {
 			protected Map stats( SpecData data ) { mockedStats }
 		}
@@ -92,7 +93,7 @@ class HtmlReportCreatorSpec extends Specification {
 		def stubSpecData = Stub( SpecData )
 		def stubInfo = Stub( SpecInfo )
 		stubSpecData.info >> stubInfo
-		stubInfo.name >> 'some-name'
+		stubInfo.description >> Description.createTestDescription( this.class, 'ignore' )
 		def builder = new MarkupBuilder( Stub( Writer ) )
 
 		when:
@@ -101,7 +102,26 @@ class HtmlReportCreatorSpec extends Specification {
 
 		then:
 		"The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
-		1 * reportCreator.reportAggregator.aggregateReport( 'some-name', mockedStats, 'outputDir' )
+		1 * reportCreator.reportAggregator.aggregateReport( this.class.name, mockedStats, 'outputDir' )
+
+	}
+
+	def "The report aggregator should be passed on the same css as the report creator"( ) {
+		given:
+		"A HtmlReportCreator"
+		def reportCreator = new HtmlReportCreator()
+
+		and:
+		"A css file location relative to the classpath"
+		def cssPath = "report.css"
+
+		when:
+		"The css is set on the HtmlReportCreator"
+		reportCreator.css = cssPath
+
+		then:
+		"The report aggregator'css is set to the same css"
+		reportCreator.css == reportCreator.reportAggregator.css
 
 	}
 
@@ -122,9 +142,7 @@ class HtmlReportCreatorSpec extends Specification {
 				projectUrl: SpockReportExtension.PROJECT_URL
 		]
 		def templateEngine = new SimpleTemplateEngine()
-		try {
-			templateEngine.createTemplate( rawHtml ).make( binding ).toString()
-		} catch ( e ) { e.printStackTrace(); null }
+		templateEngine.createTemplate( rawHtml ).make( binding ).toString()
 	}
 
 	private String defaultStyle( ) {

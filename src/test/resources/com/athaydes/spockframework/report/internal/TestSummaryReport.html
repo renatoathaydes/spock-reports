@@ -8,27 +8,27 @@
 <body>
 <h2>Specification run results</h2>
 <hr></hr>
-<h3>Specifications summary</h3>
 <div class='summary-report'>
+	<h3>Specifications summary:</h3>
 	<table class='summary-table'>
 		<thead>
 		<th>Total</th>
 		<th>Passed</th>
 		<th>Failed</th>
-		<th>Total failures</th>
-		<th>Total errors</th>
+		<th>Feature failures</th>
+		<th>Feature errors</th>
 		<th>Success rate</th>
 		<th>Total time</th>
 		</thead>
 		<tbody>
 		<tr>
-			<td>10</td>
-			<td>9</td>
-			<td>8</td>
-			<td>7</td>
-			<td>6</td>
-			<td>25.0%</td>
-			<td>42 seconds</td>
+			<td>${total}</td>
+			<td>${passed}</td>
+			<td>${failed}</td>
+			<td>${fFails}</td>
+			<td>${fErrors}</td>
+			<td>${successRate}</td>
+			<td>${time}</td>
 		</tr>
 		</tbody>
 	</table>
@@ -48,20 +48,20 @@
 	<tr>
 		<td>Spec1</td>
 		<td>5</td>
-		<td>1</td>
+		<td>0</td>
 		<td>0</td>
 		<td>2</td>
-		<td>0.1</td>
-		<td>1 second</td>
+		<td>${successRate1}</td>
+		<td>${duration1}</td>
 	</tr>
 	<tr>
 		<td>a.Spec2</td>
 		<td>6</td>
-		<td>2</td>
+		<td>0</td>
 		<td>1</td>
 		<td>3</td>
-		<td>0.2</td>
-		<td>2 seconds</td>
+		<td>${successRate2}</td>
+		<td>${duration2}</td>
 	</tr>
 	<tr>
 		<td>a.Spec3</td>
@@ -69,8 +69,8 @@
 		<td>3</td>
 		<td>2</td>
 		<td>4</td>
-		<td>0.3</td>
-		<td>3 seconds</td>
+		<td>${successRate3}</td>
+		<td>${duration3}</td>
 	</tr>
 	<tr>
 		<td>a.b.c.Spec4</td>
@@ -78,8 +78,8 @@
 		<td>4</td>
 		<td>3</td>
 		<td>5</td>
-		<td>0.4</td>
-		<td>4 seconds</td>
+		<td>${successRate4}</td>
+		<td>${duration4}</td>
 	</tr>
 	<tr>
 		<td>a.b.c.Spec5</td>
@@ -87,8 +87,8 @@
 		<td>5</td>
 		<td>4</td>
 		<td>6</td>
-		<td>0.5</td>
-		<td>5 seconds</td>
+		<td>${successRate5}</td>
+		<td>${duration5}</td>
 	</tr>
 	<tr>
 		<td>b.c.Spec6</td>
@@ -96,8 +96,8 @@
 		<td>6</td>
 		<td>5</td>
 		<td>7</td>
-		<td>0.6</td>
-		<td>6 seconds</td>
+		<td>${successRate6}</td>
+		<td>${duration6}</td>
 	</tr>
 	<tr>
 		<td>c.d.Spec6</td>
@@ -105,8 +105,8 @@
 		<td>7</td>
 		<td>6</td>
 		<td>8</td>
-		<td>0.7</td>
-		<td>7 seconds</td>
+		<td>${successRate7}</td>
+		<td>${duration7}</td>
 	</tr>
 	</tbody>
 </table>

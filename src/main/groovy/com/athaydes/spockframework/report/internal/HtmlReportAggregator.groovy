@@ -6,11 +6,16 @@ import groovy.xml.MarkupBuilder
  *
  * User: Renato
  */
+@Singleton( lazy = true )
 class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
 	final Map<String, Map> aggregatedData = [ : ]
 
 	def stringFormatter = new StringFormatHelper()
+
+	protected HtmlReportAggregator( ) {
+		// provided for testing only (need to Mock it)
+	}
 
 	void aggregateReport( String specName, Map stats, String outputDir ) {
 		this.outputDir = outputDir
@@ -57,7 +62,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 						td aggregateData.failed
 						td aggregateData.fFails
 						td aggregateData.fErrors
-						td stringFormatter.toPercentage( computeSuccessRate( aggregateData ) )
+						td stringFormatter.toPercentage( successRate( aggregateData.total, aggregateData.failed ) )
 						td stringFormatter.toTimeDuration( aggregateData.time )
 					}
 				}
@@ -78,10 +83,6 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 		result
 	}
 
-	protected double computeSuccessRate( Map aggregateData ) {
-		0.0
-	}
-
 	@Override
 	protected void writeDetails( MarkupBuilder builder, Map ignored ) {
 		builder.h3 'Specifications:'
@@ -96,7 +97,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 				th 'Time'
 			}
 			tbody {
-				aggregatedData.each { String specName, Map stats ->
+				aggregatedData.keySet().sort().each { String specName ->
+					def stats = aggregatedData[ specName ]
 					tr {
 						td specName
 						td stats.totalRuns
@@ -111,4 +113,5 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 		}
 
 	}
+
 }
