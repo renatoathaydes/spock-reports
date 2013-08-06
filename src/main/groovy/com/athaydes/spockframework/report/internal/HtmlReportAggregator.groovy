@@ -43,6 +43,9 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 	@Override
 	protected void writeSummary( MarkupBuilder builder, Map stats ) {
 		def aggregateData = recomputeAggregateData()
+		def cssClassIfTrue = { isTrue, String cssClass ->
+			if ( isTrue ) [ 'class': cssClass ] else Collections.emptyMap()
+		}
 		builder.div( 'class': 'summary-report' ) {
 			h3 'Specifications summary:'
 			table( 'class': 'summary-table' ) {
@@ -59,10 +62,11 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 					tr {
 						td aggregateData.total
 						td aggregateData.passed
-						td aggregateData.failed
-						td aggregateData.fFails
-						td aggregateData.fErrors
-						td stringFormatter.toPercentage( successRate( aggregateData.total, aggregateData.failed ) )
+						td( cssClassIfTrue( aggregateData.failed, 'failure' ), aggregateData.failed )
+						td( cssClassIfTrue( aggregateData.fFails, 'failure' ), aggregateData.fFails )
+						td( cssClassIfTrue( aggregateData.fErrors, 'error' ), aggregateData.fErrors )
+						td( cssClassIfTrue( aggregateData.failed, 'failure' ), stringFormatter
+								.toPercentage( successRate( aggregateData.total, aggregateData.failed ) ) )
 						td stringFormatter.toTimeDuration( aggregateData.time )
 					}
 				}

@@ -23,10 +23,10 @@ table.summary-table td {
   padding: 6px;
 }
 
-tr.error td {
-  background-color: #F89A4F;
+tr.error td, td.error {
+  background-color: #F89A4F !important;
 }
 
-tr.failure td {
+tr.failure td, td.failure {
   color: red;
 }
