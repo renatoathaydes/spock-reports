@@ -117,7 +117,7 @@ class HtmlReportAggregatorSpec extends Specification {
 
 		and:
 		"A HtmlReportAggregator with the test css style"
-		def aggregator = new HtmlReportAggregator( css: 'report.css' )
+		def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css' )
 
 		when:
 		"The specs data is provided to the HtmlReportAggregator"
@@ -168,7 +168,7 @@ class HtmlReportAggregatorSpec extends Specification {
 	}
 
 	private String defaultStyle( ) {
-		this.class.getResource( '/report.css' ).text
+		this.class.getResource( '/spock-feature-report.css' ).text
 	}
 
 	private String singleTestSummaryExpectedHtml( ) {

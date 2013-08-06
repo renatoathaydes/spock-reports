@@ -113,7 +113,7 @@ class HtmlReportCreatorSpec extends Specification {
 
 		and:
 		"A css file location relative to the classpath"
-		def cssPath = "report.css"
+		def cssPath = "spock-feature-report.css"
 
 		when:
 		"The css is set on the HtmlReportCreator"
@@ -146,7 +146,7 @@ class HtmlReportCreatorSpec extends Specification {
 	}
 
 	private String defaultStyle( ) {
-		this.class.getResource( '/report.css' ).text
+		this.class.getResource( '/spock-feature-report.css' ).text
 	}
 
 	@Category( StringFormatHelper )

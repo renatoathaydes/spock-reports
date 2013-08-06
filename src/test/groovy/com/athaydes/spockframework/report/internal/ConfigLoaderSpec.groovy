@@ -25,7 +25,7 @@ class ConfigLoaderSpec extends Specification {
 
 		then:
 		"The ConfigLoader to find all of the properties declared in the configLocation"
-		result.getProperty( HTML_REPORT_CSS ) == 'report.css'
+		result.getProperty( HTML_REPORT_CSS ) == 'spock-feature-report.css'
 	}
 
 	def "Custom configurations should override default configurations"( ) {
