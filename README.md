@@ -12,8 +12,8 @@ I hope you find this project as useful as I have (I actually developed this out 
 
 ## What it is
 
-This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test reports.
-Currently, the only available report creator generates a **HTML report** for each Specification.
+This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test (or, in Spock terms, Specifications) reports.
+Currently, the only available report creator generates a **HTML report** for each Specification, as well as a summary of all Specifications that have been run (index.html).
 
 ## Where to find demo reports
 
