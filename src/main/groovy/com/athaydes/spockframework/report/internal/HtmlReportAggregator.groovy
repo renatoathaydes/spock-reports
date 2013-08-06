@@ -99,7 +99,10 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 			tbody {
 				aggregatedData.keySet().sort().each { String specName ->
 					def stats = aggregatedData[ specName ]
-					tr {
+					def cssClasses = [ ]
+					if ( stats.failures ) cssClasses << 'failure'
+					if ( stats.errors ) cssClasses << 'error'
+					tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
 						td specName
 						td stats.totalRuns
 						td stats.failures

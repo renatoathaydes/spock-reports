@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.IReportCreator
 import spock.lang.Specification
 
 /**
@@ -8,7 +9,7 @@ import spock.lang.Specification
  */
 class ConfigLoaderSpec extends Specification {
 
-	private static final String HTML_REPORT_CSS = HtmlReportCreator.class.name + '.css'
+	private static final String FEATURE_REPORT_CSS = HtmlReportCreator.class.name + '.featureReportCss'
 
 	def "The ConfigLoader should load the default configurations"( ) {
 		given:
@@ -25,18 +26,19 @@ class ConfigLoaderSpec extends Specification {
 
 		then:
 		"The ConfigLoader to find all of the properties declared in the configLocation"
-		result.getProperty( HTML_REPORT_CSS ) == 'spock-feature-report.css'
+		result.getProperty( FEATURE_REPORT_CSS ) == 'spock-feature-report.css'
 	}
 
 	def "Custom configurations should override default configurations"( ) {
 		given:
 		"A ConfigLoader in an environment where there is a custom config file"
 		def configLoader = new ConfigLoader()
-		File customFile = createFile( configLoader.CUSTOM_CONFIG ).withContents( expected )
+		File customFile = createFileUnderMetaInf( IReportCreator.class.name + '.properties' )
+		customFile.write "${FEATURE_REPORT_CSS}=${expected}"
 
 		and:
 		"The configLocation exists"
-		customFile.exists()
+		assert customFile.exists()
 
 		when:
 		"I ask the ConfigLoader to load the configuration"
@@ -44,7 +46,7 @@ class ConfigLoaderSpec extends Specification {
 
 		then:
 		"The ConfigLoader to find all of the properties declared in the configLocation"
-		result.getProperty( HTML_REPORT_CSS ) == expected
+		result.getProperty( FEATURE_REPORT_CSS ) == expected
 
 		cleanup:
 		customFile.delete()
@@ -53,11 +55,11 @@ class ConfigLoaderSpec extends Specification {
 		expected << [ 'example/report.css' ]
 	}
 
-	private createFile( String fileName ) {
-		def buildDir = System.getProperty( 'project.buildDir' )
-		def file = new File( "${buildDir}/classes/test", fileName )
-		new File( file.parent ).mkdirs()
-		[ withContents: { expected -> file << "${HTML_REPORT_CSS}=${expected}" } ]
+	private createFileUnderMetaInf( String fileName ) {
+		def globalExtConfig = this.class.getResource( '/META-INF/services/org.spockframework.runtime.extension.IGlobalExtension' )
+		def f = new File( globalExtConfig.toURI() )
+		println "Using ${f.parentFile.absolutePath} as parent"
+		new File( f.parentFile, fileName )
 	}
 
 }

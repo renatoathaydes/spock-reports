@@ -34,11 +34,11 @@ table.summary-table td {
 }
 
 .feature-description.error {
-  background: orange;
+  background: #F89A4F;
 }
 
 .feature-description.failure {
-  background: red;
+  background: #FF8080;
 }
 
 .feature-description.ignored {
@@ -66,7 +66,7 @@ table.ex-table th {
 }
 
 table.ex-table td {
-  background: lightgray;
+  background: #E0E0E0;
   padding: 0px 5px 0px 5px;
 }
 
@@ -74,8 +74,8 @@ table td {
   min-width: 50px;
 }
 
-col.block-kind {
-  min-width: 100px;
+col.block-kind-col {
+  width: 70px;
 }
 
 span.spec-header {

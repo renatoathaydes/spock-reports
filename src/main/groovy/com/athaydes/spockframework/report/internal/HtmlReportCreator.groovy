@@ -30,9 +30,11 @@ implements IReportCreator {
 			'AND': 'And:'
 	]
 
-	@Override
-	void setCss( String css ) {
+	void setFeatureReportCss( String css ) {
 		super.setCss( css )
+	}
+
+	void setSummaryReportCss( String css ) {
 		reportAggregator?.css = css
 	}
 

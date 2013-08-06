@@ -1,0 +1,32 @@
+body {
+  font-family: Helvetica;
+}
+
+table {
+  margin: 5px;
+}
+
+table.summary-table {
+  width: 800px;
+  text-align: left;
+  font-weight: bold;
+  font-size: small;
+}
+
+table.summary-table th {
+  background: lightblue;
+  padding: 6px;
+}
+
+table.summary-table td {
+  background: #E0E0E0;
+  padding: 6px;
+}
+
+tr.error td {
+  background-color: #F89A4F;
+}
+
+tr.failure td {
+  color: red;
+}

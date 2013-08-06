@@ -106,7 +106,7 @@ class HtmlReportCreatorSpec extends Specification {
 
 	}
 
-	def "The report aggregator should be passed on the same css as the report creator"( ) {
+	def "The report aggregator should be passed on the summary css from the report creator"( ) {
 		given:
 		"A HtmlReportCreator"
 		def reportCreator = new HtmlReportCreator()
@@ -116,13 +116,17 @@ class HtmlReportCreatorSpec extends Specification {
 		def cssPath = "spock-feature-report.css"
 
 		when:
-		"The css is set on the HtmlReportCreator"
-		reportCreator.css = cssPath
+		"The summary report css is set on the HtmlReportCreator"
+		reportCreator.summaryReportCss = cssPath
 
 		then:
-		"The report aggregator'css is set to the same css"
-		reportCreator.css == reportCreator.reportAggregator.css
+		"The report aggregator'css is set to the contents of the css file"
+		reportCreator.reportAggregator.css == textOf( cssPath )
 
+	}
+
+	private String textOf( String cssPath ) {
+		new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
 	}
 
 	private String expectedHtmlReport( ) {
