@@ -30,3 +30,8 @@ tr.error td, td.error {
 tr.failure td, td.failure {
   color: red;
 }
+
+div.footer {
+  text-align: center;
+  font-size: small;
+}
