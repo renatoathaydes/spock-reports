@@ -107,7 +107,9 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 					if ( stats.failures ) cssClasses << 'failure'
 					if ( stats.errors ) cssClasses << 'error'
 					tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
-						td specName
+						td {
+							a( href: "${specName}.html", specName )
+						}
 						td stats.totalRuns
 						td stats.failures
 						td stats.errors
