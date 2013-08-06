@@ -8,7 +8,9 @@ Currently, the only available report creator generates a **HTML report** for eac
 
 ## Where to find demo reports
 
-I am using [this CodePen](http://codepen.io/renatoathaydes/full/ihGgt) to design the HTML report. If you don't like the style, you can use your own css stylesheet (see the customization section below). I welcome feedback on how to improve the report looks!
+I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://cdpn.io/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://cdpn.io/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
+
+If you don't like the styles, you can use your own css stylesheets (see the customization section below). I welcome feedback on how to improve the report looks!
 
 ## How to use it
 
