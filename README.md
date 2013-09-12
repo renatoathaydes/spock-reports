@@ -9,7 +9,7 @@ You can find the jar in the `releases` directory! Download it, place it in your 
 By default, the reports will be saved in the directory `build/spock-reports`, but you can change that if you want,
 just check below.
 I hope you find this project as useful as I have (I actually developed this out of my own need for it!).
-* I wrote a [blog post](https://software.athaydes.com/posts/writingspecificationsthatdoubleastestswithspock) about the motivation behind this project. Please check it out!
+* I wrote a [blog post](http://software.athaydes.com/posts/writingspecificationsthatdoubleastestswithspock) about the motivation behind this project. Please check it out!
 
 ## What it is
 
