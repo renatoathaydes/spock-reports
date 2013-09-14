@@ -63,7 +63,7 @@ class FakeTest extends Specification {
 		"Will never succeed"
 	}
 
-	def "A test with a failure"() {
+	def "A test with a failure"( ) {
 		when:
 		"Do nothing"
 		then:
@@ -75,9 +75,26 @@ class FakeTest extends Specification {
 	analysts write these too detailed overviews of what the test should be all about when what they really
 	should do is to let the details go in the body of the test using the Gherkin language which underlies BDD
 	and is proven to make it easier for all involved to understand what the test is doing, what the inputs are
-	and what the expected outcomes are in such a way that the best possible common understanding is reached"""() {
+	and what the expected outcomes are in such a way that the best possible common understanding is reached"""( ) {
 		expect:
 		"The long description above to look good in the report"
+	}
+
+	def "A Spec with empty block Strings"( ) {
+		given:
+		def a = 0
+
+		and:
+		def b = 1
+
+		when:
+		def c = a + b
+
+		then:
+		c == 1
+
+		and:
+		c > 0
 	}
 
 

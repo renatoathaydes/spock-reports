@@ -11,6 +11,7 @@ abstract class AbstractHtmlCreator<T> {
 
 	String css
 	String outputDir
+	KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
 
 	void setCss( String css ) {
 		if ( !css || css.trim().empty ) return

@@ -6,6 +6,11 @@ table {
   margin: 5px;
 }
 
+div.date-test-ran {
+  font-size: small;
+  font-style: italic;
+}
+
 table.features-table {
   width: 800px;
 }

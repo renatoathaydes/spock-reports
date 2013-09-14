@@ -48,6 +48,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 		}
 		builder.div( 'class': 'summary-report' ) {
 			h3 'Specifications summary:'
+			builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
 			table( 'class': 'summary-table' ) {
 				thead {
 					th 'Total'

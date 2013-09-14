@@ -28,4 +28,7 @@ class StringFormatHelper {
 		text.replaceAll( /[\t\n]/, '<br/>' )
 	}
 
+	String toDateString( Date date ) {
+		date.toString()
+	}
 }

@@ -64,6 +64,7 @@ implements IReportCreator {
 	void writeSummary( MarkupBuilder builder, SpecData data ) {
 		builder.div( 'class': 'summary-report' ) {
 			h3 'Summary:'
+			builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
 			table( 'class': 'summary-table' ) {
 				thead {
 					th 'Executed features'

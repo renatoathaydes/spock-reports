@@ -1,9 +1,8 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
-import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
-import spock.lang.Specification
 
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
@@ -11,7 +10,7 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
  *
  * User: Renato
  */
-class HtmlReportAggregatorSpec extends Specification {
+class HtmlReportAggregatorSpec extends ReportSpec {
 
 	def "The aggregate data for a sequence of test results should be computed correctly"( ) {
 		given:
@@ -72,16 +71,19 @@ class HtmlReportAggregatorSpec extends Specification {
 		def outputDir = "build/${this.class.simpleName}"
 
 		and:
-		"A HtmlReportAggregator with a mocked out StringFormatHelper and writeFooter() method"
+		"A HtmlReportAggregator with mocked out dependencies and writeFooter() method"
+		def aggregator = new HtmlReportAggregator()
+
 		def mockStringFormatter = Stub( StringFormatHelper )
 		mockStringFormatter.toPercentage( _ ) >>> [ '25.0%', '25%' ]
 		mockStringFormatter.toTimeDuration( _ ) >>> [ '1.0 second', '1 sec' ]
-		def aggregator = new HtmlReportAggregator() {
-			protected void writeFooter( MarkupBuilder builder ) {
-				builder.div( 'class': 'footer', 'The footer' )
-			}
-		}
+
 		aggregator.stringFormatter = mockStringFormatter
+		aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
+
+		aggregator.metaClass.writeFooter = { MarkupBuilder builder ->
+			builder.div( 'class': 'footer', 'The footer' )
+		}
 
 		when:
 		"The spec data is provided to the HtmlReportAggregator"
@@ -116,8 +118,9 @@ class HtmlReportAggregatorSpec extends Specification {
 		def outputDir = "build/${this.class.simpleName}"
 
 		and:
-		"A HtmlReportAggregator with the test css style"
+		"A HtmlReportAggregator with mocked dependencies and the test css style"
 		def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css' )
+		aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
 
 		when:
 		"The specs data is provided to the HtmlReportAggregator"
@@ -140,6 +143,8 @@ class HtmlReportAggregatorSpec extends Specification {
 		def rawHtml = this.class.getResource( 'TestSummaryReport.html' ).text
 		def binding = [
 				style: defaultStyle(),
+				dateTestRan: DATE_TEST_RAN,
+				username: TEST_USER_NAME,
 				total: 7,
 				passed: 1,
 				failed: 6,
@@ -163,8 +168,7 @@ class HtmlReportAggregatorSpec extends Specification {
 				successRate7: sf.toPercentage( 0.7 ),
 				duration7: sf.toTimeDuration( 7000 )
 		]
-		def templateEngine = new SimpleTemplateEngine()
-		templateEngine.createTemplate( rawHtml ).make( binding ).toString()
+		replacePlaceholdersInRawHtml( rawHtml, binding )
 	}
 
 	private String defaultStyle( ) {
@@ -172,7 +176,10 @@ class HtmlReportAggregatorSpec extends Specification {
 	}
 
 	private String singleTestSummaryExpectedHtml( ) {
-		this.class.getResource( 'SingleTestSummaryReport.html' ).text
+		def rawHtml = this.class.getResource( 'SingleTestSummaryReport.html' ).text
+		def binding = [ dateTestRan: DATE_TEST_RAN,
+				username: TEST_USER_NAME, ]
+		replacePlaceholdersInRawHtml( rawHtml, binding )
 	}
 
 }

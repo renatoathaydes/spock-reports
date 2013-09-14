@@ -72,5 +72,24 @@ class StringFormatHelperSpec extends Specification {
 		'Hi\nHo'        | 'Hi<br/>Ho'
 	}
 
+	def "A date should look as specified in the examples when shown in a report"( ) {
+		given:
+		"The dateParams in the examples are converted to a Gregorian Calendar Date"
+		def date = new GregorianCalendar( * Eval.me( dateParams ) ).time
+
+		when:
+		"A Date is converted to a String"
+		def result = new StringFormatHelper().toDateString( date )
+
+		then:
+		"The result is as in the examples"
+		result.split( ' ' ).toList().containsAll( expectedStringsInResult )
+
+		where:
+		dateParams                                      | expectedStringsInResult
+		'[ 1995, Calendar.SEPTEMBER, 5, 19, 35, 30 ]' | [ 'Tue', 'Sep', '05', '19:35:30', '1995' ]
+		'[ 2013, Calendar.JANUARY, 31, 0, 0, 0 ]'     | [ 'Thu', 'Jan', '31', '00:00:00', '2013' ]
+	}
+
 
 }

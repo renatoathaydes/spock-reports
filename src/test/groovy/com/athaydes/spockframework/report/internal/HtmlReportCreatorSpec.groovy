@@ -1,14 +1,13 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.FakeTest
+import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
-import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import org.spockframework.runtime.model.SpecInfo
-import spock.lang.Specification
 
 import java.nio.file.Paths
 
@@ -18,7 +17,7 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
  *
  * User: Renato
  */
-class HtmlReportCreatorSpec extends Specification {
+class HtmlReportCreatorSpec extends ReportSpec {
 
 	static final String UNKNOWN = 'Unknown'
 
@@ -41,7 +40,7 @@ class HtmlReportCreatorSpec extends Specification {
 
 		when:
 		"A Specification containing different types of features is run by Spock"
-		use( PredictableProblems, PredictableTimeResponse ) {
+		use( PredictableProblems, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest ) {
 			new Sputnik( FakeTest ).run( new RunNotifier() )
 		}
 
@@ -134,19 +133,20 @@ class HtmlReportCreatorSpec extends Specification {
 		def binding = [
 				classOnTest: FakeTest.class.name,
 				style: defaultStyle(),
-				executedFeatures: 6,
+				dateTestRan: DATE_TEST_RAN,
+				username: TEST_USER_NAME,
+				executedFeatures: 7,
 				failures: 2,
 				errors: 1,
 				skipped: 1,
-				successRate: '50.0%',
+				successRate: '57.14%',
 				problemList1: UNKNOWN,
 				problemList2: UNKNOWN,
 				problemList3: UNKNOWN,
 				time: UNKNOWN,
 				projectUrl: SpockReportExtension.PROJECT_URL
 		]
-		def templateEngine = new SimpleTemplateEngine()
-		templateEngine.createTemplate( rawHtml ).make( binding ).toString()
+		replacePlaceholdersInRawHtml( rawHtml, binding )
 	}
 
 	private String defaultStyle( ) {
@@ -163,6 +163,14 @@ class HtmlReportCreatorSpec extends Specification {
 		void writeProblems( MarkupBuilder builder, FeatureRun run, boolean isError ) {
 			builder.mkp.yieldUnescaped( HtmlReportCreatorSpec.UNKNOWN )
 		}
+	}
+
+	@Category( KnowsWhenAndWhoRanTest )
+	class FakeKnowsWhenAndWhoRanTest {
+		String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
+			"Created on ${ReportSpec.DATE_TEST_RAN} by ${ReportSpec.TEST_USER_NAME}"
+		}
+
 	}
 
 }
