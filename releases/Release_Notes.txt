@@ -1,0 +1,9 @@
+1.1 - 2013 Sep 14
+
+* Fixed HTML footer alignment in summary report
+* Added "when" and "who" ran tests to HTML reports
+* Fixed bug with showing text for WHERE blocks in HTML reports
+* Blocks with empty Strings or no Strings now show in HTML reports
+* Text to the left of example tables in HTML reports are now called "Examples", not "Where"
+
+1.0 - INITIAL RELEASE

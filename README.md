@@ -3,6 +3,8 @@
 
 ## News
 
+* 14th of September 2013 - Release of version 1.1 with some minor bug fixes and improvements in the information shown in reports.
+Please check the release notes in the file `releases/Release_Notes.txt`.
 * Today, the 6th of August 2013, I am proud to release version 1.0 of this project! I have made sure to make it as stable
 as possible so that you can start reading proper reports for your Spock specifications without worries.
 You can find the jar in the `releases` directory! Download it, place it in your classpath and you're done!
