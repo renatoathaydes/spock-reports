@@ -27,7 +27,8 @@ implements IReportCreator {
 			( EXPECT ): 'Expect:',
 			( WHEN ): 'When:',
 			( WHERE ): 'Where:',
-			'AND': 'And:'
+			'AND': 'And:',
+			'EXAMPLES': 'Examples:'
 	]
 
 	void setFeatureReportCss( String css ) {
@@ -127,14 +128,27 @@ implements IReportCreator {
 
 	private void writeBlock( MarkupBuilder builder, BlockInfo block, boolean isIgnored ) {
 		def trCssClassArg = ( isIgnored ? [ 'class': 'ignored' ] : null )
-		block.texts.eachWithIndex { blockText, index ->
-			builder.tr( trCssClassArg ) {
-				writeBlockKindTd( builder, index == 0 ? block.kind : 'AND' )
-				td {
-					div( 'class': 'block-text', blockText )
-				}
+
+		if ( !isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
+			block.texts.eachWithIndex { blockText, index ->
+				writeBlockRow( builder, trCssClassArg,
+						( index == 0 ? block.kind : 'AND' ), blockText )
+			}
+		else
+			writeBlockRow( builder, trCssClassArg, block.kind, '----' )
+	}
+
+	private writeBlockRow( MarkupBuilder builder, cssClass, blockKind, text ) {
+		builder.tr( cssClass ) {
+			writeBlockKindTd( builder, blockKind )
+			td {
+				div( 'class': 'block-text', text )
 			}
 		}
+	}
+
+	protected boolean isEmptyOrContainsOnlyEmptyStrings( List<String> strings ) {
+		!strings || strings.every { it.trim() == '' }
 	}
 
 	private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
@@ -146,7 +160,7 @@ implements IReportCreator {
 	private void writeRun( MarkupBuilder builder, FeatureRun run ) {
 		if ( !run || !run.feature.parameterized ) return
 		builder.tr {
-			writeBlockKindTd( builder, WHERE )
+			writeBlockKindTd( builder, 'EXAMPLES' )
 			td {
 				div( 'class': 'spec-examples' ) {
 					table( 'class': 'ex-table' ) {

@@ -124,6 +124,33 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
 	}
 
+	def "The HtmlReportCreator knows when block texts have no content"( ) {
+		given:
+		"A HtmlReportCreator"
+		def reportCreator = new HtmlReportCreator()
+
+		when:
+		"I create "
+		def result = reportCreator.isEmptyOrContainsOnlyEmptyStrings( examples )
+
+		then:
+		"Result is as expected"
+		result == expected
+
+		where:
+		"The given examples are used"
+		examples            | expected
+		[ ]                 | true
+		[ '' ]              | true
+		[ ' ' ]             | true
+		[ '', '' ]          | true
+		[ ' ', '  ' ]       | true
+		[ '', '', '     ' ] | true
+		[ 'a' ]             | false
+		[ '', 'a' ]         | false
+		[ 'a', '' ]         | false
+	}
+
 	private String textOf( String cssPath ) {
 		new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
 	}

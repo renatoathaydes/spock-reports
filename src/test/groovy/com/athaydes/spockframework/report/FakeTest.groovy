@@ -24,6 +24,7 @@ class FakeTest extends Specification {
 		x == y
 
 		where:
+		"The examples below are used"
 		x   | y
 		'a' | 'a'
 		'b' | 'c'
@@ -91,9 +92,11 @@ class FakeTest extends Specification {
 		def c = a + b
 
 		then:
+		""
 		c == 1
 
 		and:
+		"  "
 		c > 0
 	}
 
