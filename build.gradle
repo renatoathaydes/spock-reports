@@ -6,16 +6,16 @@ defaultTasks 'clean', 'jar', 'test'
 group = 'com.athaydes'
 version = "1.2-SNAPSHOT"
 
-ext.groovyVersion = '2.1.5'
-ext.spockVersion = '0.7-groovy-2.0'
+def groovyVersion = '2.1.5'
+def spockVersion = '0.7-groovy-2.0'
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	groovy "org.codehaus.groovy:groovy-all:${ext.groovyVersion}"
-	compile "org.spockframework:spock-core:${ext.spockVersion}"
+	groovy "org.codehaus.groovy:groovy-all:${groovyVersion}"
+	compile "org.spockframework:spock-core:${spockVersion}"
 	testCompile "cglib:cglib-nodep:2.2.2"
 }
 
@@ -29,7 +29,6 @@ test {
 }
 
 jar {
-	dependsOn "compileGroovy"
 	manifest {
 		attributes(
 				"Implementation-Title": "Athaydes-Spock-Reports",
