@@ -1,6 +1,15 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3"
+        classpath "com.github.townsfolk:gradle-release:1.2"
+    }
+}
 apply plugin: 'groovy'
-apply plugin: 'maven'
 apply plugin: 'idea'
+apply plugin: 'maven-publish'
 
 defaultTasks 'clean', 'jar', 'test'
 
@@ -36,4 +45,35 @@ jar {
 				"Implementation-Version": version )
 	}
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    classifier "sources"
+    extension "jar"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+apply plugin: 'bintray'
+apply plugin: 'release'
+
+bintray {
+    user = project.hasProperty("bintrayUserName") ? bintrayUserName : null
+    key = project.hasProperty("bintrayApiKey") ? bintrayApiKey : null
+    publications = ["mavenJava"]
+    pkg {
+        repo = 'main'
+        name = 'spock-reports'
+        licenses = ['Apache-2.0']
+    }
+}
+bintrayUpload.dependsOn build, sourcesJar
+createReleaseTag.dependsOn bintrayUpload
 
