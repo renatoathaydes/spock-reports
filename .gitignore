@@ -7,3 +7,5 @@ target/
 .idea/
 *.class
 *.iml
+*.ipr
+*.iws
