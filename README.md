@@ -30,8 +30,6 @@ If you don't like the styles, you can use your own css stylesheets (see the cust
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
 
-You can download the jar from the [releases](/releases) directory.
-
 In Maven:
 
 Enable the JCenter repository:
@@ -39,7 +37,7 @@ Enable the JCenter repository:
 ```xml
     <repository>
       <id>jcenter</id>
-      <name>your custom repo</name>
+      <name>JCenter Repo</name>
       <url>http://jcenter.bintray.com</url>
     </repository>
 ```
@@ -66,6 +64,8 @@ dependencies {
     testCompile 'com.athaydes:spock-reports:1.1'
 }
 ```
+
+If you prefer, you can just download the jar from the [releases](/releases) directory.
 
 The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
 
