@@ -30,7 +30,7 @@ If you don't like the styles, you can use your own css stylesheets (see the cust
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
 
-You can download the jar from the [release](/release) directory.
+You can download the jar from the [releases](/releases) directory.
 
 In Maven:
 
