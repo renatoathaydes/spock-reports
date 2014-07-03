@@ -3,6 +3,8 @@
 
 ## News
 
+* 3rd of July 2014 - After a long delay, I have finally published the 1.1 release on a public repo, thanks to @JayStGelais
+contribution. So now ``spock-reports`` is available on Bintray's [JCenter](http://jcenter.bintray.com/)!
 * 14th of September 2013 - Release of version 1.1 with some minor bug fixes and improvements in the information shown in reports.
 Please check the release notes in the file `releases/Release_Notes.txt`.
 * Today, the 6th of August 2013, I am proud to release version 1.0 of this project! I have made sure to make it as stable
@@ -24,23 +26,31 @@ I am using [CodePen](http://codepen.io) to design the HTML [feature report](http
 
 If you don't like the styles, you can use your own css stylesheets (see the customization section below). I welcome feedback on how to improve the report looks!
 
-## How to use it
-
-> Unfortunately, for now this project is not available in Maven Central or any other repository,
-> so you'll need to build it from source and install it in your local repo if you want to use dependency management, or just place the Jar (you can find it in the `releases` directory) in the classpath manually.
-
-
-> To build and install this project, simply type `gradle install` from the root folder.
+## How to use it 
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
 
+You can download the jar from the [release](/release) directory.
+
 In Maven:
+
+Enable the JCenter repository:
+
+```xml
+    <repository>
+      <id>jcenter</id>
+      <name>your custom repo</name>
+      <url>http://jcenter.bintray.com</url>
+    </repository>
+```
+
+Add ``spock-reports`` to your ``<dependencies>``:
 
 ```xml
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -48,7 +58,13 @@ In Maven:
 In Gradle:
 
 ```groovy
-testCompile 'com.athaydes:spock-reports:1.0'
+repositories {
+  jcenter()
+}
+
+dependencies {
+    testCompile 'com.athaydes:spock-reports:1.1'
+}
 ```
 
 The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
