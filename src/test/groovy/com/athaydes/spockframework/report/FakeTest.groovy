@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report
 
 import spock.lang.Ignore
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  *
@@ -100,5 +101,17 @@ class FakeTest extends Specification {
 		c > 0
 	}
 
+    @Unroll
+    def "An @Unrolled spec with x=#x and y=#y"() {
+        setup:
+        "nothing"
+        expect:
+        "true"
+        true
+        where:
+        x | y
+        0 | 1
+        2 | 3
+    }
 
 }
