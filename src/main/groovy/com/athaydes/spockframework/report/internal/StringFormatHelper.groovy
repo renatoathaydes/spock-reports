@@ -2,33 +2,40 @@ package com.athaydes.spockframework.report.internal
 
 import groovy.time.TimeDuration
 
+import java.text.DecimalFormat
+
 /**
  *
  * User: Renato
  */
 class StringFormatHelper {
 
-	private final MINUTE = 60 * 1000
-	private final HOUR = 60 * MINUTE
+    private final MINUTE = 60 * 1000
+    private final HOUR = 60 * MINUTE
+    static final ds = new DecimalFormat().decimalFormatSymbols.decimalSeparator
 
-	String toTimeDuration( timeInMs ) {
-		long t = timeInMs.toLong()
-		int hours = ( t / HOUR ).toInteger()
-		int mins = ( ( t - HOUR * hours ) / MINUTE ).toInteger()
-		int secs = ( ( t - HOUR * hours - mins * MINUTE ) / 1000 ).toInteger()
-		int millis = ( t % 1000 ).toInteger()
-		new TimeDuration( hours, mins, secs, millis ).toString()
-	}
+    String toTimeDuration( timeInMs ) {
+        long t = timeInMs.toLong()
+        int hours = ( t / HOUR ).toInteger()
+        int mins = ( ( t - HOUR * hours ) / MINUTE ).toInteger()
+        int secs = ( ( t - HOUR * hours - mins * MINUTE ) / 1000 ).toInteger()
+        int millis = ( t % 1000 ).toInteger()
+        internationalizeTimeDuration( new TimeDuration( hours, mins, secs, millis ) )
+    }
 
-	String toPercentage( double rate ) {
-		String.format( '%.2f%%', rate * 100 ).replace( '.00', '.0' )
-	}
+    private String internationalizeTimeDuration( TimeDuration timeDuration ) {
+        ( ds == '.' ) ? timeDuration.toString() : timeDuration.toString().replace( '.', ds.toString() )
+    }
 
-	String formatToHtml( String text ) {
-		text.replaceAll( /[\t\n]/, '<br/>' )
-	}
+    String toPercentage( double rate ) {
+        String.format( '%.2f%%', rate * 100 ).replace( "${ds}00", "${ds}0" )
+    }
 
-	String toDateString( Date date ) {
-		date.toString()
-	}
+    String formatToHtml( String text ) {
+        text.replaceAll( /[\t\n]/, '<br/>' )
+    }
+
+    String toDateString( Date date ) {
+        date.toString()
+    }
 }

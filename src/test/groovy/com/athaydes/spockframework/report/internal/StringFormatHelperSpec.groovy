@@ -2,13 +2,15 @@ package com.athaydes.spockframework.report.internal
 
 import spock.lang.Specification
 
+import static com.athaydes.spockframework.report.internal.StringFormatHelper.ds
+
 /**
  *
  * User: Renato
  */
 class StringFormatHelperSpec extends Specification {
 
-	def "Percentage values should be adequate for a Test Report"( ) {
+    def "Percentage values should be adequate for a Test Report"( ) {
 		given:
 		"Doubles representing rate of success for a test"
 
@@ -16,18 +18,18 @@ class StringFormatHelperSpec extends Specification {
 		"Formatting the Doubles to show them in a report"
 		def result = new StringFormatHelper().toPercentage( input )
 		then:
-		"The values should look as in the examples"
+		"The values should look as in the examples, with decimal separator localized"
 		result == expected
 
 		where:
 		input     | expected
-		0         | '0.0%'
-		0.1       | '10.0%'
-		0.25      | '25.0%'
-		0.5       | '50.0%'
-		3.0 / 4.0 | '75.0%'
-		1.0 / 3.0 | '33.33%'
-		1.0       | '100.0%'
+		0         | "0${ds}0%"
+		0.1       | "10${ds}0%"
+		0.25      | "25${ds}0%"
+		0.5       | "50${ds}0%"
+		3.0 / 4.0 | "75${ds}0%"
+		1.0 / 3.0 | "33${ds}33%"
+		1.0       | "100${ds}0%"
 	}
 
 	def "Time amounts should look adequate for Test Reports"( ) {
@@ -45,14 +47,14 @@ class StringFormatHelperSpec extends Specification {
 
 		where:
 		timeDurationInMillis                         | expected
-		'0'                                          | '0'
-		'1'                                          | '0.001 seconds'
-		'250'                                        | '0.250 seconds'
-		'1000'                                       | '1.000 seconds'
-		'''2 + //ms
+		"0"                                          | "0"
+		"1"                                          | "0${ds}001 seconds"
+		"250"                                        | "0${ds}250 seconds"
+		"1000"                                       | "1${ds}000 seconds"
+		"""2 + //ms
 			4 * 1000 + // sec
 			5 * 1000 * 60 + // min
-			8 * 1000 * 60 * 60 // hour''' | '8 hours, 5 minutes, 4.002 seconds'
+			8 * 1000 * 60 * 60 // hour""" | "8 hours, 5 minutes, 4${ds}002 seconds"
 	}
 
 	def "A formatted String should be converted nicely to an equivalent HTML String"( ) {

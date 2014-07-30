@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.SpecInfo
 
 import java.nio.file.Paths
 
+import static com.athaydes.spockframework.report.internal.StringFormatHelper.getDs
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
@@ -166,7 +167,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 				failures: 2,
 				errors: 1,
 				skipped: 1,
-				successRate: '57.14%',
+				successRate: "57${ds}14%",
 				problemList1: UNKNOWN,
 				problemList2: UNKNOWN,
 				problemList3: UNKNOWN,
