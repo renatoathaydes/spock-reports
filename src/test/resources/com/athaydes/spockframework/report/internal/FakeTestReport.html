@@ -118,7 +118,18 @@
 	<td colspan='10'>
 		<div class='problem-description'>
 			<div class='problem-header'>The following problems occurred:</div>
-			<div class='problem-list'>${problemList1}</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<div>[b, c]</div>
+						<ul>
+							<li>
+								<pre>Condition not satisfied:<br/><br/>x == y<br/>| |  |<br/>b |  c<br/>  false<br/>  1 difference (0% similarity)<br/>  (b)<br/>  (c)<br/></pre>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</td>
 </tr>
@@ -215,12 +226,18 @@
 	</td>
 </tr>
 <tr>
-	<td colspan='10'>
-		<div class='problem-description'>
-			<div class='problem-header'>The following problems occurred:</div>
-			<div class='problem-list'>${problemList2}</div>
+<td colspan='10'>
+	<div class='problem-description'>
+		<div class='problem-header'>The following problems occurred:</div>
+		<div class='problem-list'>
+			<ul>
+				<li>
+					<pre>java.lang.RuntimeException: As expected</pre>
+				</li>
+			</ul>
 		</div>
-	</td>
+	</div>
+</td>
 </tr>
 <tr>
 	<td colspan='10'>
@@ -247,7 +264,13 @@
 	<td colspan='10'>
 		<div class='problem-description'>
 			<div class='problem-header'>The following problems occurred:</div>
-			<div class='problem-list'>${problemList3}</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>Condition not satisfied:<br/><br/>3 == 2<br/>  |<br/>  false<br/></pre>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</td>
 </tr>
@@ -303,7 +326,7 @@
 </tr>
 <tr>
 	<td colspan='10'>
-		<div class='feature-description'>An @Unrolled spec with x=1 and y=2</div>
+		<div class='feature-description'>An @Unrolled spec with x=0 and y=1</div>
 	</td>
 </tr>
 <tr>
@@ -319,12 +342,28 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>true</div>
+		<div class='block-text'>x to be 0</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Where:</div>
+	</td>
+	<td>
+		<div class='block-text'>----</div>
 	</td>
 </tr>
 <tr>
 	<td colspan='10'>
-		<div class='feature-description'>An @Unrolled spec with x=3 and y=4</div>
+		<div class='feature-description failure'>An @Unrolled spec with x=2 and y=3</div>
 	</td>
 </tr>
 <tr>
@@ -340,7 +379,88 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>true</div>
+		<div class='block-text'>x to be 0</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Where:</div>
+	</td>
+	<td>
+		<div class='block-text'>----</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>Condition not satisfied:<br/><br/>x == 0<br/>| |<br/>2 false<br/></pre>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description error'>An @Unrolled spec with x=0 and y=5</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<div class='block-text'>x to be 0</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Where:</div>
+	</td>
+	<td>
+		<div class='block-text'>----</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>java.lang.RuntimeException: y is 5</pre>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</td>
 </tr>
 </tbody>

@@ -3,10 +3,12 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.IReportCreator
 import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
-import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import spock.lang.Unroll
 
+import static com.athaydes.spockframework.report.internal.FailureKind.ERROR
+import static com.athaydes.spockframework.report.internal.FailureKind.FAILURE
 import static org.spockframework.runtime.model.BlockKind.*
 
 /**
@@ -14,21 +16,21 @@ import static org.spockframework.runtime.model.BlockKind.*
  * User: Renato
  */
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
-implements IReportCreator {
+		implements IReportCreator {
 
 	def reportAggregator = HtmlReportAggregator.instance
 	def stringFormatter = new StringFormatHelper()
 	def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
 
 	final block2String = [
-			( SETUP ): 'Given:',
+			( SETUP )  : 'Given:',
 			( CLEANUP ): 'Cleanup:',
-			( THEN ): 'Then:',
-			( EXPECT ): 'Expect:',
-			( WHEN ): 'When:',
-			( WHERE ): 'Where:',
-			'AND': 'And:',
-			'EXAMPLES': 'Examples:'
+			( THEN )   : 'Then:',
+			( EXPECT ) : 'Expect:',
+			( WHEN )   : 'When:',
+			( WHERE )  : 'Where:',
+			'AND'      : 'And:',
+			'EXAMPLES' : 'Examples:'
 	]
 
 	void setFeatureReportCss( String css ) {
@@ -91,14 +93,29 @@ implements IReportCreator {
 		}
 	}
 
+	static int countProblems( List<FeatureRun> runs, Closure problemFilter ) {
+		runs.inject( 0 ) { int count, FeatureRun fr ->
+			def allProblems = fr.failuresByIteration.values().flatten()
+			count + ( isUnrolled( fr.feature ) ?
+					allProblems.count( problemFilter ) :
+					allProblems.any( problemFilter ) ? 1 : 0 )
+		}
+	}
+
+	static int countFeatures( List<FeatureRun> runs, Closure featureFilter = { true } ) {
+		runs.findAll( featureFilter ).inject( 0 ) { int count, FeatureRun fr ->
+			count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
+		}
+	}
+
 	protected Map stats( SpecData data ) {
-		def failures = data.featureRuns.count { it.failuresByIteration.values().any { !it.isEmpty() } }
-		def errors = data.featureRuns.count { it.error }
-		def skipped = data.info.allFeatures.count { it.skipped }
-		def total = data.featureRuns.size()
+		def failures = countProblems( data.featureRuns, HtmlReportCreator.&isFailure )
+		def errors = countProblems( data.featureRuns, HtmlReportCreator.&isError )
+		def skipped = data.info.allFeatures.count { FeatureInfo f -> f.skipped }
+		def total = countFeatures( data.featureRuns )
 		def successRate = successRate( total, ( errors + failures ).toInteger() )
-		[ failures: failures, errors: errors, skipped: skipped, totalRuns: total,
-				successRate: successRate, time: data.totalTime ]
+		[ failures   : failures, errors: errors, skipped: skipped, totalRuns: total,
+		  successRate: successRate, time: data.totalTime ]
 	}
 
 	protected void writeDetails( MarkupBuilder builder, SpecData data ) {
@@ -114,21 +131,53 @@ implements IReportCreator {
 		}
 	}
 
+	static boolean isUnrolled( FeatureInfo feature ) {
+		feature.description.annotations.any { it.annotationType() == Unroll }
+	}
+
+	static boolean isFailure( SpecProblem problem ) {
+		problem.kind == FAILURE
+	}
+
+	static boolean isError( SpecProblem problem ) {
+		problem.kind == ERROR
+	}
+
 	private void writeFeature( MarkupBuilder builder, SpecData data ) {
 		data.info.allFeatures.each { FeatureInfo feature ->
-			def run = data.featureRuns.find { run -> run.feature == feature }
-			writeFeatureDescription( builder, feature, run )
-			feature.blocks.each { BlockInfo block ->
-				writeBlock( builder, block, feature.skipped )
+			FeatureRun run = data.featureRuns.find { it.feature == feature }
+			if ( run && isUnrolled( feature ) ) {
+				run.failuresByIteration.each { iteration, problems ->
+					final name = feature.iterationNameProvider.getName( iteration )
+					final cssClass = feature.skipped ? 'ignored' :
+							problems.any( HtmlReportCreator.&isError ) ? 'error' :
+									problems.any( HtmlReportCreator.&isFailure ) ? 'failure' : ''
+					writeFeatureDescription( builder, name, cssClass )
+					writeFeatureBlocks( builder, feature )
+					problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
+				}
+			} else {
+				final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
+				final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
+				final cssClass = !run ? 'ignored' : errors ? 'error' : failures ? 'failure' : ''
+				writeFeatureDescription( builder, feature.name, cssClass )
+				writeFeatureBlocks( builder, feature )
+				if ( run ) {
+					writeRun( builder, run )
+					problemWriter.writeProblemBlockForAllIterations( builder, run, errors > 0, failures > 0 )
+				}
 			}
-			writeRun( builder, run )
-			if ( run ) writeProblemBlock( builder, run )
+		}
+	}
+
+	private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature ) {
+		feature.blocks.each { BlockInfo block ->
+			writeBlock( builder, block, feature.skipped )
 		}
 	}
 
 	private void writeBlock( MarkupBuilder builder, BlockInfo block, boolean isIgnored ) {
 		def trCssClassArg = ( isIgnored ? [ 'class': 'ignored' ] : null )
-
 		if ( !isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
 			block.texts.eachWithIndex { blockText, index ->
 				writeBlockRow( builder, trCssClassArg,
@@ -158,7 +207,7 @@ implements IReportCreator {
 	}
 
 	private void writeRun( MarkupBuilder builder, FeatureRun run ) {
-		if ( !run || !run.feature.parameterized ) return
+		if ( !run.feature.parameterized ) return
 		builder.tr {
 			writeBlockKindTd( builder, 'EXAMPLES' )
 			td {
@@ -185,13 +234,12 @@ implements IReportCreator {
 	}
 
 	private String iterationsResult( FeatureRun run ) {
-		def totalRuns = run.failuresByIteration.size()
 		def totalErrors = run.failuresByIteration.values().count { !it.empty }
-		"${totalRuns - totalErrors}/${totalRuns} passed"
+		"${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
 	}
 
 	private void writeIteration( MarkupBuilder builder, IterationInfo iteration,
-	                             List<ErrorInfo> errors ) {
+								 List<SpecProblem> errors ) {
 		builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
 			iteration.dataValues.each { value ->
 				td( 'class': 'ex-value', value )
@@ -200,37 +248,17 @@ implements IReportCreator {
 		}
 	}
 
-	private String iterationResult( List<ErrorInfo> errors ) {
+	private String iterationResult( List<SpecProblem> errors ) {
 		errors ? 'FAIL' : 'OK'
 	}
 
-	private void writeFeatureDescription( MarkupBuilder builder, FeatureInfo feature, FeatureRun run ) {
-		if ( !feature.skipped && !run ) return
-		def additionalCssClass = feature.skipped ? ' ignored' :
-			run.error ? ' error' :
-				run.failuresByIteration.any { !it.value.isEmpty() } ? ' failure' : ''
-
+	private void writeFeatureDescription( MarkupBuilder builder, String name, String cssClass ) {
+		cssClass = cssClass ? ' ' + cssClass : ''
 		builder.tr {
 			td( colspan: '10' ) {
-				div( 'class': 'feature-description' + additionalCssClass, feature.name )
+				div( 'class': 'feature-description' + cssClass, name )
 			}
 		}
-	}
-
-	private void writeProblemBlock( MarkupBuilder builder, FeatureRun run ) {
-		def isError = run.error != null
-		def isFailure = run.failuresByIteration.values().any { !it.isEmpty() }
-		if ( isError || isFailure )
-			builder.tr {
-				td( colspan: '10' ) {
-					div( 'class': 'problem-description' ) {
-						div( 'class': 'problem-header', 'The following problems occurred:' )
-						div( 'class': 'problem-list' ) {
-							problemWriter.writeProblems( builder, run, isError )
-						}
-					}
-				}
-			}
 	}
 
 }

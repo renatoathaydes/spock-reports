@@ -3,7 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
-import org.junit.ComparisonFailure
+import com.athaydes.spockframework.report.internal.SpecProblem
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
@@ -45,7 +45,7 @@ class SpockReportExtension implements IGlobalExtension {
 			}
 	}
 
-	void config( ) {
+	void config() {
 		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
@@ -58,7 +58,7 @@ class SpockReportExtension implements IGlobalExtension {
 		}
 	}
 
-	def instantiateReportCreator( ) {
+	def instantiateReportCreator() {
 		def reportCreatorClass = Class.forName( reportCreatorClassName )
 		reportCreatorClass.asSubclass( IReportCreator ).newInstance()
 	}
@@ -134,19 +134,8 @@ class SpecInfoListener implements IRunListener {
 
 	@Override
 	void error( ErrorInfo error ) {
-		//println "There is some error: ${error.exception}"
-		//println "Error at: ${error.exception.stackTrace}"
 		if ( !currentIteration ) throw new RuntimeException( 'No current iteration!' )
-		switch ( classify( error ) ) {
-			case 'FAILURE': currentRun().failuresByIteration[ currentIteration ] << error
-				break
-			case 'ERROR': currentRun().error = error.exception
-		}
-	}
-
-	private classify( ErrorInfo error ) {
-		( error.exception instanceof AssertionError ||
-				error.exception instanceof ComparisonFailure ) ? 'FAILURE' : 'ERROR'
+		currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( error )
 	}
 
 	@Override
@@ -161,7 +150,7 @@ class SpecInfoListener implements IRunListener {
 		// feature already knows if it's skipped
 	}
 
-	private FeatureRun currentRun( ) {
+	private FeatureRun currentRun() {
 		specData.featureRuns.last()
 	}
 

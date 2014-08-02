@@ -1,5 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
+import groovy.transform.Immutable
+import org.junit.ComparisonFailure
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -17,6 +19,25 @@ class SpecData {
 
 class FeatureRun {
 	FeatureInfo feature
-	Map<IterationInfo, List<ErrorInfo>> failuresByIteration = [ : ]
-	Throwable error
+	Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
+
+	int iterationCount() {
+		failuresByIteration.size()
+	}
+}
+
+@Immutable( knownImmutableClasses = [ ErrorInfo ] )
+class SpecProblem {
+	ErrorInfo failure
+
+	FailureKind getKind() {
+		failure.exception instanceof AssertionError || failure.exception instanceof ComparisonFailure ?
+				FailureKind.FAILURE :
+				FailureKind.ERROR
+	}
+
+}
+
+enum FailureKind {
+	FAILURE, ERROR
 }
