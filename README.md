@@ -67,7 +67,8 @@ dependencies {
 }
 ```
 
-If you prefer, you can just download the jar from the [releases](/releases) directory.
+If you prefer, you can just download the jar from the [releases](/releases) directory or JCenter (newer releases available only
+on [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/)).
 
 The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
 
