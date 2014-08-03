@@ -133,7 +133,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		def reportCreator = new HtmlReportCreator()
 
 		when:
-		"I create "
+		"Block texts are checked for content"
 		def result = reportCreator.isEmptyOrContainsOnlyEmptyStrings( examples )
 
 		then:

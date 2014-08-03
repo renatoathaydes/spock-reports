@@ -11,6 +11,7 @@ abstract class AbstractHtmlCreator<T> {
 
 	String css
 	String outputDir
+	boolean hideEmptyBlocks = false
 	KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
 
 	void setCss( String css ) {

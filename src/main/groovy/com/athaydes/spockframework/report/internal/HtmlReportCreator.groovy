@@ -183,7 +183,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 				writeBlockRow( builder, trCssClassArg,
 						( index == 0 ? block.kind : 'AND' ), blockText )
 			}
-		else
+		else if ( !hideEmptyBlocks )
 			writeBlockRow( builder, trCssClassArg, block.kind, '----' )
 	}
 
