@@ -9,3 +9,5 @@ target/
 *.iml
 *.ipr
 *.iws
+
+!gradlew-wrapper.jar
