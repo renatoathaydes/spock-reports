@@ -21,8 +21,6 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
 class HtmlReportCreatorSpec extends ReportSpec {
 
 	static final String UNKNOWN = 'Unknown'
-	static final String PROBLEM_FOR_ONE_ITERATION = 'Problem for one iteration'
-	static final String PROBLEM_FOR_ALL_ITERATIONS = 'Problems for all iterations'
 
 	def "A correct HTML report is generated for a spec including different types of features"() {
 		given:
@@ -124,6 +122,10 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		then:
 		"The report aggregator'css is set to the contents of the css file"
 		reportCreator.reportAggregator.css == textOf( cssPath )
+
+		cleanup:
+		"Set css for summary report back to correct css"
+		reportCreator.summaryReportCss = 'spock-summary-report.css'
 
 	}
 
