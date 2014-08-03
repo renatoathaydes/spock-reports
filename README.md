@@ -92,6 +92,9 @@ com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=s
 
 # Output directory (where the spock reports will be created) - relative to working directory
 com.athaydes.spockframework.report.outputDir=build/spock-reports
+
+# If set to true, hides blocks which do not have any description
+com.athaydes.spockframework.report.hideEmptyBlocks=false
 ```
 
 Notice that the location of the css file is relative to the classpath!
