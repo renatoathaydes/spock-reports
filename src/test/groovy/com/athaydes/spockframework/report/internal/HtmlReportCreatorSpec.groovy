@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.SpecInfo
 
 import java.nio.file.Paths
 
+import static com.athaydes.spockframework.report.internal.StringFormatHelper.getDs
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
@@ -21,7 +22,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
 	static final String UNKNOWN = 'Unknown'
 
-	def "A correct HTML report is generated for a spec including different types of features"( ) {
+	def "A correct HTML report is generated for a spec including different types of features"() {
 		given:
 		"The project build folder location is known"
 		def buildDir = System.getProperty( 'project.buildDir', 'build' )
@@ -40,7 +41,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
 		when:
 		"A Specification containing different types of features is run by Spock"
-		use( PredictableProblems, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest ) {
+		use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest ) {
 			new Sputnik( FakeTest ).run( new RunNotifier() )
 		}
 
@@ -55,7 +56,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		minify( reportFile.text ) == minify( expectedHtml )
 	}
 
-	def "The css file used should be loaded correctly from any file in the classpath"( ) {
+	def "The css file used should be loaded correctly from any file in the classpath"() {
 		given:
 		"A css file in the classpath with known contents"
 		def reportFile = new File( this.class.getResource( "${this.class.simpleName}.class" ).toURI() )
@@ -74,7 +75,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		cssFile?.delete()
 	}
 
-	def "The report aggregator should be given the required information for each spec visited"( ) {
+	def "The report aggregator should be given the required information for each spec visited"() {
 		given:
 		"A HtmlReportCreator with mocked out stats() method"
 		def mockedStats = [ failures: 9, errors: 8, skipped: 7, totalRuns: 50, successRate: 0.1, time: 10 ]
@@ -105,7 +106,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
 	}
 
-	def "The report aggregator should be passed on the summary css from the report creator"( ) {
+	def "The report aggregator should be passed on the summary css from the report creator"() {
 		given:
 		"A HtmlReportCreator"
 		def reportCreator = new HtmlReportCreator()
@@ -122,15 +123,19 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		"The report aggregator'css is set to the contents of the css file"
 		reportCreator.reportAggregator.css == textOf( cssPath )
 
+		cleanup:
+		"Set css for summary report back to correct css"
+		reportCreator.summaryReportCss = 'spock-summary-report.css'
+
 	}
 
-	def "The HtmlReportCreator knows when block texts have no content"( ) {
+	def "The HtmlReportCreator knows when block texts have no content"() {
 		given:
 		"A HtmlReportCreator"
 		def reportCreator = new HtmlReportCreator()
 
 		when:
-		"I create "
+		"Block texts are checked for content"
 		def result = reportCreator.isEmptyOrContainsOnlyEmptyStrings( examples )
 
 		then:
@@ -139,44 +144,41 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
 		where:
 		"The given examples are used"
-		examples            | expected
-		[ ]                 | true
-		[ '' ]              | true
-		[ ' ' ]             | true
-		[ '', '' ]          | true
-		[ ' ', '  ' ]       | true
+		examples | expected
+		[ ] | true
+		[ '' ] | true
+		[ ' ' ] | true
+		[ '', '' ] | true
+		[ ' ', '  ' ] | true
 		[ '', '', '     ' ] | true
-		[ 'a' ]             | false
-		[ '', 'a' ]         | false
-		[ 'a', '' ]         | false
+		[ 'a' ] | false
+		[ '', 'a' ] | false
+		[ 'a', '' ] | false
 	}
 
 	private String textOf( String cssPath ) {
 		new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
 	}
 
-	private String expectedHtmlReport( ) {
+	private String expectedHtmlReport() {
 		def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
 		def binding = [
-				classOnTest: FakeTest.class.name,
-				style: defaultStyle(),
-				dateTestRan: DATE_TEST_RAN,
-				username: TEST_USER_NAME,
-				executedFeatures: 7,
-				failures: 2,
-				errors: 1,
-				skipped: 1,
-				successRate: '57.14%',
-				problemList1: UNKNOWN,
-				problemList2: UNKNOWN,
-				problemList3: UNKNOWN,
-				time: UNKNOWN,
-				projectUrl: SpockReportExtension.PROJECT_URL
+				classOnTest     : FakeTest.class.name,
+				style           : defaultStyle(),
+				dateTestRan     : DATE_TEST_RAN,
+				username        : TEST_USER_NAME,
+				executedFeatures: 10,
+				failures        : 3,
+				errors          : 2,
+				skipped         : 1,
+				successRate     : "50${ds}0%",
+				time            : UNKNOWN,
+				projectUrl      : SpockReportExtension.PROJECT_URL
 		]
 		replacePlaceholdersInRawHtml( rawHtml, binding )
 	}
 
-	private String defaultStyle( ) {
+	private String defaultStyle() {
 		this.class.getResource( '/spock-feature-report.css' ).text
 	}
 
@@ -185,19 +187,11 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		String toTimeDuration( timeInMs ) { HtmlReportCreatorSpec.UNKNOWN }
 	}
 
-	@Category( ProblemBlockWriter )
-	class PredictableProblems {
-		void writeProblems( MarkupBuilder builder, FeatureRun run, boolean isError ) {
-			builder.mkp.yieldUnescaped( HtmlReportCreatorSpec.UNKNOWN )
-		}
-	}
-
 	@Category( KnowsWhenAndWhoRanTest )
 	class FakeKnowsWhenAndWhoRanTest {
 		String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
 			"Created on ${ReportSpec.DATE_TEST_RAN} by ${ReportSpec.TEST_USER_NAME}"
 		}
-
 	}
 
 }

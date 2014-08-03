@@ -27,6 +27,7 @@ class ConfigLoaderSpec extends Specification {
 		then:
 		"The ConfigLoader to find all of the properties declared in the configLocation"
 		result.getProperty( FEATURE_REPORT_CSS ) == 'spock-feature-report.css'
+		result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
 	}
 
 	def "Custom configurations should override default configurations"( ) {
@@ -48,8 +49,13 @@ class ConfigLoaderSpec extends Specification {
 		"The ConfigLoader to find all of the properties declared in the configLocation"
 		result.getProperty( FEATURE_REPORT_CSS ) == expected
 
+		and:
+		"The default properties are also kept"
+		result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
+		result.getProperty( 'com.athaydes.spockframework.report.outputDir' ) == 'build/spock-reports'
+
 		cleanup:
-		customFile.delete()
+		assert customFile.delete()
 
 		where:
 		expected << [ 'example/report.css' ]
@@ -58,7 +64,6 @@ class ConfigLoaderSpec extends Specification {
 	private createFileUnderMetaInf( String fileName ) {
 		def globalExtConfig = this.class.getResource( '/META-INF/services/org.spockframework.runtime.extension.IGlobalExtension' )
 		def f = new File( globalExtConfig.toURI() )
-		println "Using ${f.parentFile.absolutePath} as parent"
 		new File( f.parentFile, fileName )
 	}
 

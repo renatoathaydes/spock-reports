@@ -1,3 +1,11 @@
+1.2 - 2014 August 03
+
+* #4 Support for @Unroll. Each unrolled iteration now shown as individual spec and placeholders are correctly resolved.
+     Statistics also respect @Unroll semantics (each iteration failure is treated as a spec failure).
+* #5 numbers shown in reports are internationalized
+* #6 default config properties are merged with custom config (not replaced by it)
+* #7 new config option to hide empty blocks (which do not have a description)
+
 1.1 - 2013 Sep 14
 
 * Fixed HTML footer alignment in summary report
@@ -6,4 +14,7 @@
 * Blocks with empty Strings or no Strings now show in HTML reports
 * Text to the left of example tables in HTML reports are now called "Examples", not "Where"
 
-1.0 - INITIAL RELEASE
+1.0 - INITIAL RELEASE - 2013 August 06
+
+* creates HTML summary reports for all specs run by Spock
+* creates HTML feature reports for each individual spec

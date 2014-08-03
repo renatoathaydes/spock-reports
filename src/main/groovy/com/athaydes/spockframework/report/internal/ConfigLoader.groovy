@@ -23,16 +23,15 @@ class ConfigLoader {
 		defaultProperties
 	}
 
-	Properties loadCustomProperties( Properties defaults ) {
+	Properties loadCustomProperties( Properties properties ) {
 		def resources = RunContext.classLoader.getResources( CUSTOM_CONFIG )
-		def props = new Properties( defaults )
-		Collections.list( resources ).each { URL url ->
+		for ( URL url in resources ) {
 			try {
-				url.withInputStream { props.load it }
+				url.withInputStream { properties.load it }
 			} catch ( IOException | IllegalArgumentException e ) {
 				println "Unable to read config from ${url.path}, $e"
 			}
 		}
-		props
+		properties
 	}
 }

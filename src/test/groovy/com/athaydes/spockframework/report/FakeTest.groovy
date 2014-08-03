@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report
 
 import spock.lang.Ignore
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  *
@@ -9,7 +10,7 @@ import spock.lang.Specification
  */
 class FakeTest extends Specification {
 
-	def "A first test"( ) {
+	def "A first test"() {
 		given:
 		"we have x and y"
 
@@ -25,20 +26,20 @@ class FakeTest extends Specification {
 
 		where:
 		"The examples below are used"
-		x   | y
+		x | y
 		'a' | 'a'
 		'b' | 'c'
 
 	}
 
-	def "Another feature!!!!"( ) {
+	def "Another feature!!!!"() {
 		setup:
 		"Setup block here"
 		expect:
 		"Expecting something ??"
 	}
 
-	def "A when then spec"( ) {
+	def "A when then spec"() {
 		when:
 		"This is the when"
 		then:
@@ -46,7 +47,7 @@ class FakeTest extends Specification {
 	}
 
 	@Ignore
-	def "Please ignore me"( ) {
+	def "Please ignore me"() {
 		given:
 		"Nothing"
 		when:
@@ -55,7 +56,7 @@ class FakeTest extends Specification {
 		"Nothing happens"
 	}
 
-	def "A test with an error"( ) {
+	def "A test with an error"() {
 		when:
 		"An Exception is thrown"
 		throw new RuntimeException( 'As expected' )
@@ -64,7 +65,7 @@ class FakeTest extends Specification {
 		"Will never succeed"
 	}
 
-	def "A test with a failure"( ) {
+	def "A test with a failure"() {
 		when:
 		"Do nothing"
 		then:
@@ -76,12 +77,12 @@ class FakeTest extends Specification {
 	analysts write these too detailed overviews of what the test should be all about when what they really
 	should do is to let the details go in the body of the test using the Gherkin language which underlies BDD
 	and is proven to make it easier for all involved to understand what the test is doing, what the inputs are
-	and what the expected outcomes are in such a way that the best possible common understanding is reached"""( ) {
+	and what the expected outcomes are in such a way that the best possible common understanding is reached"""() {
 		expect:
 		"The long description above to look good in the report"
 	}
 
-	def "A Spec with empty block Strings"( ) {
+	def "A Spec with empty block Strings"() {
 		given:
 		def a = 0
 
@@ -100,5 +101,21 @@ class FakeTest extends Specification {
 		c > 0
 	}
 
+	@Unroll
+	def "An @Unrolled spec with x=#x and y=#y"() {
+		setup:
+		"nothing"
+		expect:
+		"x to be 0"
+		x == 0
+		and:
+		"An error if y is 5"
+		if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+		where:
+		x | y
+		0 | 1
+		2 | 3
+		0 | 5
+	}
 
 }

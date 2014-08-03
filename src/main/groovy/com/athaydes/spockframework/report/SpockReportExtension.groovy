@@ -3,7 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
-import org.junit.ComparisonFailure
+import com.athaydes.spockframework.report.internal.SpecProblem
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
@@ -18,12 +18,12 @@ import org.spockframework.runtime.model.SpecInfo
 class SpockReportExtension implements IGlobalExtension {
 
 	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
-	static final String DEFAULT_OUTPUT_DIR = "build/outputDir"
 
 	def configLoader = new ConfigLoader()
 	String reportCreatorClassName
 	final reportCreatorSettings = [ : ]
 	String outputDir
+	boolean hideEmptyBlocks = false
 
 	def firstVisit = true
 
@@ -45,11 +45,15 @@ class SpockReportExtension implements IGlobalExtension {
 			}
 	}
 
-	void config( ) {
+	void config() {
 		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
-		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir", DEFAULT_OUTPUT_DIR )
+		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir" )
+		hideEmptyBlocks = Boolean.parseBoolean(
+				config.getProperty( "com.athaydes.spockframework.report.hideEmptyBlocks" )
+		)
+
 		try {
 			reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
 		} catch ( e ) {
@@ -58,7 +62,7 @@ class SpockReportExtension implements IGlobalExtension {
 		}
 	}
 
-	def instantiateReportCreator( ) {
+	def instantiateReportCreator() {
 		def reportCreatorClass = Class.forName( reportCreatorClassName )
 		reportCreatorClass.asSubclass( IReportCreator ).newInstance()
 	}
@@ -73,6 +77,7 @@ class SpockReportExtension implements IGlobalExtension {
 
 	private void configReportCreator( IReportCreator reportCreator ) {
 		reportCreator.outputDir = outputDir
+		reportCreator.hideEmptyBlocks = hideEmptyBlocks
 		reportCreatorSettings.each { field, value ->
 			reportCreator."$field" = value
 		}
@@ -93,23 +98,17 @@ class SpecInfoListener implements IRunListener {
 
 	@Override
 	synchronized void beforeSpec( SpecInfo spec ) {
-		//println "Before Spec ${spec.name}"
 		specData = new SpecData( info: spec )
 		startT = System.currentTimeMillis()
 	}
 
 	@Override
 	void beforeFeature( FeatureInfo feature ) {
-		//println "Feature: ${feature.name}"
-		//println "Variables are: ${feature.parameterized ? feature.parameterNames : '[]' }"
-		//println "Blocks text:"
-		//feature.blocks.each { println "Block ${it.kind}: ${it.texts} : ${it.properties}" }
 		specData.featureRuns << new FeatureRun( feature: feature )
 	}
 
 	@Override
 	void beforeIteration( IterationInfo iteration ) {
-		//println 'Iteration properties: ' + iteration.properties
 		currentRun().failuresByIteration[ iteration ] = [ ]
 		currentIteration = iteration
 	}
@@ -134,34 +133,21 @@ class SpecInfoListener implements IRunListener {
 
 	@Override
 	void error( ErrorInfo error ) {
-		//println "There is some error: ${error.exception}"
-		//println "Error at: ${error.exception.stackTrace}"
 		if ( !currentIteration ) throw new RuntimeException( 'No current iteration!' )
-		switch ( classify( error ) ) {
-			case 'FAILURE': currentRun().failuresByIteration[ currentIteration ] << error
-				break
-			case 'ERROR': currentRun().error = error.exception
-		}
-	}
-
-	private classify( ErrorInfo error ) {
-		( error.exception instanceof AssertionError ||
-				error.exception instanceof ComparisonFailure ) ? 'FAILURE' : 'ERROR'
+		currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( error )
 	}
 
 	@Override
 	void specSkipped( SpecInfo spec ) {
 		// specInfo already knows if it's skipped
-		println "Spec is skipped! ${spec.name}"
 	}
 
 	@Override
 	void featureSkipped( FeatureInfo feature ) {
-		println "Feature is skipped! ${feature.name}"
 		// feature already knows if it's skipped
 	}
 
-	private FeatureRun currentRun( ) {
+	private FeatureRun currentRun() {
 		specData.featureRuns.last()
 	}
 

@@ -12,4 +12,6 @@ public interface IReportCreator {
 
 	void setOutputDir( String path )
 
+	void setHideEmptyBlocks( boolean hide )
+
 }
