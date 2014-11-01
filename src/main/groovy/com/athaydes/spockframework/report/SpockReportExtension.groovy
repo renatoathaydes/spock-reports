@@ -67,7 +67,7 @@ class SpockReportExtension implements IGlobalExtension {
 		reportCreatorClass.asSubclass( IReportCreator ).newInstance()
 	}
 
-	def loadSettingsFor( String prefix, Properties config ) {
+	private static loadSettingsFor( String prefix, Properties config ) {
 		Collections.list( config.propertyNames() ).grep { String key ->
 			key.startsWith prefix + '.'
 		}.collect { String key ->
@@ -133,8 +133,8 @@ class SpecInfoListener implements IRunListener {
 
 	@Override
 	void error( ErrorInfo error ) {
-		if ( !currentIteration ) throw new RuntimeException( 'No current iteration!' )
-		currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( error )
+        def iteration = currentIteration ?: dummySpecIteration()
+        currentRun().failuresByIteration[ iteration ] << new SpecProblem( error )
 	}
 
 	@Override
@@ -147,8 +147,23 @@ class SpecInfoListener implements IRunListener {
 		// feature already knows if it's skipped
 	}
 
-	private FeatureRun currentRun() {
-		specData.featureRuns.last()
-	}
+    private FeatureRun currentRun() {
+        if ( specData.featureRuns.empty ) {
+            specData.featureRuns.add new FeatureRun( feature: dummyFeature() )
+        }
+        specData.featureRuns.last()
+    }
+
+    private IterationInfo dummySpecIteration() {
+        def currentRun = currentRun()
+        def iteration = new IterationInfo( currentRun.feature, [ ] as Object[], 1 )
+        iteration.name = '<No Iteration!>'
+        currentRun.failuresByIteration.put( iteration, [ ] )
+        iteration
+    }
+
+    private static FeatureInfo dummyFeature() {
+        new FeatureInfo( name: '<No Feature initialized!>' )
+    }
 
 }

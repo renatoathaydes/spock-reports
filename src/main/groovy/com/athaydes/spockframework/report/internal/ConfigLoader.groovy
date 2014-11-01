@@ -17,7 +17,7 @@ class ConfigLoader {
 
 	Properties loadDefaultProperties( ) {
 		def defaultProperties = new Properties()
-		ConfigLoader.class.getResource( 'config.properties' ).withInputStream {
+		ConfigLoader.class.getResource( 'config.properties' )?.withInputStream {
 			defaultProperties.load it
 		}
 		defaultProperties

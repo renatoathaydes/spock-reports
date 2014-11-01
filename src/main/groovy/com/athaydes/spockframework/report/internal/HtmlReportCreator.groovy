@@ -132,7 +132,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	}
 
 	static boolean isUnrolled( FeatureInfo feature ) {
-		feature.description.annotations.any { it.annotationType() == Unroll }
+		feature.description?.annotations?.any { it.annotationType() == Unroll } ?: false
 	}
 
 	static boolean isFailure( SpecProblem problem ) {
