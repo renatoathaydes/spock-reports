@@ -24,7 +24,7 @@ Currently, the only available report creator generates a **HTML report** for eac
 
 ## Where to find demo reports
 
-I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://cdpn.io/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://cdpn.io/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
+I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://codepen.io/renatoathaydes/full/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://codepen.io/renatoathaydes/full/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
 
 If you don't like the styles, you can use your own css stylesheets (see the customization section below). I welcome feedback on how to improve the report looks!
 
@@ -50,7 +50,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -63,7 +63,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.athaydes:spock-reports:1.1'
+    testCompile 'com.athaydes:spock-reports:1.2'
 }
 ```
 
