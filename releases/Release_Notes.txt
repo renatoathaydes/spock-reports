@@ -1,3 +1,10 @@
+1.2.1 - 2014 November 01
+
+* #12 stopped throwing Exception when a Specification setup method fails
+* #12 appropriate reporting of Specification which did not run due to setup failing
+* #13 removed usage of Groovy features that break with some JDK versions
+      (notably VerifyError on Java 1.7_67 and 1.8_11)
+
 1.2 - 2014 August 03
 
 * #4 Support for @Unroll. Each unrolled iteration now shown as individual spec and placeholders are correctly resolved.

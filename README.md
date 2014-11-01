@@ -3,6 +3,8 @@
 
 ## News
 
+* 01st of November 2014 - Bug fix release, 1.2.1. Fixed problems with bad-behaving Specification setup methods and
+removed usage of some Groovy features to allow running spock-reports with any recent JDK version.
 * 3rd of August 2014 - Release of version 1.2! This release includes full support for @Unroll,
 amongst other small improvements.
 * 3rd of July 2014 - After a long delay, I have finally published the 1.1 release on a public repo, thanks to @JayStGelais
@@ -67,8 +69,7 @@ dependencies {
 }
 ```
 
-If you prefer, you can just download the jar from the [releases](/releases) directory or JCenter (newer releases available only
-on [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/)).
+If you prefer, you can just download the jar directly from [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/)).
 
 The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
 
