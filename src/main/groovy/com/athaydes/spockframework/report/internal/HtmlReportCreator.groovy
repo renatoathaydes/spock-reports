@@ -44,8 +44,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	@Override
 	void createReportFor( SpecData data ) {
 		def specClassName = data.info.description.className
-		def reportsDir = createReportsDir()
-		if ( reportsDir.exists() ) {
+        def reportsDir = createReportsDir()
+		if ( reportsDir.isDirectory() ) {
 			try {
 				new File( reportsDir, specClassName + '.html' )
 						.write( reportFor( data ) )
@@ -149,18 +149,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 			if ( run && isUnrolled( feature ) ) {
 				run.failuresByIteration.each { iteration, problems ->
 					final name = feature.iterationNameProvider.getName( iteration )
-					final cssClass = feature.skipped ? 'ignored' :
-							problems.any( HtmlReportCreator.&isError ) ? 'error' :
-									problems.any( HtmlReportCreator.&isFailure ) ? 'failure' : ''
-					writeFeatureDescription( builder, name, cssClass )
+                    final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
+                            problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
+                                    feature.skipped ? 'ignored' : ''
+                    writeFeatureDescription( builder, name, cssClass )
 					writeFeatureBlocks( builder, feature )
 					problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
 				}
 			} else {
 				final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
 				final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
-				final cssClass = !run ? 'ignored' : errors ? 'error' : failures ? 'failure' : ''
-				writeFeatureDescription( builder, feature.name, cssClass )
+				final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
+                writeFeatureDescription( builder, feature.name, cssClass )
 				writeFeatureBlocks( builder, feature )
 				if ( run ) {
 					writeRun( builder, run )

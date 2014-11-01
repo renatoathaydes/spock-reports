@@ -149,7 +149,7 @@ class SpecInfoListener implements IRunListener {
 
     private FeatureRun currentRun() {
         if ( specData.featureRuns.empty ) {
-            specData.featureRuns.add new FeatureRun( feature: dummyFeature() )
+            specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
         }
         specData.featureRuns.last()
     }
