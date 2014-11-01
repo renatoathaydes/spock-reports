@@ -4,7 +4,7 @@
 ## News
 
 * 01st of November 2014 - Bug fix release, 1.2.1. Fixed problems with bad-behaving Specification setup methods and
-removed usage of some Groovy features to allow running spock-reports with any recent JDK version.
+removed usage of some Groovy features to allow running spock-reports with any recent JDK 7 or 8 version.
 * 3rd of August 2014 - Release of version 1.2! This release includes full support for @Unroll,
 amongst other small improvements.
 * 3rd of July 2014 - After a long delay, I have finally published the 1.1 release on a public repo, thanks to @JayStGelais
