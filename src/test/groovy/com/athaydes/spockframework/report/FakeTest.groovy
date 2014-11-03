@@ -106,7 +106,7 @@ class FakeTest extends Specification {
 		setup:
 		"nothing"
 		expect:
-		"x to be 0"
+		"#x to be 0"
 		x == 0
 		and:
 		"An error if y is 5"

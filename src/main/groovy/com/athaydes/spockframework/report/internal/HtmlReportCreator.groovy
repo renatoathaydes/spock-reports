@@ -21,6 +21,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	def reportAggregator = HtmlReportAggregator.instance
 	def stringFormatter = new StringFormatHelper()
 	def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
+    def stringProcessor = new StringTemplateProcessor()
 
 	final block2String = [
 			( SETUP )  : 'Given:',
@@ -153,7 +154,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass )
-					writeFeatureBlocks( builder, feature )
+					writeFeatureBlocks( builder, feature, iteration )
 					problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
 				}
 			} else {
@@ -170,16 +171,19 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		}
 	}
 
-	private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature ) {
+	private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
 		feature.blocks.each { BlockInfo block ->
-			writeBlock( builder, block, feature.skipped )
+			writeBlock( builder, block, feature, iteration )
 		}
 	}
 
-	private void writeBlock( MarkupBuilder builder, BlockInfo block, boolean isIgnored ) {
-		def trCssClassArg = ( isIgnored ? [ 'class': 'ignored' ] : null )
+	private void writeBlock( MarkupBuilder builder, BlockInfo block, FeatureInfo feature, IterationInfo iteration ) {
+		def trCssClassArg = ( feature.skipped ? [ 'class': 'ignored' ] : null )
 		if ( !isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
 			block.texts.eachWithIndex { blockText, index ->
+                if (iteration) {
+                    blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
+                }
 				writeBlockRow( builder, trCssClassArg,
 						( index == 0 ? block.kind : 'AND' ), blockText )
 			}
