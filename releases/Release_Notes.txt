@@ -1,3 +1,7 @@
+1.2.2 - 2014 November 03
+
+* #14 support for @Unroll-ing variables not only in Spec names, but also in block texts
+
 1.2.1 - 2014 November 01
 
 * #12 stopped throwing Exception when a Specification setup method fails

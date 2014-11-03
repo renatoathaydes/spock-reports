@@ -3,6 +3,8 @@
 
 ## News
 
+* 03rd of November 2014 - Small feature release (1.2.2): added support for @Unroll-ing variables not only in Spec names,
+but also in block texts (given, when, then...)
 * 01st of November 2014 - Bug fix release, 1.2.1. Fixed problems with bad-behaving Specification setup methods and
 removed usage of some Groovy features to allow running spock-reports with any recent JDK 7 or 8 version.
 * 3rd of August 2014 - Release of version 1.2! This release includes full support for @Unroll,
@@ -52,7 +54,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.1</version>
+  <version>1.2.2</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -65,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.athaydes:spock-reports:1.2.1'
+    testCompile 'com.athaydes:spock-reports:1.2.2'
 }
 ```
 
