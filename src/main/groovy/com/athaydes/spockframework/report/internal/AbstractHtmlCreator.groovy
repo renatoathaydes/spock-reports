@@ -61,7 +61,7 @@ abstract class AbstractHtmlCreator<T> {
 	}
 
 	protected double successRate( int total, int reproved ) {
-		( total > 0 ? ( total - reproved ) / total : 1.0 )
+		Math.min( 1.0, Math.max( 0.0, ( total > 0 ? ( total - reproved ) / total : 1.0 ) ) )
 	}
 
 	abstract protected String reportHeader( T data )

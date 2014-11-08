@@ -58,6 +58,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 		2     | 1        | 0.5
 		100   | 30       | 0.7
 		30    | 20       | 1 / 3
+		2     | 3        | 0.0
+		10    | 10034    | 0.0
 	}
 
 	def """When a single spec data is provided to the HtmlReportAggregator it
