@@ -65,7 +65,7 @@ class ProblemBlockWriter {
 					pre {
 						mkp.yieldUnescaped(
 								stringFormatter.formatToHtml(
-										XmlUtil.escapeXml( msg.toString() ) ) )
+										stringFormatter.escapeXml( msg.toString() ) ) )
 					}
 				}
 			}

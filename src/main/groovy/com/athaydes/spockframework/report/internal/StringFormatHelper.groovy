@@ -38,4 +38,13 @@ class StringFormatHelper {
     String toDateString( Date date ) {
         date.toString()
     }
+
+    String escapeXml( String str ) {
+        str
+                .replaceAll( '&', '&amp;' )
+                .replaceAll( '<', '&lt;' )
+                .replaceAll( '>', '&gt;' )
+                .replaceAll( '"', '&quot;' )
+                .replaceAll( '\'', '&apos;' )
+    }
 }
