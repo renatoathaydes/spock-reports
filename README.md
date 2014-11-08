@@ -55,7 +55,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.2</version>
+  <version>1.2.3</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -68,7 +68,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.athaydes:spock-reports:1.2.2'
+    testCompile 'com.athaydes:spock-reports:1.2.3'
 }
 ```
 
