@@ -3,6 +3,7 @@
 
 ## News
 
+* 08th of November 2014 - 1.2.3 released - downgraded minimum Groovy version required to 2.0.8 (benefits some Grails users).
 * 03rd of November 2014 - Small feature release (1.2.2): added support for @Unroll-ing variables not only in Spec names,
 but also in block texts (given, when, then...)
 * 01st of November 2014 - Bug fix release, 1.2.1. Fixed problems with bad-behaving Specification setup methods and

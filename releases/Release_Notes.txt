@@ -1,3 +1,8 @@
+1.2.3 - 2014 November 08
+
+* #15 Downgraded minimum Groovy version required to 2.0.8 (benefits some Grails users).
+* Ensured successRate in reports gets bounded between 0 and 100% (some test problems count both as failure and error).
+
 1.2.2 - 2014 November 03
 
 * #14 support for @Unroll-ing variables not only in Spec names, but also in block texts
