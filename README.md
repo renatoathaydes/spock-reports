@@ -109,3 +109,15 @@ That means that you have the freedom to place the css files in a separate jar, f
 
 The output directory, on the other hand, is relative to the working directory.
 For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
+
+### Properties file location for Grails users
+
+In Grails apps, the classpath for the running tests is:
+
+    * test/functional
+    * test/unit
+    * test/integration
+
+So the full path and name for the properties should be:
+
+test/[test-type]/META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties
