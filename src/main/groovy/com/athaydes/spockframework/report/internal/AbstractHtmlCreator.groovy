@@ -39,6 +39,7 @@ abstract class AbstractHtmlCreator<T> {
 		builder.expandEmptyElements = true
 		builder.html {
 			head {
+				meta('http-equiv':'Content-Type', content:'text/html; charset=utf-8')
 				if ( css ) style css
 			}
 			body {
