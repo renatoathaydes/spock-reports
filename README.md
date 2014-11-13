@@ -112,12 +112,8 @@ For Maven projects which use the defaults, you might want to change it to `targe
 
 ### Properties file location for Grails users
 
-In Grails apps, the classpath for the running tests is:
-
-    * test/functional
-    * test/unit
-    * test/integration
+In Grails apps, the properties file has to be placed in `grails-app/conf/META-INF/services`.
 
 So the full path and name for the properties should be:
 
-test/[test-type]/META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties
+`grails-app/conf/META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
