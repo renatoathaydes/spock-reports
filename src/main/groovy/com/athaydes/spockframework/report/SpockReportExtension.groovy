@@ -49,9 +49,9 @@ class SpockReportExtension implements IGlobalExtension {
 		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
-		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir" )
+		outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
 		hideEmptyBlocks = Boolean.parseBoolean(
-				config.getProperty( "com.athaydes.spockframework.report.hideEmptyBlocks" )
+				config.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS )
 		)
 
 		try {
