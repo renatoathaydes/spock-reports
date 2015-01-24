@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+
 import spock.lang.Specification
 
 /**
@@ -59,6 +60,38 @@ class ConfigLoaderSpec extends Specification {
 
 		where:
 		expected << [ 'example/report.css' ]
+	}
+	
+	def 'System properties should override props files'() {
+		given:
+		"A ConfigLoader without any custom configuration"
+		def configLoader = new ConfigLoader()
+
+		and:
+		"The configLocation exists"
+		( configLoader.CUSTOM_CONFIG as File ).exists()
+		
+		and:
+		"I have specified a system property override"
+		def origPropVal = System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS]
+		System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS] = expected
+
+		when:
+		"I ask the ConfigLoader to load the configuration"
+		def result = configLoader.loadConfig()
+		
+		then:
+		"The ConfigLoader must use the value from the system property override"
+		result.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ) == expected
+		
+		cleanup:
+		if(origPropVal)
+			System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS] = origPropVal
+		else
+			System.properties.remove ConfigLoader.PROP_HIDE_EMPTY_BLOCKS 
+			
+		where:
+		expected = 'custom_value'
 	}
 
 	private createFileUnderMetaInf( String fileName ) {
