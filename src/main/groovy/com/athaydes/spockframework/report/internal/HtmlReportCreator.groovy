@@ -1,20 +1,26 @@
 package com.athaydes.spockframework.report.internal
 
-import com.athaydes.spockframework.report.IReportCreator
-import groovy.xml.MarkupBuilder
-import org.spockframework.runtime.model.BlockInfo
-import org.spockframework.runtime.model.FeatureInfo
-import org.spockframework.runtime.model.IterationInfo
-import spock.lang.Unroll
-
 import static com.athaydes.spockframework.report.internal.FailureKind.ERROR
 import static com.athaydes.spockframework.report.internal.FailureKind.FAILURE
 import static org.spockframework.runtime.model.BlockKind.*
+import groovy.util.logging.Log
+import groovy.xml.MarkupBuilder
+
+import java.util.logging.Level
+
+import org.spockframework.runtime.model.BlockInfo
+import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.runtime.model.IterationInfo
+
+import spock.lang.Unroll
+
+import com.athaydes.spockframework.report.IReportCreator
 
 /**
  *
  * User: Renato
  */
+@Log
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		implements IReportCreator {
 
@@ -51,12 +57,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 				new File( reportsDir, specClassName + '.html' )
 						.write( reportFor( data ) )
 			} catch ( e ) {
-				e.printStackTrace()
-				println "${this.class.name} failed to create report for $specClassName, Reason: $e"
+				log.log(Level.FINE, "${this.class.name} failed to create report for $specClassName", e)
 			}
 
 		} else {
-			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+			log.fine "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
 		}
 	}
 

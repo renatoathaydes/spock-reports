@@ -1,9 +1,9 @@
 package com.athaydes.spockframework.report
 
-import com.athaydes.spockframework.report.internal.ConfigLoader
-import com.athaydes.spockframework.report.internal.FeatureRun
-import com.athaydes.spockframework.report.internal.SpecData
-import com.athaydes.spockframework.report.internal.SpecProblem
+import groovy.util.logging.Log
+
+import java.util.logging.Level
+
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
@@ -11,10 +11,16 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 
+import com.athaydes.spockframework.report.internal.ConfigLoader
+import com.athaydes.spockframework.report.internal.FeatureRun
+import com.athaydes.spockframework.report.internal.SpecData
+import com.athaydes.spockframework.report.internal.SpecProblem
+
 /**
  *
  * User: Renato
  */
+@Log
 class SpockReportExtension implements IGlobalExtension {
 
 	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
@@ -40,13 +46,12 @@ class SpockReportExtension implements IGlobalExtension {
 				specInfo.addListener new SpecInfoListener( reportCreator )
 
 			} catch ( e ) {
-				e.printStackTrace()
-				println "Failed to create instance of $reportCreatorClassName: $e"
+				log.log(Level.FINE, "Failed to create instance of $reportCreatorClassName", e)
 			}
 	}
 
 	void config() {
-		println "Configuring ${this.class.name}"
+		log.finer "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
 		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir" )
@@ -57,8 +62,7 @@ class SpockReportExtension implements IGlobalExtension {
 		try {
 			reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
 		} catch ( e ) {
-			e.printStackTrace()
-			println "Error configuring ${this.class.name}! $e"
+			log.log(Level.FINE, "Error configuring ${this.class.name}!", e)
 		}
 	}
 

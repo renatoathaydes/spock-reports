@@ -1,12 +1,16 @@
 package com.athaydes.spockframework.report.internal
 
+import groovy.util.logging.Log
 import groovy.xml.MarkupBuilder
+
+import java.util.logging.Level
 
 /**
  *
  * User: Renato
  */
 @Singleton( lazy = true )
+@Log
 class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
 	final Map<String, Map> aggregatedData = [ : ]
@@ -26,12 +30,11 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 				new File( reportsDir, 'index.html' )
 						.write( reportFor( stats ) )
 			} catch ( e ) {
-				e.printStackTrace()
-				println "${this.class.name} failed to create aggregated report, Reason: $e"
+				log.log(Level.FINE, "${this.class.name} failed to create aggregated report", e)
 			}
 
 		} else {
-			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+			log.fine "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
 		}
 	}
 

@@ -1,12 +1,17 @@
 package com.athaydes.spockframework.report.internal
 
-import com.athaydes.spockframework.report.SpockReportExtension
+import groovy.util.logging.Log
 import groovy.xml.MarkupBuilder
+
+import java.util.logging.Level
+
+import com.athaydes.spockframework.report.SpockReportExtension
 
 /**
  *
  * User: Renato
  */
+@Log
 abstract class AbstractHtmlCreator<T> {
 
 	String css
@@ -21,10 +26,10 @@ abstract class AbstractHtmlCreator<T> {
 			try {
 				this.@css = cssResource.text
 			} catch ( e ) {
-				println "${this.class.name}: Failed to set CSS file to $css: $e"
+				log.log(Level.FINE, "${this.class.name}: Failed to set CSS file to $css", e)
 			}
 		else
-			println "${this.class.name}: The CSS file does not exist: ${css}"
+			log.fine "${this.class.name}: The CSS file does not exist: ${css}"
 	}
 
 	File createReportsDir( ) {
