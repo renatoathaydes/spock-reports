@@ -51,11 +51,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 				new File( reportsDir, specClassName + '.html' )
 						.write( reportFor( data ) )
 			} catch ( e ) {
-				e.printStackTrace()
-				println "${this.class.name} failed to create report for $specClassName, Reason: $e"
+				if(!silenceOutput) {
+					e.printStackTrace()
+					println "${this.class.name} failed to create report for $specClassName, Reason: $e"
+				}
 			}
 
-		} else {
+		} else if(!silenceOutput) {
 			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
 		}
 	}
@@ -66,6 +68,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	}
 
 	void writeSummary( MarkupBuilder builder, SpecData data ) {
+		reportAggregator.silenceOutput = silenceOutput
 		builder.div( 'class': 'summary-report' ) {
 			h3 'Summary:'
 			builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
