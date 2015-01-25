@@ -26,11 +26,13 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 				new File( reportsDir, 'index.html' )
 						.write( reportFor( stats ) )
 			} catch ( e ) {
-				e.printStackTrace()
-				println "${this.class.name} failed to create aggregated report, Reason: $e"
+				if(!silenceOutput) {
+					e.printStackTrace()
+					println "${this.class.name} failed to create aggregated report, Reason: $e"
+				}
 			}
 
-		} else {
+		} else if(!silenceOutput) {
 			println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
 		}
 	}

@@ -12,6 +12,7 @@ abstract class AbstractHtmlCreator<T> {
 	String css
 	String outputDir
 	boolean hideEmptyBlocks = false
+	boolean silenceOutput
 	KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
 
 	void setCss( String css ) {
@@ -21,9 +22,10 @@ abstract class AbstractHtmlCreator<T> {
 			try {
 				this.@css = cssResource.text
 			} catch ( e ) {
-				println "${this.class.name}: Failed to set CSS file to $css: $e"
+				if(!silenceOutput)
+					println "${this.class.name}: Failed to set CSS file to $css: $e"
 			}
-		else
+		else if(!silenceOutput)
 			println "${this.class.name}: The CSS file does not exist: ${css}"
 	}
 

@@ -24,6 +24,7 @@ class SpockReportExtension implements IGlobalExtension {
 	final reportCreatorSettings = [ : ]
 	String outputDir
 	boolean hideEmptyBlocks = false
+	boolean silenceOutput = true
 
 	def firstVisit = true
 
@@ -40,31 +41,41 @@ class SpockReportExtension implements IGlobalExtension {
 				specInfo.addListener new SpecInfoListener( reportCreator )
 
 			} catch ( e ) {
-				e.printStackTrace()
-				println "Failed to create instance of $reportCreatorClassName: $e"
+				if(!silenceOutput) {
+					e.printStackTrace()
+					println "Failed to create instance of $reportCreatorClassName: $e"
+				}
 			}
 	}
 
 	void config() {
-		println "Configuring ${this.class.name}"
 		def config = configLoader.loadConfig()
 		reportCreatorClassName = config.getProperty( IReportCreator.class.name )
 		outputDir = config.getProperty( "com.athaydes.spockframework.report.outputDir" )
 		hideEmptyBlocks = Boolean.parseBoolean(
 				config.getProperty( "com.athaydes.spockframework.report.hideEmptyBlocks" )
 		)
+		silenceOutput = Boolean.parseBoolean(
+				config.getProperty( 'com.athaydes.spockframework.silenceOutput' ) ?: 'true'
+		)
+		if(!silenceOutput)
+			println "Configuring ${this.class.name}"		
 
 		try {
 			reportCreatorSettings << loadSettingsFor( reportCreatorClassName, config )
 		} catch ( e ) {
-			e.printStackTrace()
-			println "Error configuring ${this.class.name}! $e"
+			if(!silenceOutput) {
+				e.printStackTrace()
+				println "Error configuring ${this.class.name}! $e"
+			}
 		}
 	}
 
 	def instantiateReportCreator() {
 		def reportCreatorClass = Class.forName( reportCreatorClassName )
-		reportCreatorClass.asSubclass( IReportCreator ).newInstance()
+		def obj = reportCreatorClass.asSubclass( IReportCreator ).newInstance()
+		obj.silenceOutput = silenceOutput
+		obj
 	}
 
 	private static loadSettingsFor( String prefix, Properties config ) {
