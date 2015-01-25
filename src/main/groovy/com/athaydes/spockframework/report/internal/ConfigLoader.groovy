@@ -14,11 +14,19 @@ import com.athaydes.spockframework.report.IReportCreator
  */
 @Log
 class ConfigLoader {
-
+	static final PROP_OUTPUT_DIR = 'com.athaydes.spockframework.report.outputDir'
+	static final PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
+	
 	final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
 
 	Properties loadConfig( ) {
-		loadCustomProperties( loadDefaultProperties() )
+		def props = loadCustomProperties( loadDefaultProperties() )
+		[IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS].each {
+			def sysVal = System.properties[it]
+			if(sysVal)
+				props[it] = sysVal
+		}
+		props
 	}
 
 	Properties loadDefaultProperties( ) {
