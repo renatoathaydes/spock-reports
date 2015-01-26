@@ -59,22 +59,20 @@ class ProblemBlockWriter {
 	}
 
 	private void writeProblemMsgs( MarkupBuilder builder, List msgs ) {
-		builder.ul {
+		builder.pre {
 			msgs.each { msg ->
-				li {
-					pre {
-						mkp.yieldUnescaped(
-								stringFormatter.formatToHtml(
-										stringFormatter.escapeXml( msg.toString() ) ) )
-					}
-				}
+				mkp.yieldUnescaped(stringFormatter.escapeXml(msg.toString()))
 			}
 		}
 	}
 
 	private List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
 		failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
-			def errorMessages = failureList.collect { it.failure.exception.toString() }
+			def errorMessages = failureList.collect {
+				def stack = new StringWriter()
+				it.failure.exception.printStackTrace(new PrintWriter(stack))
+				stack.toString()
+			}
 			if ( errorMessages ) {
 				acc << [ dataValues: iteration.dataValues, messages: errorMessages ]
 			}
