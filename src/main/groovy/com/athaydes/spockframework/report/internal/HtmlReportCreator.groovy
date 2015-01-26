@@ -149,7 +149,34 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		problem.kind == ERROR
 	}
 
+	private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
+		builder.ul(id: 'toc') {
+			data.info.allFeatures.each { FeatureInfo feature ->
+				FeatureRun run = data.featureRuns.find { it.feature == feature }
+				if ( run && isUnrolled( feature ) ) {
+					run.failuresByIteration.each { iteration, problems ->
+						final name = feature.iterationNameProvider.getName( iteration )
+						final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
+								problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
+										feature.skipped ? 'ignored' : 'pass'
+						li {
+							a(href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name)
+						}
+					}
+				} else {
+					final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
+					final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
+					final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : 'pass'
+					li {
+						a(href: "#${feature.name.hashCode()}", 'class': "feature-toc-$cssClass", feature.name)
+					}
+				}
+			}
+		}
+	}
+	
 	private void writeFeature( MarkupBuilder builder, SpecData data ) {
+		writeFeatureToc( builder, data )
 		data.info.allFeatures.each { FeatureInfo feature ->
 			FeatureRun run = data.featureRuns.find { it.feature == feature }
 			if ( run && isUnrolled( feature ) ) {
@@ -265,7 +292,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		cssClass = cssClass ? ' ' + cssClass : ''
 		builder.tr {
 			td( colspan: '10' ) {
-				div( 'class': 'feature-description' + cssClass, name )
+				div( 'class': 'feature-description' + cssClass, id: name.hashCode(), name ) {
+					span(style: 'float: right; font-size: 60%;') {
+						a(href: '#toc', 'Return')
+					}
+				}
 			}
 		}
 	}
