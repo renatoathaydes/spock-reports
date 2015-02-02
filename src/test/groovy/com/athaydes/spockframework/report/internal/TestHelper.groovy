@@ -9,7 +9,7 @@ import spock.lang.Specification
 class TestHelper extends Specification {
 
 	static String minify( String xml ) {
-		xml.replaceAll( /[\t\r\n]/, '' )
+		xml.replaceAll( /[\t\r\n]/, '' ).replaceAll( />\s+</, '><' )
 	}
 
 	def "minimizeXml() Spec"( ) {
