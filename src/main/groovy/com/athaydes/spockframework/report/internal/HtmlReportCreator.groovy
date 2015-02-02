@@ -27,7 +27,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	def reportAggregator = HtmlReportAggregator.instance
 	def stringFormatter = new StringFormatHelper()
 	def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
-    def stringProcessor = new StringTemplateProcessor()
+	def stringProcessor = new StringTemplateProcessor()
 
 	final block2String = [
 			( SETUP )  : 'Given:',
@@ -51,13 +51,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	@Override
 	void createReportFor( SpecData data ) {
 		def specClassName = data.info.description.className
-        def reportsDir = createReportsDir()
+		def reportsDir = createReportsDir()
 		if ( reportsDir.isDirectory() ) {
 			try {
 				new File( reportsDir, specClassName + '.html' )
 						.write( reportFor( data ) )
 			} catch ( e ) {
-				log.log(Level.FINE, "${this.class.name} failed to create report for $specClassName", e)
+				log.log( Level.FINE, "${this.class.name} failed to create report for $specClassName", e )
 			}
 
 		} else {
@@ -150,7 +150,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	}
 
 	private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
-		builder.ul(id: 'toc') {
+		builder.ul( id: 'toc' ) {
 			data.info.allFeatures.each { FeatureInfo feature ->
 				FeatureRun run = data.featureRuns.find { it.feature == feature }
 				if ( run && isUnrolled( feature ) ) {
@@ -160,7 +160,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 								problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
 										feature.skipped ? 'ignored' : 'pass'
 						li {
-							a(href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name)
+							a( href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name )
 						}
 					}
 				} else {
@@ -168,24 +168,24 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 					final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
 					final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : 'pass'
 					li {
-						a(href: "#${feature.name.hashCode()}", 'class': "feature-toc-$cssClass", feature.name)
+						a( href: "#${feature.name.hashCode()}", 'class': "feature-toc-$cssClass", feature.name )
 					}
 				}
 			}
 		}
 	}
-	
+
 	private void writeFeature( MarkupBuilder builder, SpecData data ) {
-		writeFeatureToc( builder, data )
+		if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
 		data.info.allFeatures.each { FeatureInfo feature ->
 			FeatureRun run = data.featureRuns.find { it.feature == feature }
 			if ( run && isUnrolled( feature ) ) {
 				run.failuresByIteration.each { iteration, problems ->
 					final name = feature.iterationNameProvider.getName( iteration )
-                    final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
-                            problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
-                                    feature.skipped ? 'ignored' : ''
-                    writeFeatureDescription( builder, name, cssClass )
+					final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
+							problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
+									feature.skipped ? 'ignored' : ''
+					writeFeatureDescription( builder, name, cssClass )
 					writeFeatureBlocks( builder, feature, iteration )
 					problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
 				}
@@ -193,7 +193,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 				final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
 				final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
 				final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
-                writeFeatureDescription( builder, feature.name, cssClass )
+				writeFeatureDescription( builder, feature.name, cssClass )
 				writeFeatureBlocks( builder, feature )
 				if ( run ) {
 					writeRun( builder, run )
@@ -213,9 +213,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		def trCssClassArg = ( feature.skipped ? [ 'class': 'ignored' ] : null )
 		if ( !isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
 			block.texts.eachWithIndex { blockText, index ->
-                if (iteration) {
-                    blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
-                }
+				if ( iteration ) {
+					blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
+				}
 				writeBlockRow( builder, trCssClassArg,
 						( index == 0 ? block.kind : 'AND' ), blockText )
 			}
@@ -275,7 +275,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	}
 
 	private void writeIteration( MarkupBuilder builder, IterationInfo iteration,
-								 List<SpecProblem> errors ) {
+	                             List<SpecProblem> errors ) {
 		builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
 			iteration.dataValues.each { value ->
 				td( 'class': 'ex-value', value )
@@ -299,10 +299,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		}
 	}
 
-    private void writeLinkBackToTop( MarkupBuilder builder ) {
-        builder.span(style: 'float: right; font-size: 60%;') {
-            a(href: '#toc', 'Return')
-        }
-    }
+	private void writeLinkBackToTop( MarkupBuilder builder ) {
+		builder.span( style: 'float: right; font-size: 60%;' ) {
+			a( href: '#toc', 'Return' )
+		}
+	}
 
 }
