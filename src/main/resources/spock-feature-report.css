@@ -38,8 +38,12 @@ table.summary-table td {
   padding: 4px;
 }
 
-.feature-toc-error, .feature-toc-failure {
-  color: red;	
+.feature-toc-error {
+	color: #F89A4F;
+}
+
+.feature-toc-failure {
+	color: #FF8080;
 }
 
 .feature-toc-ignored {
