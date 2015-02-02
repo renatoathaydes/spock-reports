@@ -39,9 +39,17 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		"ProblemBlockWriter is mocked out to fill error blocks with known contents"
 		// using PredictableProblems category to mock that
 
+		and:
+		"ToC Writer if mocked out to write something predictable"
+		// using NoTocGenerated
+
+		and:
+		"String hashCodes produce predictable values"
+		// using PredictableStringHashCode
+
 		when:
 		"A Specification containing different types of features is run by Spock"
-		use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest ) {
+		use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
 			new Sputnik( FakeTest ).run( new RunNotifier() )
 		}
 
@@ -191,6 +199,23 @@ class HtmlReportCreatorSpec extends ReportSpec {
 	class FakeKnowsWhenAndWhoRanTest {
 		String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
 			"Created on ${ReportSpec.DATE_TEST_RAN} by ${ReportSpec.TEST_USER_NAME}"
+		}
+	}
+
+	@Category( HtmlReportCreator )
+	class NoTocGenerated {
+
+		void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
+			builder.div( 'TOC' )
+		}
+	}
+
+	@Category( String )
+	class PredictableStringHashCode {
+		static code = 0
+
+		int hashCode() {
+			code++
 		}
 	}
 
