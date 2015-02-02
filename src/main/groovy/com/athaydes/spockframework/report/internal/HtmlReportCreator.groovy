@@ -293,12 +293,16 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		builder.tr {
 			td( colspan: '10' ) {
 				div( 'class': 'feature-description' + cssClass, id: name.hashCode(), name ) {
-					span(style: 'float: right; font-size: 60%;') {
-						a(href: '#toc', 'Return')
-					}
+					writeLinkBackToTop builder
 				}
 			}
 		}
 	}
+
+    private void writeLinkBackToTop( MarkupBuilder builder ) {
+        builder.span(style: 'float: right; font-size: 60%;') {
+            a(href: '#toc', 'Return')
+        }
+    }
 
 }
