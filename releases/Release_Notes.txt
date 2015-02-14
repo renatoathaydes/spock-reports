@@ -1,3 +1,10 @@
+1.2.4 - 2015 February 14
+
+* #18 Added character encoding for HTML reports
+* Support for configuring some properties using environment variables
+* Stopped using `println` in favour of using java.util.logging
+* Added a Table Of Contents to HTML reports (can be turned off via config file)
+
 1.2.3 - 2014 November 08
 
 * #15 Downgraded minimum Groovy version required to 2.0.8 (benefits some Grails users).
