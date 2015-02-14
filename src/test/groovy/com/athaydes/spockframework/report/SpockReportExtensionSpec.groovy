@@ -14,24 +14,16 @@ class SpockReportExtensionSpec extends Specification {
 		given:
 		"An instance of SpockReportExtension with a mocked out config loader"
 		def extension = new SpockReportExtension()
-		def callsCount = 0
-		extension.configLoader = [ loadConfig: { callsCount++; new Properties() } ] as ConfigLoader
+		extension.configLoader = Mock ConfigLoader
+//        extension.configLoader.loadConfig() >> new Properties()
 
 		when:
-		"Spock visits one spec"
-		extension.visitSpec( Mock( SpecInfo ) )
+		"Spock visits 10 spec"
+        10.times { extension.visitSpec( Mock( SpecInfo ) ) }
 
 		then:
 		"The config is read once"
-		callsCount == 1
-
-		when:
-		"Spock visits another 10 specs"
-		10.times { extension.visitSpec( Mock( SpecInfo ) ) }
-
-		then:
-		"The config has still been read only once"
-		callsCount == 1
+		1 * extension.configLoader.loadConfig() >> new Properties()
 	}
 
 	def "The settings found in the config.properties file are used to configure the report framework"( ) {
