@@ -130,3 +130,13 @@ The following configuration options can also be overridden by system properties.
 `com.athaydes.spockframework.report.hideEmptyBlocks`: true|false; should blocks with empty text be printed out in report?
 
 Default values are inherited from those described above.
+
+## Submitting pull requests
+
+Please submit pull requests with bug fixes at any time!!
+
+But if your Pull Request is about a new feature, please make sure to create an issue first so that
+we can all discuss whether it's a good idea and what's the best way to go about it.
+
+Also, please notice that the master branch is supposed to contain only releases... the development branch
+is called `next`, so *all PRs should be submitted against `next`*, not master.
