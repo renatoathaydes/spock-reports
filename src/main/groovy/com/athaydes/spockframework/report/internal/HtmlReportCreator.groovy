@@ -1,7 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
-import static com.athaydes.spockframework.report.internal.FailureKind.ERROR
-import static com.athaydes.spockframework.report.internal.FailureKind.FAILURE
+import com.athaydes.spockframework.report.util.Utils
+
 import static org.spockframework.runtime.model.BlockKind.*
 import groovy.util.logging.Log
 import groovy.xml.MarkupBuilder
@@ -11,9 +11,6 @@ import java.util.logging.Level
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
-
-import spock.lang.Unroll
-
 import com.athaydes.spockframework.report.IReportCreator
 
 /**
@@ -51,7 +48,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	@Override
 	void createReportFor( SpecData data ) {
 		def specClassName = data.info.description.className
-		def reportsDir = createReportsDir()
+        def reportsDir = Utils.createDir( outputDir )
 		if ( reportsDir.isDirectory() ) {
 			try {
 				new File( reportsDir, specClassName + '.html' )
@@ -85,7 +82,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 				}
 				tbody {
 					tr {
-						def stats = stats( data )
+						def stats = Utils.stats( data )
 						td stats.totalRuns
 						td stats.failures
 						td stats.errors
@@ -102,7 +99,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 	static int countProblems( List<FeatureRun> runs, Closure problemFilter ) {
 		runs.inject( 0 ) { int count, FeatureRun fr ->
 			def allProblems = fr.failuresByIteration.values().flatten()
-			count + ( isUnrolled( fr.feature ) ?
+			count + ( Utils.isUnrolled( fr.feature ) ?
 					allProblems.count( problemFilter ) :
 					allProblems.any( problemFilter ) ? 1 : 0 )
 		}
@@ -110,21 +107,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
 	static int countFeatures( List<FeatureRun> runs, Closure featureFilter = { true } ) {
 		runs.findAll( featureFilter ).inject( 0 ) { int count, FeatureRun fr ->
-			count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
+			count + ( Utils.isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
 		}
 	}
 
-	protected Map stats( SpecData data ) {
-		def failures = countProblems( data.featureRuns, HtmlReportCreator.&isFailure )
-		def errors = countProblems( data.featureRuns, HtmlReportCreator.&isError )
-		def skipped = data.info.allFeatures.count { FeatureInfo f -> f.skipped }
-		def total = countFeatures( data.featureRuns )
-		def successRate = successRate( total, ( errors + failures ).toInteger() )
-		[ failures   : failures, errors: errors, skipped: skipped, totalRuns: total,
-		  successRate: successRate, time: data.totalTime ]
-	}
-
-	protected void writeDetails( MarkupBuilder builder, SpecData data ) {
+    protected void writeDetails( MarkupBuilder builder, SpecData data ) {
 		builder.h3 "Features:"
 		builder.table( 'class': 'features-table' ) {
 			colgroup {
@@ -137,35 +124,23 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		}
 	}
 
-	static boolean isUnrolled( FeatureInfo feature ) {
-		feature.description?.annotations?.any { it.annotationType() == Unroll } ?: false
-	}
-
-	static boolean isFailure( SpecProblem problem ) {
-		problem.kind == FAILURE
-	}
-
-	static boolean isError( SpecProblem problem ) {
-		problem.kind == ERROR
-	}
-
-	private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
+    private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
 		builder.ul( id: 'toc' ) {
 			data.info.allFeatures.each { FeatureInfo feature ->
 				FeatureRun run = data.featureRuns.find { it.feature == feature }
-				if ( run && isUnrolled( feature ) ) {
+				if ( run && Utils.isUnrolled( feature ) ) {
 					run.failuresByIteration.each { iteration, problems ->
 						final name = feature.iterationNameProvider.getName( iteration )
-						final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
-								problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
+						final cssClass = problems.any( Utils.&isError ) ? 'error' :
+								problems.any( Utils.&isFailure ) ? 'failure' :
 										feature.skipped ? 'ignored' : 'pass'
 						li {
 							a( href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name )
 						}
 					}
 				} else {
-					final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
-					final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
+					final failures = run ? countProblems( [ run ], Utils.&isFailure ) : 0
+					final errors = run ? countProblems( [ run ], Utils.&isError ) : 0
 					final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : 'pass'
 					li {
 						a( href: "#${feature.name.hashCode()}", 'class': "feature-toc-$cssClass", feature.name )
@@ -179,19 +154,19 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
 		data.info.allFeatures.each { FeatureInfo feature ->
 			FeatureRun run = data.featureRuns.find { it.feature == feature }
-			if ( run && isUnrolled( feature ) ) {
+			if ( run && Utils.isUnrolled( feature ) ) {
 				run.failuresByIteration.each { iteration, problems ->
 					final name = feature.iterationNameProvider.getName( iteration )
-					final cssClass = problems.any( HtmlReportCreator.&isError ) ? 'error' :
-							problems.any( HtmlReportCreator.&isFailure ) ? 'failure' :
+					final cssClass = problems.any( Utils.&isError ) ? 'error' :
+							problems.any( Utils.&isFailure ) ? 'failure' :
 									feature.skipped ? 'ignored' : ''
 					writeFeatureDescription( builder, name, cssClass )
 					writeFeatureBlocks( builder, feature, iteration )
 					problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
 				}
 			} else {
-				final failures = run ? countProblems( [ run ], HtmlReportCreator.&isFailure ) : 0
-				final errors = run ? countProblems( [ run ], HtmlReportCreator.&isError ) : 0
+				final failures = run ? countProblems( [ run ], Utils.&isFailure ) : 0
+				final errors = run ? countProblems( [ run ], Utils.&isError ) : 0
 				final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
 				writeFeatureDescription( builder, feature.name, cssClass )
 				writeFeatureBlocks( builder, feature )
@@ -211,7 +186,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
 	private void writeBlock( MarkupBuilder builder, BlockInfo block, FeatureInfo feature, IterationInfo iteration ) {
 		def trCssClassArg = ( feature.skipped ? [ 'class': 'ignored' ] : null )
-		if ( !isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
+		if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
 			block.texts.eachWithIndex { blockText, index ->
 				if ( iteration ) {
 					blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
@@ -232,11 +207,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 		}
 	}
 
-	protected boolean isEmptyOrContainsOnlyEmptyStrings( List<String> strings ) {
-		!strings || strings.every { it.trim() == '' }
-	}
-
-	private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
+    private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
 		builder.td {
 			div( 'class': 'block-kind', block2String[ blockKindKey ] )
 		}

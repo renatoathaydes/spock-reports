@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Log
 import groovy.xml.MarkupBuilder
 
@@ -24,7 +25,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 	void aggregateReport( String specName, Map stats, String outputDir ) {
 		this.outputDir = outputDir
 		aggregatedData[ specName ] = stats
-		def reportsDir = createReportsDir()
+        def reportsDir = Utils.createDir( outputDir )
 		if ( reportsDir.exists() ) {
 			try {
 				new File( reportsDir, 'index.html' )
@@ -70,7 +71,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 						td( cssClassIfTrue( aggregateData.fFails, 'failure' ), aggregateData.fFails )
 						td( cssClassIfTrue( aggregateData.fErrors, 'error' ), aggregateData.fErrors )
 						td( cssClassIfTrue( aggregateData.failed, 'failure' ), stringFormatter
-								.toPercentage( successRate( aggregateData.total, aggregateData.failed ) ) )
+								.toPercentage( Utils.successRate( aggregateData.total, aggregateData.failed ) ) )
 						td stringFormatter.toTimeDuration( aggregateData.time )
 					}
 				}

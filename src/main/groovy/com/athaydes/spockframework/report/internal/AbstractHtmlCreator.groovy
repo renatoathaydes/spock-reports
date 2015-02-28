@@ -33,12 +33,6 @@ abstract class AbstractHtmlCreator<T> {
 			log.fine "${this.class.name}: The CSS file does not exist: ${css}"
 	}
 
-	File createReportsDir( ) {
-		def reportsDir = new File( outputDir )
-		reportsDir.mkdirs()
-		reportsDir
-	}
-
 	String reportFor( T data ) {
 		def writer = new StringWriter()
 		def builder = new MarkupBuilder( new IndentPrinter( new PrintWriter( writer ), "" ) )
@@ -67,11 +61,7 @@ abstract class AbstractHtmlCreator<T> {
 		}
 	}
 
-	protected double successRate( int total, int reproved ) {
-		Math.min( 1.0, Math.max( 0.0, ( total > 0 ? ( total - reproved ) / total : 1.0 ) ) )
-	}
-
-	abstract protected String reportHeader( T data )
+    abstract protected String reportHeader( T data )
 
 	abstract protected void writeSummary( MarkupBuilder builder, T data )
 
