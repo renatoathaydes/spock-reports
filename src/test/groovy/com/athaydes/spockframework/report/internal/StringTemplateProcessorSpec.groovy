@@ -4,10 +4,7 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Specification
 
-/**
- *
- */
-class SpringTemplateProcessorSpec extends Specification {
+class StringTemplateProcessorSpec extends Specification {
 
     def "Should replace #variables with the provided values"() {
         given:
