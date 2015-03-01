@@ -9,6 +9,8 @@ import org.spockframework.runtime.model.IterationInfo
  * User: Renato
  */
 class ProblemBlockWriter {
+	
+	static private int problemId = 0
 
 	StringFormatHelper stringFormatter
 
@@ -59,9 +61,19 @@ class ProblemBlockWriter {
 	}
 
 	private void writeProblemMsgs( MarkupBuilder builder, List msgs ) {
-		builder.pre {
+		builder.ul {
 			msgs.each { msg ->
-				mkp.yieldUnescaped(stringFormatter.escapeXml(msg.toString()))
+				def id = ++problemId
+				li {
+					a('class': 'problem-block', href: "#problem-$id", msg.split('\n')[0].trim())
+				}
+			}
+		}
+		for(int i = msgs.size(); i > 0; --i) {
+			builder.div(id: "problem-${problemId - (i - msgs.size())}", style: 'display:none;') {
+				pre {
+					mkp.yieldUnescaped(stringFormatter.escapeXml(msgs[i - 1].toString()))
+				}
 			}
 		}
 	}
