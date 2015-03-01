@@ -1,10 +1,11 @@
 package com.athaydes.spockframework.report.util
 
 import com.athaydes.spockframework.report.internal.FailureKind
-import com.athaydes.spockframework.report.internal.HtmlReportCreator
+import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
 import groovy.transform.CompileStatic
+import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import spock.lang.Unroll
 
@@ -12,6 +13,17 @@ import java.lang.annotation.Annotation
 
 @CompileStatic
 class Utils {
+
+    public static final Map block2String = [
+            ( BlockKind.SETUP )  : 'Given:',
+            ( BlockKind.CLEANUP ): 'Cleanup:',
+            ( BlockKind.THEN )   : 'Then:',
+            ( BlockKind.EXPECT ) : 'Expect:',
+            ( BlockKind.WHEN )   : 'When:',
+            ( BlockKind.WHERE )  : 'Where:',
+            'AND'      : 'And:',
+            'EXAMPLES' : 'Examples:'
+    ]
 
     static File createDir( String outputDir ) {
         def reportsDir = new File( outputDir )
@@ -26,10 +38,10 @@ class Utils {
     }
 
     static Map stats( SpecData data ) {
-        def failures = HtmlReportCreator.countProblems( data.featureRuns, this.&isFailure )
-        def errors = HtmlReportCreator.countProblems( data.featureRuns, this.&isError )
+        def failures = countProblems( data.featureRuns, this.&isFailure )
+        def errors = countProblems( data.featureRuns, this.&isError )
         def skipped = data.info.allFeatures.count { FeatureInfo f -> f.skipped }
-        def total = HtmlReportCreator.countFeatures( data.featureRuns )
+        def total = countFeatures( data.featureRuns )
         def successRate = successRate( total, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: total,
           successRate: successRate, time: data.totalTime ]
@@ -50,4 +62,24 @@ class Utils {
     static boolean isError( SpecProblem problem ) {
         problem.kind == FailureKind.ERROR
     }
+
+    static int countFeatures( List<FeatureRun> runs, Closure featureFilter = { true } ) {
+        runs.findAll( featureFilter ).inject( 0 ) { int count, FeatureRun fr ->
+            count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
+        } as int
+    }
+
+    static int countProblems( List<FeatureRun> runs, Closure problemFilter ) {
+        runs.inject( 0 ) { int count, FeatureRun fr ->
+            def allProblems = fr.failuresByIteration.values().flatten()
+            count + ( isUnrolled( fr.feature ) ?
+                    allProblems.count( problemFilter ) :
+                    allProblems.any( problemFilter ) ? 1 : 0 )
+        } as int
+    }
+
+    static String iterationsResult( FeatureRun run ) {
+     def totalErrors = run.failuresByIteration.values().count { List it -> !it.empty }
+     "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
+ }
 }
