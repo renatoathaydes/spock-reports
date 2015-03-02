@@ -18,53 +18,23 @@
 ## Features
 
 <%
-    unrolledFeatures.call { feature, name, result, iteration, problems ->
+    features.call { name, result, blocks, iterations ->
 %>
 ### $name
 
 Result: **$result**
 
 <%
-    feature.blocks.each { block ->
-        if ( !hideEmptyBlocks || !utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) ) {
+        blocks.each { block ->
  %>
-* ${utils.block2String[ block.kind ]}
-  * ${block.texts.join('\n  * ')}
+* {block.kind} {block.text}
 <%
         }
-    }
+        iterations.each { iteration, errors ->
 %>
-
-<%
+| {iteration.dataValues.join( ' | ' )} | {errors ? '(FAIL)' : '(PASS)'}
+<%      }
     }
-    regularFeatures.call { feature, name, result, run ->
-%>
-### $name
-
-Result: **$result**
-
-<%
-    feature.blocks.each { block ->
-        if ( !hideEmptyBlocks || !utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) ) {
  %>
-* ${utils.block2String[ block.kind ]}
-  * ${block.texts.join('\n  * ')}
-<%
-        }
-    }
-
-    if ( run && run.feature.parameterized ) {
-%>
-
-| ${run.feature.parameterNames.join( ' | ' )} |
-|-------------------------------------------|
-<% run.failuresByIteration.each { iteration, errors -> %>| ${iteration.dataValues.join( ' | ' )} |
-<% } %>
-
-
-<%
-    }
-  }
-%>
 
 Footer

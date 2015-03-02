@@ -15,7 +15,7 @@ class TemplateReportCreatorSpec extends Specification {
     This is a Spock Report
     """
 
-    def "A correct HTML report is generated for a spec including different types of features"() {
+    def "A correct Template report is generated for a spec including different types of features"() {
         given:
         "The project build folder location is known"
         def buildDir = System.getProperty( 'project.buildDir', 'build' )

@@ -4,7 +4,6 @@ import com.athaydes.spockframework.report.internal.FailureKind
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
-import groovy.transform.CompileStatic
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -12,7 +11,6 @@ import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
 
-@CompileStatic
 class Utils {
 
     public static final Map block2String = [
@@ -85,7 +83,7 @@ class Utils {
     }
 
     static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
-        failures.inject( [ ] ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
+        failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
             if ( allErrors ) {
                 acc << [ dataValues: iteration.dataValues, errors: allErrors ]
