@@ -50,7 +50,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 		
 		and:
 		"ProblemBlockWriter is mocked out to produce consise messages"
-		// using ConciseProblemMessages
+		// using PredictableProblemMessages
 
 		when:
 		"A Specification containing different types of features is run by Spock"
