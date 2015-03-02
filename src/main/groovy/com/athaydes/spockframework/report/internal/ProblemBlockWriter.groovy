@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.util.Utils
 import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.IterationInfo
 
@@ -71,13 +72,9 @@ class ProblemBlockWriter {
         }
     }
 
-    private List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
-        failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
-            def errorMessages = failureList.collect { it.failure.exception.toString() }
-            if ( errorMessages ) {
-                acc << [ dataValues: iteration.dataValues, messages: errorMessages ]
-            }
-            acc
+    private static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
+        Utils.problemsByIteration( failures ).collect { Map entry ->
+            entry + [ messages: entry.errors*.toString() ]
         }
     }
 

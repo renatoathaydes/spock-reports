@@ -7,6 +7,7 @@ import com.athaydes.spockframework.report.internal.SpecProblem
 import groovy.transform.CompileStatic
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
@@ -21,8 +22,8 @@ class Utils {
             ( BlockKind.EXPECT ) : 'Expect:',
             ( BlockKind.WHEN )   : 'When:',
             ( BlockKind.WHERE )  : 'Where:',
-            'AND'      : 'And:',
-            'EXAMPLES' : 'Examples:'
+            'AND'                : 'And:',
+            'EXAMPLES'           : 'Examples:'
     ]
 
     static File createDir( String outputDir ) {
@@ -79,7 +80,18 @@ class Utils {
     }
 
     static String iterationsResult( FeatureRun run ) {
-     def totalErrors = run.failuresByIteration.values().count { List it -> !it.empty }
-     "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
- }
+        def totalErrors = run.failuresByIteration.values().count { List it -> !it.empty }
+        "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
+    }
+
+    static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
+        failures.inject( [ ] ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
+            def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
+            if ( allErrors ) {
+                acc << [ dataValues: iteration.dataValues, errors: allErrors ]
+            }
+            acc
+        }
+    }
+
 }
