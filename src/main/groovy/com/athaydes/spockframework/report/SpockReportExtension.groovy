@@ -5,7 +5,7 @@ import groovy.util.logging.Log
 import java.util.logging.Level
 
 import org.spockframework.runtime.IRunListener
-import org.spockframework.runtime.extension.IGlobalExtension
+import org.spockframework.runtime.extension.AbstractGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -21,7 +21,7 @@ import com.athaydes.spockframework.report.internal.SpecProblem
  * User: Renato
  */
 @Log
-class SpockReportExtension implements IGlobalExtension {
+class SpockReportExtension extends AbstractGlobalExtension {
 
 	static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 

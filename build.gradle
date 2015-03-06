@@ -14,16 +14,17 @@ apply plugin: 'maven-publish'
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.4"
+version = "1.2.4-1.0-spock"
 
 def groovyVersion = '2.0.8'
-def spockVersion = '0.7-groovy-2.0'
+def spockVersion = '1.0-groovy-2.0'
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
+
 	compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
 	compile "org.spockframework:spock-core:${spockVersion}"
 	testCompile "cglib:cglib-nodep:2.2.2"
