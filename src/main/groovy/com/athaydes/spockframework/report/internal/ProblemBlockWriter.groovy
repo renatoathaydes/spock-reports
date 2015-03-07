@@ -45,6 +45,9 @@ class ProblemBlockWriter {
 
     private void writeProblems( MarkupBuilder builder, List<Map> problems ) {
         problems.each { Map problem ->
+            if ( !problem.messages ) {
+                return
+            }
             if ( problem.dataValues ) {
                 builder.ul {
                     li {

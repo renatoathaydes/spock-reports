@@ -37,10 +37,10 @@ class TemplateReportCreator implements IReportCreator {
             if ( reportsDir.isDirectory() ) {
                 reportFile.write( reportFor( data ) )
             } else {
-                println "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+                log.warning "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
             }
         } catch ( e ) {
-            println "Unexpected error creating report: $e"
+            log.warning "Unexpected error creating report: $e"
         }
     }
 
@@ -62,43 +62,52 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     def createFeaturesCallback( SpecData data ) {
-        return { callback ->
-            data.info.allFeatures.each { FeatureInfo feature ->
+        return [ forEach: { Closure callback ->
+            for ( feature in data.info.allFeatures ) {
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
-                    run.failuresByIteration.each { iteration, problems ->
-                        final name = feature.iterationNameProvider.getName( iteration )
-                        final result = problems.any( Utils.&isError ) ? 'ERROR' :
-                                problems.any( Utils.&isFailure ) ? 'FAILURE' :
-                                        feature.skipped ? 'IGNORED' : 'PASS'
-                        final problemsByIteration = Utils.problemsByIteration( [ ( iteration ): problems ] )
-                        callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration )
-                    }
+                    handleUnrolledFeature( run, feature, callback )
                 } else {
-                    final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
-                    final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
-                    final result = errors ? 'ERROR' : failures ? 'FAIL' : !run ? 'IGNORED' : 'PASS'
-                    final problemsByIteration = run ? Utils.problemsByIteration( run.failuresByIteration ) : [ : ]
-                    callback.call( feature.name, result, processedBlocks( feature ), problemsByIteration )
+                    handleRegularFeature( run, callback, feature )
                 }
             }
+        } ]
+    }
+
+    protected void handleRegularFeature( FeatureRun run, Closure callback, FeatureInfo feature ) {
+        final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
+        final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
+        final result = errors ? 'ERROR' : failures ? 'FAIL' : !run ? 'IGNORED' : 'PASS'
+        final problemsByIteration = run ? Utils.problemsByIteration( run.failuresByIteration ) : [ : ]
+        callback.call( feature.name, result, processedBlocks( feature ), problemsByIteration, feature.parameterNames )
+    }
+
+    protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
+        run.failuresByIteration.each { iteration, problems ->
+            final name = feature.iterationNameProvider.getName( iteration )
+            final result = problems.any( Utils.&isError ) ? 'ERROR' :
+                    problems.any( Utils.&isFailure ) ? 'FAILURE' :
+                            feature.skipped ? 'IGNORED' : 'PASS'
+            final problemsByIteration = Utils.problemsByIteration( [ ( iteration ): problems ] )
+            callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration, feature.parameterNames )
         }
     }
 
-    List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
+    protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
         feature.blocks.collect { BlockInfo block ->
-            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
-                block.texts.eachWithIndex { blockText, index ->
+            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) ) {
+                int index = 0
+                block.texts.collect { blockText ->
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
-                    [ kind: Utils.block2String[ index == 0 ? block.kind : 'AND' ], text: blockText ]
+                    [ kind: Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ], text: blockText ]
                 }
-            else if ( !hideEmptyBlocks )
+            } else if ( !hideEmptyBlocks )
                 [ kind: Utils.block2String[ block.kind ], text: '----' ]
             else
                 [ : ]
-        }.findAll { !it.empty }
+        }.findAll { !it.empty }.flatten()
     }
 
 }

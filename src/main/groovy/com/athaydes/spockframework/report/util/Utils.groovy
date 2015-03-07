@@ -85,10 +85,7 @@ class Utils {
     static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
         failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
-            if ( allErrors ) {
-                acc << [ dataValues: iteration.dataValues, errors: allErrors ]
-            }
-            acc
+            acc << [ dataValues: iteration.dataValues, errors: allErrors ]
         }
     }
 

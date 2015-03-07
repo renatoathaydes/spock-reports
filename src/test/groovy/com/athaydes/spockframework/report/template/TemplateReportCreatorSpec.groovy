@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.template
 
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.SpockReportExtension
+import com.athaydes.spockframework.report.internal.HtmlReportCreatorSpec
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
@@ -10,11 +11,6 @@ import java.nio.file.Paths
 
 class TemplateReportCreatorSpec extends Specification {
 
-    static String expectedReport = """
-    Welcome!
-    This is a Spock Report
-    """
-
     def "A correct Template report is generated for a spec including different types of features"() {
         given:
         "The project build folder location is known"
@@ -22,7 +18,7 @@ class TemplateReportCreatorSpec extends Specification {
 
         when:
         "A Specification containing different types of features is run by Spock"
-        use( UseTemplaceReportCreator ) {
+        use( UseTemplaceReportCreator, HtmlReportCreatorSpec.PredictableTimeResponse ) {
             new Sputnik( FakeTest ).run( new RunNotifier() )
         }
 
@@ -34,7 +30,11 @@ class TemplateReportCreatorSpec extends Specification {
 
         and:
         "The contents are functionally the same as expected"
-        reportFile.text == expectedReport
+        reportFile.text == expectedText()
+    }
+
+    String expectedText() {
+        this.class.getResource( '/FakeTest.md' ).text.replace( '${projectUrl}', SpockReportExtension.PROJECT_URL )
     }
 
     @Category( SpockReportExtension )
