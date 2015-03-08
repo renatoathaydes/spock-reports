@@ -145,12 +145,13 @@ Just copy the above contents to a file at `META-INF/services/com.athaydes.spockf
 relative to the classpath (eg. in `src/test/resources` for Maven users) and spock-reports will create a MD (mark-down)
 report for your tests.
 
-To provide your own template, change the location of the template file and the file extension
-you wish your reports to have using the config file.
+To provide your own template, change the location of the template files, the file extension
+you wish your reports to have, and the name for the summary report file, using the config file.
 
-To get started with your own template, check the [existing template file](src/main/resources/templateReportCreator/spec-template.md).
+To get started with your own template, check the [existing spec template file](src/main/resources/templateReportCreator/spec-template.md)
+and the [summary template](src/main/resources/templateReportCreator/summary-template.md).
 
-You can see an example report created with the default template file [here](src/test/resources/FakeTest.md)
+You can see an example report created with the default spec template file [here](src/test/resources/FakeTest.md)
 (this is actually used in the spock-reports tests).
 
 ### How templates work
@@ -160,7 +161,14 @@ to create reports based on a template file.
 
 This template mechanism is very simple to use, but also very powerful, as you can write any code you want in the template file.
 
-Here's the most basic template you could imagine, which simply outputs the name of the Specification that ran:
+There are two templates you should provide:
+
+* Spec report template: report for the run of a single Specification.
+* Summary template: contains a summary of all Specifications that have been run during a JVM lifetime.
+
+#### Spec report template
+
+Here's the most basic Spec template you could imagine, which simply outputs the name of the Specification that ran:
 
 ```
 This is a Report for ${data.info.description.className}
@@ -215,6 +223,30 @@ Total time (ms):        ${stats.time}
 
 Created on ${new Date()} by ${System.properties['user.name']}
 ```
+
+#### Summary template
+
+The summary template has access to a single variable called `data`.
+This is a Map containing all the available data for all Specifications that have been run.
+
+For example, after running two Specifications called `test.FirstSpec` and `test.SecondSpec`,
+the `data` Map could look like this:
+
+```groovy
+[ test.FirstSpec: [ failures: 1, errors: 0, skipped: 0, totalRuns: 1, successRate: 0.0, time: 159],
+  test.SecondSpec: [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
+```
+
+You can then iterate over each Spec data as follows:
+
+```
+<% data.each { name, map ->
+ %>| $name | ${map.totalRuns} | ${map.failures} | ${map.errors} | ${map.skipped} | ${map.successRate} | ${map.time} |
+<% }
+ %>
+```
+
+Check the default [summary template](src/main/resources/templateReportCreator/summary-template.md) for a full example.
 
 ## Submitting pull requests
 
