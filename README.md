@@ -171,6 +171,69 @@ To get started with your own template, check the [existing template file](src/ma
 You can see an example report created with the default template file [here](src/test/resources/FakeTest.md)
 (this is actually used in the spock-reports tests).
 
+### How templates work
+
+The template report creator uses Groovy's [GStringTemplateEngine](http://groovy.codehaus.org/Groovy+Templates#GroovyTemplates-GStringTemplateEngine)
+to create reports based on a template file.
+
+This template mechanism is very simple to use, but also very powerful, as you can write any code you want in the template file.
+
+Here's the most basic template you could imagine, which simply outputs the name of the Specification that ran:
+
+```
+This is a Report for ${data.info.description.className}
+```
+
+As you can see, you can use `${variable}` to run actual code whose result will be printed in the report.
+Another way to do this, is to use `<% code %>` blocks, as in the following example, which prints the name and
+result of all features in a Specification:
+
+```
+<%
+    features.forEach { name, result, blocks, iterations, params ->
+%>
+Feature Name: $name
+Result: $result
+<%
+    }
+%>
+```
+
+You probably noticed that some variables are available to be used in code in the template file.
+
+These variables are the following:
+
+* `data`: an instance of `SpecData` containing the result of running a Specification.
+* `reportCreator`: the `TemplateReportCreator` instance.
+* `features`: as shown above, an Object which has a `forEach` method which can be used to iterate over all features of a
+    Specification.
+
+As the default template file shows, you can get statistics for the Specification easily with this code snippet:
+
+```
+<% def stats = com.athaydes.spockframework.report.util.Utils.stats( data ) %>
+Report statistics: $stats
+```
+
+`stats` is a `Map` containing the following keys:
+
+```
+failures, errors, skipped, totalRuns, successRate, time
+```
+
+So, you can use it in your template like this, for example:
+
+```
+Total number of runs:   ${stats.totalRuns}
+Success rate:           ${stats.successRate}
+Number of failures:     ${stats.failures}
+Number of errors:       ${stats.errors}
+Executed?:              ${stats.skipped ? 'NO' : 'YES'}
+Total time (ms):        ${stats.time}
+
+Created on ${new Date()} by ${System.properties['user.name']}
+```
+
 ## Submitting pull requests
 
 Please submit pull requests with bug fixes at any time!!
