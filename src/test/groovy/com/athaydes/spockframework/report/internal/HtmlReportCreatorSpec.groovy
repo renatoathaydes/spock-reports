@@ -86,14 +86,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     def "The report aggregator should be given the required information for each spec visited"() {
         given:
-        "Ensure Utils.stats() returns mocked out statistics"
-        def mockedStats = [ failures: 9, errors: 8, skipped: 7, totalRuns: 50, successRate: 0.1, time: 10 ]
-        Utils.metaClass.static.stats = { SpecData _ ->
-            mockedStats
-        }
-
-        and:
-        "A HtmlReportCreator with mocked out stats"
+        "A HtmlReportCreator"
         def reportCreator = new HtmlReportCreator()
 
         and:
@@ -115,7 +108,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         then:
         "The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
-        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, mockedStats, 'outputDir' )
+        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _, 'outputDir' )
     }
 
     def "The report aggregator should be passed on the summary css from the report creator"() {
