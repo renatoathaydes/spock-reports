@@ -46,7 +46,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
 	@Override
 	protected void writeSummary( MarkupBuilder builder, Map stats ) {
-		def aggregateData = recomputeAggregateData()
+		def aggregateData = Utils.aggregateStats( this.aggregatedData )
 		def cssClassIfTrue = { isTrue, String cssClass ->
 			if ( isTrue ) [ 'class': cssClass ] else Collections.emptyMap()
 		}
@@ -77,19 +77,6 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 				}
 			}
 		}
-	}
-
-	protected Map recomputeAggregateData( ) {
-		def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
-		aggregatedData.values().each { Map stats ->
-			result.total += 1
-			result.passed += ( stats.failures || stats.errors ? 0 : 1 )
-			result.failed += ( stats.failures || stats.errors ? 1 : 0 )
-			result.fFails += stats.failures
-			result.fErrors += stats.errors
-			result.time += stats.time
-		}
-		result
 	}
 
 	@Override

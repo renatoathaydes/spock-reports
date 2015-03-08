@@ -46,6 +46,19 @@ class Utils {
           successRate: successRate, time: data.totalTime ]
     }
 
+    static Map aggregateStats( Map<String, Map> aggregatedData ) {
+        def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
+        aggregatedData.values().each { Map stats ->
+            result.total += 1
+            result.passed += ( stats.failures || stats.errors ? 0 : 1 )
+            result.failed += ( stats.failures || stats.errors ? 1 : 0 )
+            result.fFails += stats.failures
+            result.fErrors += stats.errors
+            result.time += stats.time
+        }
+        result
+    }
+
     static boolean isEmptyOrContainsOnlyEmptyStrings( List<String> strings ) {
         !strings || strings.every { String it -> it.trim() == '' }
     }

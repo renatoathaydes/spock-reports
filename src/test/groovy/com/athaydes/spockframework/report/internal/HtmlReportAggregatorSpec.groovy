@@ -12,35 +12,6 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
  */
 class HtmlReportAggregatorSpec extends ReportSpec {
 
-    def "The aggregate data for a sequence of test results should be computed correctly"() {
-        given:
-        "An HtmlReportAggregator with known aggregatedData"
-        def aggregator = new HtmlReportAggregator()
-        aggregator.aggregatedData << aggregatedData
-
-        when:
-        "I request the aggregate data to be recomputed"
-        def result = aggregator.recomputeAggregateData()
-
-        then:
-        "The expected result is obtained"
-        result == expected
-
-        where:
-        aggregatedData | expected
-        [
-                'A': [ failures   : 1, errors: 2,
-                       skipped    : 0, totalRuns: 10,
-                       successRate: 0.7, time: 1.25 ],
-                'B': [ failures   : 6, errors: 4,
-                       skipped    : 0, totalRuns: 20,
-                       successRate: 0.5, time: 2.0 ],
-                'C': [ failures   : 0, errors: 0,
-                       skipped    : 0, totalRuns: 1,
-                       successRate: 1.0, time: 3.0 ]
-        ]              | [ total: 3, passed: 1, failed: 2, fFails: 7, fErrors: 6, time: 6.25 ]
-    }
-
     def """When a single spec data is provided to the HtmlReportAggregator it
            should create a report with data from the single spec"""() {
         given:
