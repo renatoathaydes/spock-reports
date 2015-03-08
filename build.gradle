@@ -14,7 +14,7 @@ apply plugin: 'maven-publish'
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.5"
+version = "1.2.6-SNAPSHOT"
 
 def groovyVersion = '2.0.8'
 def spockVersion = '1.0-groovy-2.0'
