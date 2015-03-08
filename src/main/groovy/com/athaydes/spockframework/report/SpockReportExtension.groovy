@@ -30,6 +30,16 @@ class SpockReportExtension implements IGlobalExtension {
     boolean hideEmptyBlocks = false
 
     @Override
+    void start() {
+        // nothing to do
+    }
+
+    @Override
+    void stop() {
+        // nothing to do
+    }
+
+    @Override
     void visitSpec( SpecInfo specInfo ) {
         if ( config == null ) {
             config()
@@ -71,7 +81,7 @@ class SpockReportExtension implements IGlobalExtension {
     private void configReportCreator( IReportCreator reportCreator ) {
         reportCreator.outputDir = outputDir
         reportCreator.hideEmptyBlocks = hideEmptyBlocks
-        def reportCreatorSettings = [:]
+        def reportCreatorSettings = [ : ]
         try {
             reportCreatorSettings << loadSettingsFor( reportCreator.class.name, config )
         } catch ( e ) {

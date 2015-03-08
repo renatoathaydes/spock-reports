@@ -17,15 +17,31 @@ group = 'com.athaydes'
 version = "1.2.5-SNAPSHOT"
 
 def groovyVersion = '2.0.8'
-def spockVersion = '0.7-groovy-2.0'
+def spockVersion = '1.0-groovy-2.0'
 
 repositories {
 	mavenCentral()
 }
 
+//////// hack to add provided dependency support ////////
+configurations {
+    provided
+}
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+    }
+}
+////////////////////////////////////////////////////////////
+
+
 dependencies {
-	compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
-	compile "org.spockframework:spock-core:${spockVersion}"
+    provided "org.codehaus.groovy:groovy-all:${groovyVersion}"
+    provided "org.spockframework:spock-core:${spockVersion}"
+
 	testCompile "cglib:cglib-nodep:2.2.2"
 }
 
