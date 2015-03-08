@@ -26,7 +26,12 @@ I hope you find this project as useful as I have (I actually developed this out 
 ## What it is
 
 This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test (or, in Spock terms, Specifications) reports.
-Currently, the only available report creator generates a **HTML report** for each Specification, as well as a summary of all Specifications that have been run (index.html).
+
+By default, the report creator generates a **HTML report** for each Specification, as well as a summary of all Specifications that have been run (index.html).
+
+If you prefer to have your own template to generate reports from, you can use the TemplateReportCreator. This allows you
+to generate reports in any text format.
+See the **"Using template reports"** section below.
 
 ## Where to find demo reports
 
@@ -90,6 +95,7 @@ Here's the default properties file:
 # Name of the implementation class of the report creator
 # Currently supported classes are:
 #   1. com.athaydes.spockframework.report.internal.HtmlReportCreator
+#   2. com.athaydes.spockframework.report.template.TemplateReportCreator
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.internal.HtmlReportCreator
 
 # Set properties of the report creator
@@ -130,6 +136,40 @@ The following configuration options can also be overridden by system properties.
 `com.athaydes.spockframework.report.hideEmptyBlocks`: true|false; should blocks with empty text be printed out in report?
 
 Default values are inherited from those described above.
+
+## Using template reports
+
+If you don't like the looks of the HTML report or want your reports in a different text format, you can use the
+TemplateReportCreator to do that.
+
+All you need to do to get started is provide a config file, as explained above, setting the `IReportCreator` to
+`com.athaydes.spockframework.report.template.TemplateReportCreator`:
+
+```properties
+com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.template.TemplateReportCreator
+
+# Set properties of the report creator
+com.athaydes.spockframework.report.template.TemplateReportCreator.templateFile=/templateReportCreator/template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
+
+# Output directory (where the spock reports will be created) - relative to working directory
+com.athaydes.spockframework.report.outputDir=build/spock-reports
+
+# If set to true, hides blocks which do not have any description
+com.athaydes.spockframework.report.hideEmptyBlocks=false
+```
+
+Just copy the above contents to a file at `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
+relative to the classpath (eg. in `src/test/resources` for Maven users) and spock-reports will create a MD (mark-down)
+report for your tests.
+
+To provide your own template, change the location of the template file and the file extension
+you wish your reports to have using the config file.
+
+To get started with your own template, check the [existing template file](src/main/resources/templateReportCreator/template.md).
+
+You can see an example report created with the default template file [here](src/test/resources/FakeTest.md)
+(this is actually used in the spock-reports tests).
 
 ## Submitting pull requests
 
