@@ -228,7 +228,7 @@ Total number of runs:   ${stats.totalRuns}
 Success rate:           ${stats.successRate}
 Number of failures:     ${stats.failures}
 Number of errors:       ${stats.errors}
-Executed?:              ${stats.skipped ? 'NO' : 'YES'}
+Number of ignored:      ${stats.skipped}
 Total time (ms):        ${stats.time}
 
 Created on ${new Date()} by ${System.properties['user.name']}
