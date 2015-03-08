@@ -69,8 +69,11 @@ class UtilsSpec extends Specification {
                        successRate: 0.5, time: 2.0 ],
                 'C': [ failures   : 0, errors: 0,
                        skipped    : 0, totalRuns: 1,
-                       successRate: 1.0, time: 3.0 ]
-        ]              | [ total: 3, passed: 1, failed: 2, fFails: 7, fErrors: 6, time: 6.25 ]
+                       successRate: 1.0, time: 3.0 ],
+                'D': [ failures   : 0, errors: 0,
+                       skipped    : 2, totalRuns: 3,
+                       successRate: 1.0, time: 2.0 ]
+        ]              | [ total: 4, passed: 2, failed: 2, fFails: 7, fErrors: 6, time: 8.25, successRate: 0.5 ]
     }
 
 }

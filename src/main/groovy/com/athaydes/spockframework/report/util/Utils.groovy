@@ -56,6 +56,7 @@ class Utils {
             result.fErrors += stats.errors
             result.time += stats.time
         }
+        result.successRate = successRate( result.total, result.failed )
         result
     }
 
