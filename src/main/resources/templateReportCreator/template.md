@@ -24,7 +24,7 @@ Result: **$result**
 * ${block.kind} ${block.text}
 <%
         }
-        def executedIterations = iterations.findAll { it.dataValues }
+        def executedIterations = iterations.findAll { it.dataValues || it.errors }
         if ( params && executedIterations ) {
  %>
  | ${params.join( ' | ' )} |
@@ -33,14 +33,16 @@ Result: **$result**
             for ( iteration in executedIterations ) {
 %> | ${iteration.dataValues.join( ' | ' )} | ${iteration.errors ? '(FAIL)' : '(PASS)'}
 <%          }
-            def problems = executedIterations.findAll { it.errors }
-            if ( problems ) {
-                out << "\nThe following problems occurred:\n\n"
-                for ( badIteration in problems ) {
+        }
+        def problems = executedIterations.findAll { it.errors }
+        if ( problems ) {
+            out << "\nThe following problems occurred:\n\n"
+            for ( badIteration in problems ) {
+                if ( badIteration.dataValues ) {
                     out << '* ' << badIteration.dataValues << '\n'
-                    for ( error in badIteration.errors ) {
-                        out << '```\n' << error << '\n```\n'
-                    }
+                }
+                for ( error in badIteration.errors ) {
+                    out << '```\n' << error << '\n```\n'
                 }
             }
         }

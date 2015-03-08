@@ -80,6 +80,12 @@ Result: **ERROR**
 
 * Then: Will never succeed
 
+The following problems occurred:
+
+```
+java.lang.RuntimeException: As expected
+```
+
 ### A test with a failure
 
 Result: **FAIL**
@@ -87,6 +93,17 @@ Result: **FAIL**
 * When: Do nothing
 
 * Then: Test fails
+
+The following problems occurred:
+
+```
+Condition not satisfied:
+
+3 == 2
+  |
+  false
+
+```
 
 ### An incredibly long feature description that unfortunately will popup in some cases where business
 	analysts write these too detailed overviews of what the test should be all about when what they really
