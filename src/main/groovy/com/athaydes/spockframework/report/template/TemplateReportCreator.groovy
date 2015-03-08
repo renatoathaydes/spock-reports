@@ -52,12 +52,12 @@ class TemplateReportCreator implements IReportCreator {
 
         def engine = new GStringTemplateEngine()
 
-        def featureCallbacks = createFeaturesCallback data
+        def featuresCallback = createFeaturesCallback data
 
         engine.createTemplate( templateFileUrl )
-                .make( [ data           : data,
-                         hideEmptyBlocks: hideEmptyBlocks,
-                         features       : featureCallbacks ] )
+                .make( [ reportCreator: this,
+                         data         : data,
+                         features     : featuresCallback ] )
                 .toString()
     }
 
