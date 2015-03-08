@@ -24,8 +24,10 @@ class TemplateReportCreator implements IReportCreator {
     boolean hideEmptyBlocks
 
     // TemplateReportCreator properties
-    String templateFile
+    String specTemplateFile
     String reportFileExtension
+    String summaryTemplateFile
+    String summaryFileName
 
     @Override
     void createReportFor( SpecData data ) {
@@ -36,6 +38,8 @@ class TemplateReportCreator implements IReportCreator {
         try {
             if ( reportsDir.isDirectory() ) {
                 reportFile.write( reportFor( data ) )
+                TemplateReportAggregator.instance.addData(
+                        new File( reportsDir, summaryFileName ), summaryTemplateFile, data )
             } else {
                 log.warning "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
             }
@@ -45,9 +49,9 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     String reportFor( SpecData data ) {
-        def templateFileUrl = this.class.getResource( templateFile )
+        def templateFileUrl = this.class.getResource( specTemplateFile )
         if ( !templateFileUrl ) {
-            throw new RuntimeException( "Template File does not exist: $templateFile" )
+            throw new RuntimeException( "Template File does not exist: $specTemplateFile" )
         }
 
         def engine = new GStringTemplateEngine()

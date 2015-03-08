@@ -79,7 +79,7 @@ Here's the default properties file:
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.internal.HtmlReportCreator
 
 # Set properties of the report creator
-# For the HtmlReportCreator, the only properties are available
+# For the HtmlReportCreator, the only properties available are
 # (the location of the css files is relative to the classpath):
 com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=spock-feature-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
@@ -129,8 +129,10 @@ All you need to do to get started is provide a config file, as explained above, 
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.template.TemplateReportCreator
 
 # Set properties of the report creator
-com.athaydes.spockframework.report.template.TemplateReportCreator.templateFile=/templateReportCreator/spec-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
 
 # Output directory (where the spock reports will be created) - relative to working directory
 com.athaydes.spockframework.report.outputDir=build/spock-reports
