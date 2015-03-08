@@ -1,3 +1,8 @@
+1.2.5 - 2015 March 8
+
+* #33 Support for Spock 1.0, but this version also works with Spock 0.7
+* #27 Added new report creator - TemplateReportCreator
+
 1.2.4 - 2015 February 14
 
 * #18 Added character encoding for HTML reports

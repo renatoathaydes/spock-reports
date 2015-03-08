@@ -2,6 +2,13 @@
 
 > (most recent first)
 
+* `8th of March 2015`
+
+1.2.5 release - added support for [Spock 1.0](http://spockframework.github.io/spock/docs/1.0/release_notes.html),
+which has been released, finally!!
+Also, but not less important, now spock-reports has support for templates! This lets you make your report look
+like whatever you want!
+
 * `14th of February 2015`
 
 1.2.4 released - some nice new features included, such as Table of Contents.
