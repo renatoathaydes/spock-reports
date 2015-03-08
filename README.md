@@ -129,7 +129,7 @@ All you need to do to get started is provide a config file, as explained above, 
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.template.TemplateReportCreator
 
 # Set properties of the report creator
-com.athaydes.spockframework.report.template.TemplateReportCreator.templateFile=/templateReportCreator/template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.templateFile=/templateReportCreator/spec-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
 
 # Output directory (where the spock reports will be created) - relative to working directory
@@ -146,7 +146,7 @@ report for your tests.
 To provide your own template, change the location of the template file and the file extension
 you wish your reports to have using the config file.
 
-To get started with your own template, check the [existing template file](src/main/resources/templateReportCreator/template.md).
+To get started with your own template, check the [existing template file](src/main/resources/templateReportCreator/spec-template.md).
 
 You can see an example report created with the default template file [here](src/test/resources/FakeTest.md)
 (this is actually used in the spock-reports tests).
