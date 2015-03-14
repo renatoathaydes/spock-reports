@@ -40,19 +40,23 @@ class HtmlReportCreatorSpec extends ReportSpec {
         "ProblemBlockWriter is mocked out to fill error blocks with known contents"
         // using PredictableProblems category to mock that
 
-        and:
-        "ToC Writer if mocked out to write something predictable"
-        // using NoTocGenerated
+		and:
+		"ToC Writer is mocked out to write something predictable"
+		// using NoTocGenerated
 
-        and:
-        "String hashCodes produce predictable values"
-        // using PredictableStringHashCode
+		and:
+		"String hashCodes produce predictable values"
+		// using PredictableStringHashCode
+		
+		and:
+		"ProblemBlockWriter is mocked out to produce consise messages"
+		// using PredictableProblemMessages
 
-        when:
-        "A Specification containing different types of features is run by Spock"
-        use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( FakeTest ).run( new RunNotifier() )
-        }
+		when:
+		"A Specification containing different types of features is run by Spock"
+		use( PredictableProblemMessages, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+			new Sputnik( FakeTest ).run( new RunNotifier() )
+		}
 
         then:
         "A nice HTML report to have been generated under the build directory"
@@ -189,4 +193,10 @@ class HtmlReportCreatorSpec extends ReportSpec {
         }
     }
 
+	@Category( ProblemBlockWriter )
+	class PredictableProblemMessages {
+		void writeProblemMsgs(MarkupBuilder builder, List msgs) {
+			builder.div( 'ProblemMessage' )
+		}
+	}
 }
