@@ -7,6 +7,7 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import spock.lang.Ignore
 
 import java.util.logging.Level
 
@@ -131,7 +132,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
-                    writeFeatureDescription( builder, name, cssClass )
+                    writeFeatureDescription( builder, name, cssClass, feature.description.getAnnotation( Ignore ) )
                     writeFeatureBlocks( builder, feature, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
@@ -139,7 +140,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
                 final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
                 final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
-                writeFeatureDescription( builder, feature.name, cssClass )
+                writeFeatureDescription( builder, feature.name, cssClass, feature.description.getAnnotation( Ignore ) )
                 writeFeatureBlocks( builder, feature )
                 if ( run ) {
                     writeRun( builder, run )
@@ -225,11 +226,23 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         errors ? 'FAIL' : 'OK'
     }
 
-    private void writeFeatureDescription( MarkupBuilder builder, String name, String cssClass ) {
+    private void writeFeatureDescription( MarkupBuilder builder, String name,
+                                          String cssClass, Ignore ignoreAnnotation ) {
+        def ignoreReason = ''
+        if ( cssClass == 'ignored' && ignoreAnnotation ) {
+            ignoreReason = ignoreAnnotation.value()
+        }
+
         cssClass = cssClass ? ' ' + cssClass : ''
+
         builder.tr {
             td( colspan: '10' ) {
-                div( 'class': 'feature-description' + cssClass, id: name.hashCode(), name ) {
+                div( 'class': 'feature-description' + cssClass, id: name.hashCode() ) {
+                    span name
+                    if (ignoreReason) {
+                        br()
+                        span('class': 'reason', ignoreReason)
+                    }
                     writeLinkBackToTop builder
                 }
             }

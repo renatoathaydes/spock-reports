@@ -46,7 +46,7 @@ class FakeTest extends Specification {
 		"This is the then"
 	}
 
-	@Ignore
+	@Ignore("Feature not implemented yet")
 	def "Please ignore me"() {
 		given:
 		"Nothing"

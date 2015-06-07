@@ -29,6 +29,14 @@ class HtmlReportCreatorSpec extends ReportSpec {
         def buildDir = System.getProperty( 'project.buildDir', 'build' )
 
         and:
+        "A known location where the report file will be saved that does not exist"
+        def reportFile = Paths.get( buildDir, 'spock-reports',
+                FakeTest.class.name + '.html' ).toFile()
+        if (reportFile.exists()) {
+            assert reportFile.delete()
+        }
+
+        and:
         "The expected HTML report (not counting time fields and errors)"
         String expectedHtml = expectedHtmlReport()
 
@@ -56,8 +64,6 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         then:
         "A nice HTML report to have been generated under the build directory"
-        def reportFile = Paths.get( buildDir, 'spock-reports',
-                FakeTest.class.name + '.html' ).toFile()
         reportFile.exists()
 
         and:
