@@ -240,7 +240,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 div( 'class': 'feature-description' + cssClass, id: name.hashCode() ) {
                     span name
                     if (ignoreReason) {
-                        br()
+                        div()
                         span('class': 'reason', ignoreReason)
                     }
                     writeLinkBackToTop builder
