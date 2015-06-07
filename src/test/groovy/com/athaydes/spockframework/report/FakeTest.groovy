@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report
 
 import spock.lang.Ignore
+import spock.lang.Issue
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -56,6 +57,7 @@ class FakeTest extends Specification {
 		"Nothing happens"
 	}
 
+	@Issue(["http://myhost.com/issues/995", "http://myhost.com/issues/973"])
 	def "A test with an error"() {
 		when:
 		"An Exception is thrown"

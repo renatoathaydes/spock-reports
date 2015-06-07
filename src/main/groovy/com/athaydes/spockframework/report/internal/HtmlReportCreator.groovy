@@ -8,6 +8,7 @@ import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Ignore
+import spock.lang.Issue
 
 import java.util.logging.Level
 
@@ -132,7 +133,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
-                    writeFeatureDescription( builder, name, cssClass, feature.description.getAnnotation( Ignore ) )
+                    writeFeatureDescription( builder, name, cssClass,
+                            feature.description.getAnnotation( Ignore ),
+                            feature.description.getAnnotation( Issue ) )
                     writeFeatureBlocks( builder, feature, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
@@ -140,7 +143,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
                 final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
                 final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
-                writeFeatureDescription( builder, feature.name, cssClass, feature.description.getAnnotation( Ignore ) )
+                writeFeatureDescription( builder, feature.name, cssClass,
+                        feature.description.getAnnotation( Ignore ),
+                        feature.description.getAnnotation( Issue ) )
                 writeFeatureBlocks( builder, feature )
                 if ( run ) {
                     writeRun( builder, run )
@@ -227,7 +232,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private void writeFeatureDescription( MarkupBuilder builder, String name,
-                                          String cssClass, Ignore ignoreAnnotation ) {
+                                          String cssClass,
+                                          Ignore ignoreAnnotation, Issue issueAnnotation ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -242,6 +248,20 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     if (ignoreReason) {
                         div()
                         span('class': 'reason', ignoreReason)
+                    }
+                    if ( issueAnnotation && issueAnnotation.value() ) {
+                        div('class': 'issues') {
+                            div('Issues:')
+                            ul {
+                                issueAnnotation.value().each { link ->
+                                    li {
+                                        a('href': link) {
+                                            mkp.yield link
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     writeLinkBackToTop builder
                 }

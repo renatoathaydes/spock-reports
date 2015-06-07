@@ -72,6 +72,12 @@ table.summary-table td {
   font-size: small;
 }
 
+.feature-description .issues {
+  color: black;
+  font-weight: bold;
+  font-size: small;
+}
+
 div.problem-description {
   padding: 10px;
   background: pink;
