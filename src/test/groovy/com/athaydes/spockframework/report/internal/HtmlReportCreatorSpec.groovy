@@ -3,7 +3,6 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
-import com.athaydes.spockframework.report.util.Utils
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
@@ -32,7 +31,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         "A known location where the report file will be saved that does not exist"
         def reportFile = Paths.get( buildDir, 'spock-reports',
                 FakeTest.class.name + '.html' ).toFile()
-        if (reportFile.exists()) {
+        if ( reportFile.exists() ) {
             assert reportFile.delete()
         }
 

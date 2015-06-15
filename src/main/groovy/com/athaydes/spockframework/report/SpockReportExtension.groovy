@@ -32,11 +32,13 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void start() {
         // nothing to do
+        println "GlobalExtension.start()"
     }
 
     @Override
     void stop() {
         // nothing to do
+        println "GlobalExtension.stop()"
     }
 
     @Override

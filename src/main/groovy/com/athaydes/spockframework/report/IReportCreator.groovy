@@ -8,10 +8,10 @@ import com.athaydes.spockframework.report.internal.SpecData
  */
 public interface IReportCreator {
 
-	void createReportFor( SpecData data )
+    void createReportFor( SpecData data )
 
-	void setOutputDir( String path )
+    void setOutputDir( String path )
 
-	void setHideEmptyBlocks( boolean hide )
+    void setHideEmptyBlocks( boolean hide )
 
 }

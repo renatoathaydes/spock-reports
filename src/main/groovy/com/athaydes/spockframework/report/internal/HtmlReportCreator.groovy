@@ -245,17 +245,17 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             td( colspan: '10' ) {
                 div( 'class': 'feature-description' + cssClass, id: name.hashCode() ) {
                     span name
-                    if (ignoreReason) {
+                    if ( ignoreReason ) {
                         div()
-                        span('class': 'reason', ignoreReason)
+                        span( 'class': 'reason', ignoreReason )
                     }
                     if ( issueAnnotation && issueAnnotation.value() ) {
-                        div('class': 'issues') {
-                            div('Issues:')
+                        div( 'class': 'issues' ) {
+                            div( 'Issues:' )
                             ul {
                                 issueAnnotation.value().each { link ->
                                     li {
-                                        a('href': link) {
+                                        a( 'href': link ) {
                                             mkp.yield link
                                         }
                                     }
