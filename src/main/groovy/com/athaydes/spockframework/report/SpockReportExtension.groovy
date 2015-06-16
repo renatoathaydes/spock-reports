@@ -94,7 +94,7 @@ class SpockReportExtension implements IGlobalExtension {
         try {
             reportCreatorSettings << loadSettingsFor( reportCreator.class.name, config )
         } catch ( e ) {
-            log.fine( "Error configuring ${reportCreator.class.name}!", e )
+            log.warning( "Error configuring ${reportCreator.class.name}! ${e}" )
         }
 
         reportCreatorSettings.each { field, value ->
