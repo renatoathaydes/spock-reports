@@ -23,14 +23,16 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     }
 
-    void aggregateReport( String specName, Map stats, String outputDir ) {
-        this.outputDir = outputDir
+    void aggregateReport( String specName, Map stats ) {
         aggregatedData[ specName ] = stats
+    }
+
+    void writeOut() {
         def reportsDir = Utils.createDir( outputDir )
         if ( reportsDir.exists() ) {
             try {
                 new File( reportsDir, 'index.html' )
-                        .write( reportFor( stats ) )
+                        .write( reportFor( aggregatedData ) )
             } catch ( e ) {
                 log.log( Level.FINE, "${this.class.name} failed to create aggregated report", e )
             }

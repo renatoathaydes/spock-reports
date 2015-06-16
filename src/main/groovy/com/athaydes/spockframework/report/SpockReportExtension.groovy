@@ -29,37 +29,42 @@ class SpockReportExtension implements IGlobalExtension {
     String outputDir
     boolean hideEmptyBlocks = false
 
+    IReportCreator reportCreator
+
     @Override
     void start() {
-        // nothing to do
-        println "GlobalExtension.start()"
-    }
-
-    @Override
-    void stop() {
-        // nothing to do
-        println "GlobalExtension.stop()"
-    }
-
-    @Override
-    void visitSpec( SpecInfo specInfo ) {
         if ( config == null ) {
             config()
         }
         if ( reportCreatorClassName )
             try {
-                def reportCreator = instantiateReportCreator()
+                reportCreator = instantiateReportCreator()
                 configReportCreator( reportCreator )
-                specInfo.addListener new SpecInfoListener( reportCreator )
             } catch ( e ) {
                 log.log( Level.FINE, "Failed to create instance of $reportCreatorClassName", e )
             }
     }
 
+    @Override
+    void stop() {
+        reportCreator?.done()
+    }
+
+    @Override
+    void visitSpec( SpecInfo specInfo ) {
+        if ( reportCreator != null ) {
+            specInfo.addListener createListener()
+        }
+    }
+
+    SpecInfoListener createListener() {
+        new SpecInfoListener( reportCreator )
+    }
+
     void config() {
         log.finer "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
-        reportCreatorClassName = config.getProperty( IReportCreator.class.name )
+        reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
         hideEmptyBlocks = Boolean.parseBoolean(
                 config.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS )
@@ -68,7 +73,9 @@ class SpockReportExtension implements IGlobalExtension {
 
     def instantiateReportCreator() {
         def reportCreatorClass = Class.forName( reportCreatorClassName )
-        reportCreatorClass.asSubclass( IReportCreator ).newInstance()
+        reportCreatorClass
+                .asSubclass( IReportCreator )
+                .newInstance()
     }
 
     private static loadSettingsFor( String prefix, Properties config ) {

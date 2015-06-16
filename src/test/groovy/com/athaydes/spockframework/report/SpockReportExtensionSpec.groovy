@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report
 
 import com.athaydes.spockframework.report.internal.ConfigLoader
+import com.athaydes.spockframework.report.internal.HtmlReportCreator
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
 
@@ -15,11 +16,14 @@ class SpockReportExtensionSpec extends Specification {
         "An instance of SpockReportExtension with a mocked out config loader"
         def extension = new SpockReportExtension()
         extension.configLoader = Mock ConfigLoader
-//        extension.configLoader.loadConfig() >> new Properties()
 
         when:
         "Spock visits 10 spec"
-        10.times { extension.visitSpec( Mock( SpecInfo ) ) }
+        10.times {
+            extension.start()
+            extension.visitSpec( Mock( SpecInfo ) )
+            extension.stop()
+        }
 
         then:
         "The config is read once"
@@ -37,6 +41,7 @@ class SpockReportExtensionSpec extends Specification {
         "A mock ConfigLoader"
         def mockConfigLoader = Mock( ConfigLoader )
         def props = new Properties()
+        props.setProperty( IReportCreator.name, HtmlReportCreator.name )
         mockConfigLoader.loadConfig() >> props
 
         and:
@@ -60,7 +65,9 @@ class SpockReportExtensionSpec extends Specification {
 
         when:
         "This extension framework is initiated by Spock visiting the mock spec"
+        extension.start()
         extension.visitSpec( mockSpecInfo )
+        extension.stop()
 
         then:
         "The class of the implementation of ReportCreator was correctly set"

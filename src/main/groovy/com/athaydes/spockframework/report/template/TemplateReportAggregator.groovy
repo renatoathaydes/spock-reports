@@ -11,13 +11,8 @@ class TemplateReportAggregator {
 
     private final Map<String, Map> aggregatedData = [ : ]
 
-    void addData( File summaryFile, String templateLocation, SpecData specData ) {
+    void addData( SpecData specData ) {
         aggregatedData[ specData.info.description.className ] = Utils.stats( specData )
-        try {
-            summaryFile.write( summaryWith( templateLocation ) )
-        } catch ( e ) {
-            log.warning( "Problem writing summary report: $e" )
-        }
     }
 
     private String summaryWith( String templateLocation ) {
@@ -29,6 +24,14 @@ class TemplateReportAggregator {
         engine.createTemplate( template )
                 .make( [ data: aggregatedData ] )
                 .toString()
+    }
+
+    void writeOut( File summaryFile, String templateLocation ) {
+        try {
+            summaryFile.write( summaryWith( templateLocation ) )
+        } catch ( e ) {
+            log.warning( "Problem writing summary report: $e" )
+        }
     }
 
 }

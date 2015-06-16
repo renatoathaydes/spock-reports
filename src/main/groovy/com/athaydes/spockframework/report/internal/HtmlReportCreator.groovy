@@ -25,6 +25,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
 
+    @Override
+    void setOutputDir( String outputDir ) {
+        super.outputDir = outputDir
+        reportAggregator.outputDir = outputDir
+    }
+
     void setFeatureReportCss( String css ) {
         super.setCss( css )
     }
@@ -33,11 +39,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         reportAggregator?.css = css
     }
 
+    void done() {
+        reportAggregator?.writeOut()
+    }
+
     @Override
     void createReportFor( SpecData data ) {
         def specClassName = data.info.description.className
-        def reportsDir = Utils.createDir( outputDir )
-        if ( reportsDir.isDirectory() ) {
+        def reportsDir = outputDir ? Utils.createDir( outputDir ) : null
+        if ( reportsDir?.isDirectory() ) {
             try {
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
@@ -77,7 +87,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         td stats.skipped
                         td stringFormatter.toPercentage( stats.successRate )
                         td stringFormatter.toTimeDuration( stats.time )
-                        reportAggregator?.aggregateReport( data.info.description.className, stats, outputDir )
+                        reportAggregator?.aggregateReport( data.info.description.className, stats )
                     }
                 }
             }

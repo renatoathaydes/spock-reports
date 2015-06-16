@@ -14,4 +14,6 @@ public interface IReportCreator {
 
     void setHideEmptyBlocks( boolean hide )
 
+    void done()
+
 }

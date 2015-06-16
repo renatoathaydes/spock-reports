@@ -57,7 +57,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         when:
         "A Specification containing different types of features is run by Spock"
-        use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
             new Sputnik( FakeTest ).run( new RunNotifier() )
         }
 
@@ -113,7 +113,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         then:
         "The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
-        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _, 'outputDir' )
+        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _ )
     }
 
     def "The report aggregator should be passed on the summary css from the report creator"() {
@@ -182,6 +182,14 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
             builder.div( 'TOC' )
+        }
+    }
+
+    @Category( HtmlReportCreator )
+    class ConfigOutputDir {
+
+        String getOutputDir() {
+            System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports'
         }
     }
 
