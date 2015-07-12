@@ -25,12 +25,6 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
 
-    @Override
-    void setOutputDir( String outputDir ) {
-        super.outputDir = outputDir
-        reportAggregator.outputDir = outputDir
-    }
-
     void setFeatureReportCss( String css ) {
         super.setCss( css )
     }
@@ -40,7 +34,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     void done() {
-        reportAggregator?.writeOut()
+        reportAggregator?.writeOut( outputDir )
     }
 
     @Override
@@ -52,11 +46,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
             } catch ( e ) {
-                log.log( Level.FINE, "${this.class.name} failed to create report for $specClassName", e )
+                log.log( Level.INFO, "${this.class.name} failed to create report for $specClassName", e )
             }
 
         } else {
-            log.fine "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+            log.info "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
     }
 

@@ -36,12 +36,12 @@ class SpockReportExtension implements IGlobalExtension {
         if ( config == null ) {
             config()
         }
-        if ( reportCreatorClassName )
+        if ( reportCreatorClassName && !reportCreator )
             try {
                 reportCreator = instantiateReportCreator()
                 configReportCreator( reportCreator )
             } catch ( e ) {
-                log.log( Level.FINE, "Failed to create instance of $reportCreatorClassName", e )
+                log.log( Level.INFO, "Failed to create instance of $reportCreatorClassName", e )
             }
     }
 
@@ -54,6 +54,8 @@ class SpockReportExtension implements IGlobalExtension {
     void visitSpec( SpecInfo specInfo ) {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
+        } else {
+            log.info "Not creating report for ${specInfo.name} as reportCreator is null"
         }
     }
 
@@ -62,7 +64,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     void config() {
-        log.finer "Configuring ${this.class.name}"
+        log.config "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
         reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )

@@ -27,8 +27,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         aggregatedData[ specName ] = stats
     }
 
-    void writeOut() {
-        def reportsDir = Utils.createDir( outputDir )
+    void writeOut( location ) {
+        final reportsDir = location as File // try to force it into being a File!
         if ( reportsDir.exists() ) {
             try {
                 new File( reportsDir, 'index.html' )
@@ -38,7 +38,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             }
 
         } else {
-            log.fine "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+            log.warning "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
     }
 
