@@ -40,7 +40,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         when:
         "The spec data is provided to the HtmlReportAggregator"
         aggregator.aggregateReport( 'Spec1', stats )
-        aggregator.writeOut()
+        aggregator.writeOut( outputDir )
         def reportFile = new File( outputDir, 'index.html' )
 
         then:
@@ -80,7 +80,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         allSpecs.each { String name, Map stats ->
             aggregator.aggregateReport( name, stats )
         }
-        aggregator.writeOut()
+        aggregator.writeOut( outputDir )
         def reportFile = new File( outputDir, 'index.html' )
 
         then:

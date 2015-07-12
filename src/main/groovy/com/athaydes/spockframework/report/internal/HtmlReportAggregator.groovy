@@ -29,7 +29,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     void writeOut( location ) {
         final reportsDir = location as File // try to force it into being a File!
-        if ( reportsDir.exists() ) {
+        if ( existsOrCanCreate( reportsDir ) ) {
             try {
                 new File( reportsDir, 'index.html' )
                         .write( reportFor( aggregatedData ) )
@@ -40,6 +40,10 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         } else {
             log.warning "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
+    }
+
+    def boolean existsOrCanCreate( File reportsDir ) {
+        reportsDir?.exists() || reportsDir?.mkdirs()
     }
 
     @Override
