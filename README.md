@@ -69,6 +69,13 @@ You can provide custom configuration in a properties file located at the followi
 
 `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
+**If you use Gradle**, the above location will not work... the correct location depends on the Gradle version
+you're using. See the following blog posts by @rdmueller for instructions:
+
+* [Spock Reports with Grails 2.2](https://rdmueller.github.io/Spock-Reports-with-Grails-2.2/)
+* [Spock Reports with Grails 2.5](https://rdmueller.github.io/Spock-Reports-with-Grails-2.5/)
+* [Spock Reports with Grails 3.0](https://rdmueller.github.io/Spock-Reports-with-Grails-3.0/)
+
 Here's the default properties file:
 
 ```properties
@@ -98,14 +105,6 @@ That means that you have the freedom to place the css files in a separate jar, f
 
 The output directory, on the other hand, is relative to the working directory.
 For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
-
-### Properties file location for Grails users
-
-In Grails apps, the properties file has to be placed in `grails-app/conf/META-INF/services`.
-
-So the full path and name for the properties should be:
-
-`grails-app/conf/META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
 ### System properties overrides
 
