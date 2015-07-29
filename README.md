@@ -69,7 +69,7 @@ You can provide custom configuration in a properties file located at the followi
 
 `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
-**If you use Gradle**, the above location will not work... the correct location depends on the Gradle version
+**If you use Grails**, the above location will not work... the correct location depends on the Grails version
 you're using. See the following blog posts by @rdmueller for instructions:
 
 * [Spock Reports with Grails 2.2](https://rdmueller.github.io/Spock-Reports-with-Grails-2.2/)
