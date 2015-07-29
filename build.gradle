@@ -36,6 +36,7 @@ dependencies {
 }
 
 test {
+    maxParallelForks = 4
 	exclude '**/FakeTest.class'
 	systemProperty 'project.buildDir', project.buildDir
 	testLogging.showStandardStreams = true

@@ -6,6 +6,8 @@ import groovy.xml.MarkupBuilder
 
 import java.util.logging.Level
 
+import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
+
 /**
  *
  * User: Renato
@@ -20,7 +22,6 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     protected HtmlReportAggregator() {
         // provided for testing only (need to Mock it)
-
     }
 
     void aggregateReport( String specName, Map stats ) {
@@ -30,13 +31,15 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
     void writeOut( location ) {
         final reportsDir = location as File // try to force it into being a File!
         if ( existsOrCanCreate( reportsDir ) ) {
-            try {
-                new File( reportsDir, 'index.html' )
-                        .write( reportFor( aggregatedData ) )
-            } catch ( e ) {
-                log.log( Level.FINE, "${this.class.name} failed to create aggregated report", e )
-            }
+            final aggregatedReport = new File( reportsDir, 'index.html' )
 
+            try {
+                def allData = getAllAggregatedDataAndPersistLocalData( reportsDir, aggregatedData )
+                aggregatedData.clear()
+                aggregatedReport.write( reportFor( allData ) )
+            } catch ( e ) {
+                log.log( Level.WARNING, "${this.class.name} failed to create aggregated report", e )
+            }
         } else {
             log.warning "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
@@ -53,7 +56,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     @Override
     protected void writeSummary( MarkupBuilder builder, Map stats ) {
-        def aggregateData = Utils.aggregateStats( this.aggregatedData )
+        def aggregateData = Utils.aggregateStats( stats )
         def cssClassIfTrue = { isTrue, String cssClass ->
             if ( isTrue ) [ 'class': cssClass ] else Collections.emptyMap()
         }
@@ -87,7 +90,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
     }
 
     @Override
-    protected void writeDetails( MarkupBuilder builder, Map ignored ) {
+    protected void writeDetails( MarkupBuilder builder, Map data ) {
         builder.h3 'Specifications:'
         builder.table( 'class': 'summary-table' ) {
             thead {
@@ -100,8 +103,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                 th 'Time'
             }
             tbody {
-                aggregatedData.keySet().sort().each { String specName ->
-                    def stats = aggregatedData[ specName ]
+                data.keySet().sort().each { String specName ->
+                    def stats = data[ specName ]
                     def cssClasses = [ ]
                     if ( stats.failures ) cssClasses << 'failure'
                     if ( stats.errors ) cssClasses << 'error'
