@@ -64,7 +64,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     void config() {
-        log.config "Configuring ${this.class.name}"
+        log.info "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
         reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
@@ -81,7 +81,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     private static loadSettingsFor( String prefix, Properties config ) {
-        log.fine "Loading settings for reportCreator of type $prefix"
+        log.info "Loading settings for reportCreator of type $prefix"
         Collections.list( config.propertyNames() ).grep { String key ->
             key.startsWith prefix + '.'
         }.collect { String key ->
