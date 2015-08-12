@@ -66,6 +66,18 @@ table.summary-table td {
   background: lightgray;
 }
 
+.feature-description.ignored .reason {
+  color: black;
+  font-style: italic;
+  font-size: small;
+}
+
+.feature-description .issues {
+  color: black;
+  font-weight: bold;
+  font-size: small;
+}
+
 div.problem-description {
   padding: 10px;
   background: pink;

@@ -11,36 +11,36 @@ import org.spockframework.runtime.model.SpecInfo
  * User: Renato
  */
 class SpecData {
-	SpecInfo info
-	List<FeatureRun> featureRuns = [ ]
-	long totalTime
+    SpecInfo info
+    List<FeatureRun> featureRuns = [ ]
+    long totalTime
 }
 
 class FeatureRun {
-	FeatureInfo feature
-	Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
+    FeatureInfo feature
+    Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
 
-	int iterationCount() {
-		failuresByIteration.size()
-	}
+    int iterationCount() {
+        failuresByIteration.size()
+    }
 }
 
 class SpecProblem {
 
-	final ErrorInfo failure
+    final ErrorInfo failure
 
     SpecProblem( ErrorInfo failure ) {
         this.failure = failure
     }
 
     FailureKind getKind() {
-		failure.exception instanceof AssertionError || failure.exception instanceof ComparisonFailure ?
-				FailureKind.FAILURE :
-				FailureKind.ERROR
-	}
+        failure.exception instanceof AssertionError || failure.exception instanceof ComparisonFailure ?
+                FailureKind.FAILURE :
+                FailureKind.ERROR
+    }
 
 }
 
 enum FailureKind {
-	FAILURE, ERROR
+    FAILURE, ERROR
 }

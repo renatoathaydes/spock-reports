@@ -9,94 +9,94 @@ import spock.lang.Specification
  */
 class ConfigLoaderSpec extends Specification {
 
-	private static final String FEATURE_REPORT_CSS = HtmlReportCreator.class.name + '.featureReportCss'
+    private static final String FEATURE_REPORT_CSS = HtmlReportCreator.class.name + '.featureReportCss'
 
-	def "The ConfigLoader should load the default configurations"( ) {
-		given:
-		"A ConfigLoader without any custom configuration"
-		def configLoader = new ConfigLoader()
+    def "The ConfigLoader should load the default configurations"() {
+        given:
+        "A ConfigLoader without any custom configuration"
+        def configLoader = new ConfigLoader()
 
-		and:
-		"The configLocation exists"
-		( configLoader.CUSTOM_CONFIG as File ).exists()
+        and:
+        "The configLocation exists"
+        ( configLoader.CUSTOM_CONFIG as File ).exists()
 
-		when:
-		"I ask the ConfigLoader to load the configuration"
-		def result = configLoader.loadConfig()
+        when:
+        "I ask the ConfigLoader to load the configuration"
+        def result = configLoader.loadConfig()
 
-		then:
-		"The ConfigLoader to find all of the properties declared in the configLocation"
-		result.getProperty( FEATURE_REPORT_CSS ) == 'spock-feature-report.css'
-		result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
-	}
+        then:
+        "The ConfigLoader to find all of the properties declared in the configLocation"
+        result.getProperty( FEATURE_REPORT_CSS ) == 'spock-feature-report.css'
+        result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
+    }
 
-	def "Custom configurations should override default configurations"( ) {
-		given:
-		"A ConfigLoader in an environment where there is a custom config file"
-		def configLoader = new ConfigLoader()
-		File customFile = createFileUnderMetaInf( IReportCreator.class.name + '.properties' )
-		customFile.write "${FEATURE_REPORT_CSS}=${expected}"
+    def "Custom configurations should override default configurations"() {
+        given:
+        "A ConfigLoader in an environment where there is a custom config file"
+        def configLoader = new ConfigLoader()
+        File customFile = createFileUnderMetaInf( IReportCreator.class.name + '.properties' )
+        customFile.write "${FEATURE_REPORT_CSS}=${expected}"
 
-		and:
-		"The configLocation exists"
-		assert customFile.exists()
+        and:
+        "The configLocation exists"
+        assert customFile.exists()
 
-		when:
-		"I ask the ConfigLoader to load the configuration"
-		def result = configLoader.loadConfig()
+        when:
+        "I ask the ConfigLoader to load the configuration"
+        def result = configLoader.loadConfig()
 
-		then:
-		"The ConfigLoader to find all of the properties declared in the configLocation"
-		result.getProperty( FEATURE_REPORT_CSS ) == expected
+        then:
+        "The ConfigLoader to find all of the properties declared in the configLocation"
+        result.getProperty( FEATURE_REPORT_CSS ) == expected
 
-		and:
-		"The default properties are also kept"
-		result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
-		result.getProperty( 'com.athaydes.spockframework.report.outputDir' ) == 'build/spock-reports'
+        and:
+        "The default properties are also kept"
+        result.getProperty( 'com.athaydes.spockframework.report.hideEmptyBlocks' ) == 'false'
+        result.getProperty( 'com.athaydes.spockframework.report.outputDir' ) == 'build/spock-reports'
 
-		cleanup:
-		assert customFile.delete()
+        cleanup:
+        assert customFile.delete()
 
-		where:
-		expected << [ 'example/report.css' ]
-	}
+        where:
+        expected << [ 'example/report.css' ]
+    }
 
-	def 'System properties should override props files'() {
-		given:
-		"A ConfigLoader without any custom configuration"
-		def configLoader = new ConfigLoader()
+    def 'System properties should override props files'() {
+        given:
+        "A ConfigLoader without any custom configuration"
+        def configLoader = new ConfigLoader()
 
-		and:
-		"The configLocation exists"
-		( configLoader.CUSTOM_CONFIG as File ).exists()
+        and:
+        "The configLocation exists"
+        ( configLoader.CUSTOM_CONFIG as File ).exists()
 
-		and:
-		"I have specified a system property override"
-		def origPropVal = System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS]
-		System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS] = expected
+        and:
+        "I have specified a system property override"
+        def origPropVal = System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ]
+        System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ] = expected
 
-		when:
-		"I ask the ConfigLoader to load the configuration"
-		def result = configLoader.loadConfig()
+        when:
+        "I ask the ConfigLoader to load the configuration"
+        def result = configLoader.loadConfig()
 
-		then:
-		"The ConfigLoader must use the value from the system property override"
-		result.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ) == expected
+        then:
+        "The ConfigLoader must use the value from the system property override"
+        result.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ) == expected
 
-		cleanup:
-		if(origPropVal)
-			System.properties[ConfigLoader.PROP_HIDE_EMPTY_BLOCKS] = origPropVal
-		else
-			System.properties.remove ConfigLoader.PROP_HIDE_EMPTY_BLOCKS
+        cleanup:
+        if ( origPropVal )
+            System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ] = origPropVal
+        else
+            System.properties.remove ConfigLoader.PROP_HIDE_EMPTY_BLOCKS
 
-		where:
-		expected = 'custom_value'
-	}
-	
-	private createFileUnderMetaInf( String fileName ) {
-		def globalExtConfig = this.class.getResource( '/META-INF/services/org.spockframework.runtime.extension.IGlobalExtension' )
-		def f = new File( globalExtConfig.toURI() )
-		new File( f.parentFile, fileName )
-	}
+        where:
+        expected = 'custom_value'
+    }
+
+    private createFileUnderMetaInf( String fileName ) {
+        def globalExtConfig = this.class.getResource( '/META-INF/services/org.spockframework.runtime.extension.IGlobalExtension' )
+        def f = new File( globalExtConfig.toURI() )
+        new File( f.parentFile, fileName )
+    }
 
 }

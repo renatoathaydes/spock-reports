@@ -5,12 +5,12 @@ package com.athaydes.spockframework.report.internal
  */
 class KnowsWhenAndWhoRanTest {
 
-	String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
-		"Created on ${stringFormatter.toDateString( new Date() )}" +
-				" by ${getUserName()}"
-	}
+    String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
+        "Created on ${stringFormatter.toDateString( new Date() )}" +
+                " by ${getUserName()}"
+    }
 
-	private String getUserName( ) {
-		System.getProperty( 'user.name' )
-	}
+    private String getUserName() {
+        System.getProperty( 'user.name' )
+    }
 }

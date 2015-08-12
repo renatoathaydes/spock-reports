@@ -3,7 +3,6 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
-import com.athaydes.spockframework.report.util.Utils
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
@@ -29,6 +28,14 @@ class HtmlReportCreatorSpec extends ReportSpec {
         def buildDir = System.getProperty( 'project.buildDir', 'build' )
 
         and:
+        "A known location where the report file will be saved that does not exist"
+        def reportFile = Paths.get( buildDir, 'spock-reports',
+                FakeTest.class.name + '.html' ).toFile()
+        if ( reportFile.exists() ) {
+            assert reportFile.delete()
+        }
+
+        and:
         "The expected HTML report (not counting time fields and errors)"
         String expectedHtml = expectedHtmlReport()
 
@@ -50,14 +57,12 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         when:
         "A Specification containing different types of features is run by Spock"
-        use( PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
             new Sputnik( FakeTest ).run( new RunNotifier() )
         }
 
         then:
         "A nice HTML report to have been generated under the build directory"
-        def reportFile = Paths.get( buildDir, 'spock-reports',
-                FakeTest.class.name + '.html' ).toFile()
         reportFile.exists()
 
         and:
@@ -108,7 +113,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         then:
         "The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
-        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _, 'outputDir' )
+        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _ )
     }
 
     def "The report aggregator should be passed on the summary css from the report creator"() {
@@ -177,6 +182,14 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
             builder.div( 'TOC' )
+        }
+    }
+
+    @Category( HtmlReportCreator )
+    class ConfigOutputDir {
+
+        String getOutputDir() {
+            System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports'
         }
     }
 

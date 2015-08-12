@@ -29,35 +29,44 @@ class SpockReportExtension implements IGlobalExtension {
     String outputDir
     boolean hideEmptyBlocks = false
 
+    IReportCreator reportCreator
+
     @Override
     void start() {
-        // nothing to do
+        if ( config == null ) {
+            config()
+        }
+        if ( reportCreatorClassName && !reportCreator )
+            try {
+                reportCreator = instantiateReportCreator()
+                configReportCreator( reportCreator )
+            } catch ( e ) {
+                log.log( Level.INFO, "Failed to create instance of $reportCreatorClassName", e )
+            }
     }
 
     @Override
     void stop() {
-        // nothing to do
+        reportCreator?.done()
     }
 
     @Override
     void visitSpec( SpecInfo specInfo ) {
-        if ( config == null ) {
-            config()
+        if ( reportCreator != null ) {
+            specInfo.addListener createListener()
+        } else {
+            log.info "Not creating report for ${specInfo.name} as reportCreator is null"
         }
-        if ( reportCreatorClassName )
-            try {
-                def reportCreator = instantiateReportCreator()
-                configReportCreator( reportCreator )
-                specInfo.addListener new SpecInfoListener( reportCreator )
-            } catch ( e ) {
-                log.log( Level.FINE, "Failed to create instance of $reportCreatorClassName", e )
-            }
+    }
+
+    SpecInfoListener createListener() {
+        new SpecInfoListener( reportCreator )
     }
 
     void config() {
-        log.finer "Configuring ${this.class.name}"
+        log.info "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
-        reportCreatorClassName = config.getProperty( IReportCreator.class.name )
+        reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
         hideEmptyBlocks = Boolean.parseBoolean(
                 config.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS )
@@ -66,11 +75,13 @@ class SpockReportExtension implements IGlobalExtension {
 
     def instantiateReportCreator() {
         def reportCreatorClass = Class.forName( reportCreatorClassName )
-        reportCreatorClass.asSubclass( IReportCreator ).newInstance()
+        reportCreatorClass
+                .asSubclass( IReportCreator )
+                .newInstance()
     }
 
     private static loadSettingsFor( String prefix, Properties config ) {
-        log.fine "Loading settings for reportCreator of type $prefix"
+        log.info "Loading settings for reportCreator of type $prefix"
         Collections.list( config.propertyNames() ).grep { String key ->
             key.startsWith prefix + '.'
         }.collect { String key ->
@@ -85,7 +96,7 @@ class SpockReportExtension implements IGlobalExtension {
         try {
             reportCreatorSettings << loadSettingsFor( reportCreator.class.name, config )
         } catch ( e ) {
-            log.fine( "Error configuring ${reportCreator.class.name}!", e )
+            log.warning( "Error configuring ${reportCreator.class.name}! ${e}" )
         }
 
         reportCreatorSettings.each { field, value ->

@@ -3,49 +3,40 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
         classpath "com.github.townsfolk:gradle-release:1.2"
     }
 }
-apply plugin: 'groovy'
-apply plugin: 'idea'
-apply plugin: 'maven-publish'
+
+plugins {
+    id "com.jfrog.bintray" version "1.1"
+    id 'groovy'
+    id 'idea'
+    id 'maven-publish'
+}
 
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.5"
+version = "1.2.6-SNAPSHOT"
 
 def groovyVersion = '2.0.8'
 def spockVersion = '1.0-groovy-2.0'
 
 repositories {
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
-
-//////// hack to add provided dependency support ////////
-configurations {
-    provided
-}
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-    test {
-        compileClasspath += configurations.provided
-    }
-}
-////////////////////////////////////////////////////////////
-
 
 dependencies {
-    provided "org.codehaus.groovy:groovy-all:${groovyVersion}"
-    provided "org.spockframework:spock-core:${spockVersion}"
+    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
+    compile "org.spockframework:spock-core:${spockVersion}"
 
 	testCompile "cglib:cglib-nodep:2.2.2"
 }
 
 test {
+    maxParallelForks = 4
 	exclude '**/FakeTest.class'
 	systemProperty 'project.buildDir', project.buildDir
 	testLogging.showStandardStreams = true
@@ -77,7 +68,6 @@ publishing {
     }
 }
 
-apply plugin: 'bintray'
 apply plugin: 'release'
 
 bintray {

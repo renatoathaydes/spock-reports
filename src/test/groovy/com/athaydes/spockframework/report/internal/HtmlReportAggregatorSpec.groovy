@@ -24,14 +24,14 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "A HtmlReportAggregator with mocked out dependencies and writeFooter() method"
-        def aggregator = new HtmlReportAggregator()
+        def aggregator = new HtmlReportAggregator( outputDir: outputDir )
+        aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
 
         def mockStringFormatter = Stub( StringFormatHelper )
         mockStringFormatter.toPercentage( _ ) >>> [ '25.0%', '25%' ]
         mockStringFormatter.toTimeDuration( _ ) >>> [ '1.0 second', '1 sec' ]
 
         aggregator.stringFormatter = mockStringFormatter
-        aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
 
         aggregator.metaClass.writeFooter = { MarkupBuilder builder ->
             builder.div( 'class': 'footer', 'The footer' )
@@ -39,7 +39,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         when:
         "The spec data is provided to the HtmlReportAggregator"
-        aggregator.aggregateReport( 'Spec1', stats, outputDir )
+        aggregator.aggregateReport( 'Spec1', stats )
+        aggregator.writeOut( outputDir )
         def reportFile = new File( outputDir, 'index.html' )
 
         then:
@@ -71,14 +72,15 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "A HtmlReportAggregator with mocked dependencies and the test css style"
-        def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css' )
+        def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css', outputDir: outputDir )
         aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
 
         when:
         "The specs data is provided to the HtmlReportAggregator"
         allSpecs.each { String name, Map stats ->
-            aggregator.aggregateReport( name, stats, outputDir )
+            aggregator.aggregateReport( name, stats )
         }
+        aggregator.writeOut( outputDir )
         def reportFile = new File( outputDir, 'index.html' )
 
         then:

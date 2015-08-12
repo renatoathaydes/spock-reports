@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.template
 
 import com.athaydes.spockframework.report.FakeTest
+import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.internal.HtmlReportCreatorSpec
 import org.junit.runner.notification.RunNotifier
@@ -18,7 +19,7 @@ class TemplateReportCreatorSpec extends Specification {
 
         when:
         "A Specification containing different types of features is run by Spock"
-        use( UseTemplaceReportCreator, HtmlReportCreatorSpec.PredictableTimeResponse ) {
+        use( UseTemplateReportCreator, HtmlReportCreatorSpec.PredictableTimeResponse ) {
             new Sputnik( FakeTest ).run( new RunNotifier() )
         }
 
@@ -37,11 +38,15 @@ class TemplateReportCreatorSpec extends Specification {
         this.class.getResource( '/FakeTest.md' ).text.replace( '${projectUrl}', SpockReportExtension.PROJECT_URL )
     }
 
-    @Category( SpockReportExtension )
-    class UseTemplaceReportCreator {
-        def instantiateReportCreator() {
-            new TemplateReportCreator()
-        }
+}
+
+@Category( SpockReportExtension )
+class UseTemplateReportCreator {
+    static final templateReportCreator = new TemplateReportCreator()
+
+    SpecInfoListener createListener() {
+        configReportCreator templateReportCreator
+        new SpecInfoListener( templateReportCreator )
     }
 
 }

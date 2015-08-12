@@ -29,6 +29,12 @@ class TemplateReportCreator implements IReportCreator {
     String summaryTemplateFile
     String summaryFileName
 
+    void done() {
+        def reportsDir = Utils.createDir( outputDir )
+        TemplateReportAggregator.instance
+                .writeOut( new File( reportsDir, summaryFileName ), summaryTemplateFile )
+    }
+
     @Override
     void createReportFor( SpecData data ) {
         def specClassName = data.info.description.className
@@ -38,8 +44,7 @@ class TemplateReportCreator implements IReportCreator {
         try {
             if ( reportsDir.isDirectory() ) {
                 reportFile.write( reportFor( data ) )
-                TemplateReportAggregator.instance.addData(
-                        new File( reportsDir, summaryFileName ), summaryTemplateFile, data )
+                TemplateReportAggregator.instance.addData( data )
             } else {
                 log.warning "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
             }
