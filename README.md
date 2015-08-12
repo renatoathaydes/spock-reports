@@ -41,8 +41,15 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.5</version>
+  <version>1.2.6</version>
   <scope>test</scope>
+  <!-- this avoids affecting your version of Groovy/Spock -->
+  <exclusions>
+    <exclusion>
+      <groupId>*</groupId>
+      <artifactId>*</artifactId>
+    </exclusion>
+  </exclusions>
 </dependency>
 ```
 
@@ -54,7 +61,9 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.athaydes:spock-reports:1.2.5'
+    testCompile( 'com.athaydes:spock-reports:1.2.6' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
 }
 ```
 
@@ -187,6 +196,9 @@ Result: $result
     }
 %>
 ```
+
+> NOTE: before version 1.2.6, `eachFeature` used to be called `forEach`. This had to be changed to avoid conflict
+ with Java 8's method of the same name.
 
 You probably noticed that some variables are available to be used in code in the template file.
 

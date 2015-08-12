@@ -2,6 +2,18 @@
 
 > (most recent first)
 
+* `12th of August 2015`
+
+1.2.6 release - this release brings support for **parallel builds**. Until now, individual specification reports would
+be created just fine, but the aggregated report would only contain the specifications run by the last Thread of a
+parallel build. After this release, that is no longer the case!
+
+Other minor improvements were also included in this release, check the release notes for details.
+
+**BREAKING CHANGE**: for users of template reports, a necessary breaking change had to made: in Specification report
+templates, to iterate over features you must now call method `eachFeature` instead of `forEach`. This was necessary
+ because the old name conflicted with a native method when using Java 8. Sorry for the inconvenience.
+
 * `8th of March 2015`
 
 1.2.5 release - added support for [Spock 1.0](http://spockframework.github.io/spock/docs/1.0/release_notes.html),
