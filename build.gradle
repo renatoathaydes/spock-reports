@@ -18,7 +18,7 @@ plugins {
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.6-SNAPSHOT"
+version = "1.2.6"
 
 def groovyVersion = '2.0.8'
 def spockVersion = '1.0-groovy-2.0'
