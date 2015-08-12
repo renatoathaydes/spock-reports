@@ -179,7 +179,7 @@ result of all features in a Specification:
 
 ```
 <%
-    features.forEach { name, result, blocks, iterations, params ->
+    features.eachFeature { name, result, blocks, iterations, params ->
 %>
 Feature Name: $name
 Result: $result
@@ -194,7 +194,7 @@ These variables are the following:
 
 * `data`: an instance of `SpecData` containing the result of running a Specification.
 * `reportCreator`: the `TemplateReportCreator` instance.
-* `features`: as shown above, an Object which has a `forEach` method which can be used to iterate over all features of a
+* `features`: as shown above, an Object which has a `eachFeature` method which can be used to iterate over all features of a
     Specification.
 
 As the default template file shows, you can get statistics for the Specification easily with this code snippet:
