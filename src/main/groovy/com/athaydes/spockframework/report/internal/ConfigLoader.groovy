@@ -21,9 +21,12 @@ class ConfigLoader {
         def props = loadCustomProperties( loadDefaultProperties() )
         [ IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS ].each {
             def sysVal = System.properties[ it ]
-            if ( sysVal )
+            if ( sysVal ) {
+                log.info( "Overriding property [$it] with System property's value: $sysVal" )
                 props[ it ] = sysVal
+            }
         }
+        log.info( "SpockReports config loaded: $props" )
         props
     }
 
@@ -39,6 +42,7 @@ class ConfigLoader {
         def resources = RunContext.classLoader.getResources( CUSTOM_CONFIG )
         for ( URL url in resources ) {
             try {
+                log.info( "Trying to load custom configuration at $url" )
                 url.withInputStream { properties.load it }
             } catch ( IOException | IllegalArgumentException e ) {
                 log.log( Level.FINE, "Unable to read config from ${url.path}", e )
