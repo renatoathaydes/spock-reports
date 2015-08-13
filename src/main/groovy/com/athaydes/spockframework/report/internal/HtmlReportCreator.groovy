@@ -92,7 +92,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
         def specTitle = data.info.description.testClass.getAnnotation( Title )?.value() ?: ''
         def narrative = specTitle + (specTitle ? '\n' : '') + data.info.narrative
-        builder.pre('class': 'narrative', narrative)
+        if (narrative) {
+            builder.pre('class': 'narrative', narrative)
+        }
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
             colgroup {
