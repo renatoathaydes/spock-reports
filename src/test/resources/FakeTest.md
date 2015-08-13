@@ -9,6 +9,11 @@
 * Skipped:  1
 * Total time: Unknown
 
+###As a user
+###I want foo
+###So that bar
+
+
 ## Features
 
 ### A first test

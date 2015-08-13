@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.template
 
 import com.athaydes.spockframework.report.internal.SpecData
+import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Log
@@ -29,7 +30,9 @@ class TemplateReportAggregator {
         def engine = new GStringTemplateEngine()
 
         engine.createTemplate( template )
-                .make( [ data: allData ] )
+                .make( [ data   : allData,
+                         'utils': Utils,
+                         'fmt'  : new StringFormatHelper() ] )
                 .toString()
     }
 

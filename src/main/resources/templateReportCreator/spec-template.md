@@ -1,5 +1,5 @@
-<%  def fmt = new com.athaydes.spockframework.report.internal.StringFormatHelper()
-    def stats = com.athaydes.spockframework.report.util.Utils.stats( data )
+<%
+    def stats = utils.stats( data )
  %># Report for ${data.info.description.className}
 
 ##Summary
@@ -10,6 +10,21 @@
 * Errors:   ${stats.errors}
 * Skipped:  ${stats.skipped}
 * Total time: ${fmt.toTimeDuration(stats.time)}
+
+<%
+    if ( data.info.narrative ) {
+        data.info.narrative.split('\n').each { out << '###' << it << '\n' }
+    }
+    def writeIssues = { issues ->
+        if ( issues?.value() ) {
+            out << '### Issues:\n\n'
+            issues.value().each { issue ->
+                out << '* ' << issue << '\n'
+            }
+        }
+    }
+    writeIssues( utils.specAnnotation( data, spock.lang.Issue ) )
+%>
 
 ## Features
 <%
