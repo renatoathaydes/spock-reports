@@ -147,6 +147,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
         def binding = [
                 classOnTest     : FakeTest.class.name,
+                narrative       : '\nAs a user\nI want foo\nSo that bar',
                 style           : defaultStyle(),
                 dateTestRan     : DATE_TEST_RAN,
                 username        : TEST_USER_NAME,

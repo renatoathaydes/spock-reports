@@ -9,6 +9,7 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.Title
 
 import java.util.logging.Level
 
@@ -89,6 +90,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
+        def specTitle = data.info.description.testClass.getAnnotation( Title )?.value() ?: ''
+        def narrative = specTitle + (specTitle ? '\n' : '') + data.info.narrative
+        builder.pre('class': 'narrative', narrative)
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
             colgroup {

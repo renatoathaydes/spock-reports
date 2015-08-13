@@ -32,6 +32,14 @@ table.summary-table td {
   padding: 6px;
 }
 
+pre.narrative {
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: -1px;
+  color: #444;
+}
+
 .feature-description {
   font-size: large;
   background: lightblue;
