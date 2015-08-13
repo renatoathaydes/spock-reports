@@ -255,6 +255,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             td( colspan: '10' ) {
                 div( 'class': 'feature-description' + cssClass, id: name.hashCode() ) {
                     span name
+                    writeLinkBackToTop builder
                     if ( ignoreReason ) {
                         div()
                         span( 'class': 'reason', ignoreReason )
@@ -273,7 +274,6 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             }
                         }
                     }
-                    writeLinkBackToTop builder
                 }
             }
         }
