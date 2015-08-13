@@ -80,7 +80,7 @@ pre.narrative {
   font-size: small;
 }
 
-.feature-description .issues {
+div.issues {
   color: black;
   font-weight: bold;
   font-size: small;

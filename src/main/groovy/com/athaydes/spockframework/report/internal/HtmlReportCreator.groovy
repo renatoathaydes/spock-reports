@@ -91,9 +91,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
         def specTitle = data.info.description.testClass.getAnnotation( Title )?.value() ?: ''
-        def narrative = specTitle + (specTitle ? '\n' : '') + data.info.narrative
-        if (narrative) {
-            builder.pre('class': 'narrative', narrative)
+        def narrative = specTitle + ( specTitle ? '\n' : '' ) + data.info.narrative
+        if ( narrative ) {
+            builder.pre( 'class': 'narrative', narrative )
+        }
+        def issues = data.info.description.testClass.getAnnotation( Issue )
+        if ( issues ) {
+            writeIssues( builder, issues )
         }
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
@@ -260,17 +264,21 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         div()
                         span( 'class': 'reason', ignoreReason )
                     }
-                    if ( issueAnnotation && issueAnnotation.value() ) {
-                        div( 'class': 'issues' ) {
-                            div( 'Issues:' )
-                            ul {
-                                issueAnnotation.value().each { link ->
-                                    li {
-                                        a( 'href': link ) {
-                                            mkp.yield link
-                                        }
-                                    }
-                                }
+                    writeIssues builder, issueAnnotation
+                }
+            }
+        }
+    }
+
+    private void writeIssues( MarkupBuilder builder, Issue issueAnnotation ) {
+        if ( issueAnnotation && issueAnnotation.value() ) {
+            builder.div( 'class': 'issues' ) {
+                div( 'Issues:' )
+                ul {
+                    issueAnnotation.value().each { link ->
+                        li {
+                            a( 'href': link ) {
+                                mkp.yield link
                             }
                         }
                     }
