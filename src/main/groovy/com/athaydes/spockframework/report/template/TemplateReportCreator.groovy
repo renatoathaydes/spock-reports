@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report.template
 import com.athaydes.spockframework.report.IReportCreator
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
+import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
@@ -65,6 +66,8 @@ class TemplateReportCreator implements IReportCreator {
 
         engine.createTemplate( templateFileUrl )
                 .make( [ reportCreator: this,
+                         'utils'      : Utils,
+                         'fmt'        : new StringFormatHelper(),
                          data         : data,
                          features     : featuresCallback ] )
                 .toString()
@@ -73,6 +76,7 @@ class TemplateReportCreator implements IReportCreator {
     def createFeaturesCallback( SpecData data ) {
         return [ eachFeature: { Closure callback ->
             for ( feature in data.info.allFeatures ) {
+                callback.delegate = feature
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     handleUnrolledFeature( run, feature, callback )

@@ -1,5 +1,5 @@
-<%  def fmt = new com.athaydes.spockframework.report.internal.StringFormatHelper()
-    def stats = com.athaydes.spockframework.report.util.Utils.stats( data )
+<%
+    def stats = utils.stats( data )
  %># Report for ${data.info.description.className}
 
 ##Summary
@@ -11,12 +11,35 @@
 * Skipped:  ${stats.skipped}
 * Total time: ${fmt.toTimeDuration(stats.time)}
 
+<%
+    if ( data.info.narrative ) {
+        data.info.narrative.split('\n').each { out << '###' << it << '\n' }
+    }
+    def specTitle = utils.specAnnotation( data, spock.lang.Title )?.value()
+    if ( specTitle ) {
+        specTitle.split('\n').each { out << '###' << it << '\n' }
+    }
+    def writeIssuesOrSees = { issues, description ->
+        if ( issues?.value() ) {
+            out << '\n#### ' << description << ':\n\n'
+            issues.value().each { issue ->
+                out << '* ' << issue << '\n'
+            }
+        }
+    }
+    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
+    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
+%>
+
 ## Features
 <%
     features.eachFeature { name, result, blocks, iterations, params ->
 %>
 ### $name
-
+<% 
+ writeIssuesOrSees( description.getAnnotation( spock.lang.Issue ), 'Issues' )
+ writeIssuesOrSees( description.getAnnotation( spock.lang.See ), 'See' )
+%>
 Result: **$result**
 <%
         for ( block in blocks ) {

@@ -1,7 +1,12 @@
+1.2.7 - 2015 August 15
+
+* #46 Added support for showing comment on Spock's @Ignore, @Issue, @See, @Title, @Narrative annotations to reports.
+* Made it easier to write template reports by including more variables in the scope (see README).
+* Fixed misplacement of "Return" link in html reports.
+
 1.2.6 - 2015 August 12
 
-* #39 Added support for showing comment on Spock's @Ignore annotation to reports.
-* #39 Added support for showing comment on Spock's @Issue annotation to reports.
+* #43 Summary report now contains all specifications even when build runs in parallel (forked) mode.
 * #36 Log much more information about config and errors (use the --info flag when running a build).
 * Small bug fixes when logging errors.
 * Try to create report dir more strongly if it does not already exist when writing the aggregated report

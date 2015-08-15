@@ -2,6 +2,8 @@ package com.athaydes.spockframework.report
 
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.Narrative
+import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -9,6 +11,10 @@ import spock.lang.Unroll
  *
  * User: Renato
  */
+@Narrative("""
+As a user
+I want foo
+So that bar""")
 class FakeTest extends Specification {
 
     def "A first test"() {
@@ -67,6 +73,7 @@ class FakeTest extends Specification {
         "Will never succeed"
     }
 
+    @See( "http://myhost.com/features/feature-234" )
     def "A test with a failure"() {
         when:
         "Do nothing"

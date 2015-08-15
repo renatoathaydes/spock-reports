@@ -2,6 +2,14 @@
 
 > (most recent first)
 
+* `15th of August 2015`
+
+1.2.7 release - a really quick release this time! That's because the previous release, 1.2.6, unfortunately missed
+adding support for documentation annotations (@Ignore, @Issue, @See, @Title, @Narrative). Support for all of these 
+annotations have been added in this release (the release notes have been amended to reflect this).
+
+As usual, this release also includes some tiny bug fixes... and template reports are now easier to write.
+
 * `12th of August 2015`
 
 1.2.6 release - this release brings support for **parallel builds**. Until now, individual specification reports would

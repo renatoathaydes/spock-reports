@@ -41,7 +41,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.6</version>
+  <version>1.2.7</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.6' ) {
+    testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
 }
@@ -204,15 +204,23 @@ You probably noticed that some variables are available to be used in code in the
 
 These variables are the following:
 
-* `data`: an instance of `SpecData` containing the result of running a Specification.
-* `reportCreator`: the `TemplateReportCreator` instance.
+* `data`: an instance of [`SpecData`](src/main/groovy/com/athaydes/spockframework/report/internal/SpecData.groovy)
+  containing the result of running a Specification.
+* `reportCreator`: the [`TemplateReportCreator`](src/main/groovy/com/athaydes/spockframework/report/template/TemplateReportCreator.groovy) instance.
+* `fmt`: an instance of [`StringFormatHelper`](src/main/groovy/com/athaydes/spockframework/report/internal/StringFormatHelper.groovy).
+  It provides methods such as `String toTimeDuration( timeInMs )`
+  and `String escapeXml( String str )`.
+* `utils`: the [`Utils`](src/main/groovy/com/athaydes/spockframework/report/util/Utils.groovy) class, which offers
+  many *useful* methods like `Map stats( SpecData data )`, which returns statistics about the given Specification.
 * `features`: as shown above, an Object which has a `eachFeature` method which can be used to iterate over all features of a
-    Specification.
+  Specification. When inside the `eachFeature` closure, you can access directly all members of the current feature
+  (an instance of `FeatureInfo`). So, for example, to get the `Title` annotation of a feature, you can do
+  `utils.specAnnotation( data, spock.lang.Title )`.
 
 As the default template file shows, you can get statistics for the Specification easily with this code snippet:
 
 ```
-<% def stats = com.athaydes.spockframework.report.util.Utils.stats( data ) %>
+<% def stats = utils.stats( data ) %>
 Report statistics: $stats
 ```
 

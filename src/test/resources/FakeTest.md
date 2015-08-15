@@ -9,6 +9,11 @@
 * Skipped:  1
 * Total time: Unknown
 
+###As a user
+###I want foo
+###So that bar
+
+
 ## Features
 
 ### A first test
@@ -74,6 +79,11 @@ Result: **IGNORED**
 
 ### A test with an error
 
+#### Issues:
+
+* http://myhost.com/issues/995
+* http://myhost.com/issues/973
+
 Result: **ERROR**
 
 * When: An Exception is thrown
@@ -87,6 +97,10 @@ java.lang.RuntimeException: As expected
 ```
 
 ### A test with a failure
+
+#### See:
+
+* http://myhost.com/features/feature-234
 
 Result: **FAIL**
 

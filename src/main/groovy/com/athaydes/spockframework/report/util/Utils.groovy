@@ -103,4 +103,8 @@ class Utils {
         }
     }
 
+    static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
+        data.info.description.testClass.getAnnotation( annotation )
+    }
+
 }

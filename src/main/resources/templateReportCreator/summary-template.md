@@ -1,4 +1,4 @@
-<% def stats = com.athaydes.spockframework.report.util.Utils.aggregateStats( data )
+<% def stats = utils.aggregateStats( data )
  %># Specification run results
 
 ## Specifications summary
