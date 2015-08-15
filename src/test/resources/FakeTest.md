@@ -98,6 +98,10 @@ java.lang.RuntimeException: As expected
 
 ### A test with a failure
 
+#### See:
+
+* http://myhost.com/features/feature-234
+
 Result: **FAIL**
 
 * When: Do nothing

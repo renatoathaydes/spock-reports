@@ -9,8 +9,10 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.See
 import spock.lang.Title
 
+import java.lang.annotation.Annotation
 import java.util.logging.Level
 
 /**
@@ -97,7 +99,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
         def issues = Utils.specAnnotation( data, Issue )
         if ( issues ) {
-            writeIssues( builder, issues )
+            writeIssuesOrSees( builder, issues, 'Issues:' )
+        }
+        def sees = Utils.specAnnotation( data, See )
+        if ( sees ) {
+            writeIssuesOrSees( builder, sees, 'See:' )
         }
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
@@ -149,7 +155,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                     feature.skipped ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
                             feature.description.getAnnotation( Ignore ),
-                            feature.description.getAnnotation( Issue ) )
+                            feature.description.getAnnotation( Issue ),
+                            feature.description.getAnnotation( See ) )
                     writeFeatureBlocks( builder, feature, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
@@ -159,7 +166,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
-                        feature.description.getAnnotation( Issue ) )
+                        feature.description.getAnnotation( Issue ),
+                        feature.description.getAnnotation( See ) )
                 writeFeatureBlocks( builder, feature )
                 if ( run ) {
                     writeRun( builder, run )
@@ -247,7 +255,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeatureDescription( MarkupBuilder builder, String name,
                                           String cssClass,
-                                          Ignore ignoreAnnotation, Issue issueAnnotation ) {
+                                          Ignore ignoreAnnotation,
+                                          Issue issueAnnotation,
+                                          See seeAnnotation ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -264,18 +274,19 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         div()
                         span( 'class': 'reason', ignoreReason )
                     }
-                    writeIssues builder, issueAnnotation
+                    writeIssuesOrSees builder, issueAnnotation, 'Issues:'
+                    writeIssuesOrSees builder, seeAnnotation, 'See:'
                 }
             }
         }
     }
 
-    private void writeIssues( MarkupBuilder builder, Issue issueAnnotation ) {
-        if ( issueAnnotation && issueAnnotation.value() ) {
+    private void writeIssuesOrSees( MarkupBuilder builder, Annotation annotation, String description ) {
+        if ( annotation?.value() ) {
             builder.div( 'class': 'issues' ) {
-                div( 'Issues:' )
+                div( description )
                 ul {
-                    issueAnnotation.value().each { link ->
+                    annotation.value().each { link ->
                         li {
                             a( 'href': link ) {
                                 mkp.yield link

@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report
 import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Narrative
+import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -72,6 +73,7 @@ class FakeTest extends Specification {
         "Will never succeed"
     }
 
+    @See( "http://myhost.com/features/feature-234" )
     def "A test with a failure"() {
         when:
         "Do nothing"

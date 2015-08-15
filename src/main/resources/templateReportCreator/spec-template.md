@@ -10,19 +10,21 @@
 * Errors:   ${stats.errors}
 * Skipped:  ${stats.skipped}
 * Total time: ${fmt.toTimeDuration(stats.time)}
+
 <%
     if ( data.info.narrative ) {
         data.info.narrative.split('\n').each { out << '###' << it << '\n' }
     }
-    def writeIssues = { issues ->
+    def writeIssuesOrSees = { issues, description ->
         if ( issues?.value() ) {
-            out << '\n#### Issues:\n\n'
+            out << '\n#### ' << description << ':\n\n'
             issues.value().each { issue ->
                 out << '* ' << issue << '\n'
             }
         }
     }
-    writeIssues( utils.specAnnotation( data, spock.lang.Issue ) )
+    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
+    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
 %>
 
 ## Features
@@ -30,7 +32,10 @@
     features.eachFeature { name, result, blocks, iterations, params ->
 %>
 ### $name
-<% writeIssues( description.getAnnotation( spock.lang.Issue ) ) %>
+<% 
+ writeIssuesOrSees( description.getAnnotation( spock.lang.Issue ), 'Issues' )
+ writeIssuesOrSees( description.getAnnotation( spock.lang.See ), 'See' )
+%>
 Result: **$result**
 <%
         for ( block in blocks ) {
