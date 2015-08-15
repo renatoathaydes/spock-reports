@@ -15,6 +15,10 @@
     if ( data.info.narrative ) {
         data.info.narrative.split('\n').each { out << '###' << it << '\n' }
     }
+    def specTitle = utils.specAnnotation( data, spock.lang.Title )?.value()
+    if ( specTitle ) {
+        specTitle.split('\n').each { out << '###' << it << '\n' }
+    }
     def writeIssuesOrSees = { issues, description ->
         if ( issues?.value() ) {
             out << '\n#### ' << description << ':\n\n'
