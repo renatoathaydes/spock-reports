@@ -10,14 +10,13 @@
 * Errors:   ${stats.errors}
 * Skipped:  ${stats.skipped}
 * Total time: ${fmt.toTimeDuration(stats.time)}
-
 <%
     if ( data.info.narrative ) {
         data.info.narrative.split('\n').each { out << '###' << it << '\n' }
     }
     def writeIssues = { issues ->
         if ( issues?.value() ) {
-            out << '### Issues:\n\n'
+            out << '\n#### Issues:\n\n'
             issues.value().each { issue ->
                 out << '* ' << issue << '\n'
             }
@@ -31,7 +30,7 @@
     features.eachFeature { name, result, blocks, iterations, params ->
 %>
 ### $name
-
+<% writeIssues( description.getAnnotation( spock.lang.Issue ) ) %>
 Result: **$result**
 <%
         for ( block in blocks ) {

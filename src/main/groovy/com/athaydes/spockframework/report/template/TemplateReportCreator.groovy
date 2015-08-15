@@ -76,6 +76,7 @@ class TemplateReportCreator implements IReportCreator {
     def createFeaturesCallback( SpecData data ) {
         return [ eachFeature: { Closure callback ->
             for ( feature in data.info.allFeatures ) {
+                callback.delegate = feature
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     handleUnrolledFeature( run, feature, callback )

@@ -79,6 +79,11 @@ Result: **IGNORED**
 
 ### A test with an error
 
+#### Issues:
+
+* http://myhost.com/issues/995
+* http://myhost.com/issues/973
+
 Result: **ERROR**
 
 * When: An Exception is thrown
