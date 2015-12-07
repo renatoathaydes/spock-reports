@@ -26,7 +26,7 @@ class ConfigLoader {
                 props[ it ] = sysVal
             }
         }
-        log.info( "SpockReports config loaded: $props" )
+        log.fine( "SpockReports config loaded: $props" )
         props
     }
 
@@ -42,7 +42,7 @@ class ConfigLoader {
         def resources = RunContext.classLoader.getResources( CUSTOM_CONFIG )
         for ( URL url in resources ) {
             try {
-                log.info( "Trying to load custom configuration at $url" )
+                log.fine( "Trying to load custom configuration at $url" )
                 url.withInputStream { properties.load it }
             } catch ( IOException | IllegalArgumentException e ) {
                 log.log( Level.FINE, "Unable to read config from ${url.path}", e )

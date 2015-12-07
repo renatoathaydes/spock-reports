@@ -55,7 +55,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.info "Not creating report for ${specInfo.name} as reportCreator is null"
+            log.fine "Not creating report for ${specInfo.name} as reportCreator is null"
         }
     }
 
@@ -64,7 +64,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     void config() {
-        log.info "Configuring ${this.class.name}"
+        log.fine "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
         reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
@@ -81,7 +81,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     private static loadSettingsFor( String prefix, Properties config ) {
-        log.info "Loading settings for reportCreator of type $prefix"
+        log.fine "Loading settings for reportCreator of type $prefix"
         Collections.list( config.propertyNames() ).grep { String key ->
             key.startsWith prefix + '.'
         }.collect { String key ->
