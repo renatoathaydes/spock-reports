@@ -35,8 +35,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         reportAggregator?.css = css
     }
 
-    void setPrintThrowableStackTrace( boolean printStacktrace ) {
-        problemWriter.printThrowableStackTrace = printStacktrace
+    void setPrintThrowableStackTrace( String printStacktrace ) {
+        problemWriter.printThrowableStackTrace = Boolean.parseBoolean( printStacktrace )
     }
 
     void done() {
