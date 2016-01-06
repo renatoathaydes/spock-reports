@@ -2,6 +2,18 @@
 
 > (most recent first)
 
+* `6th of January 2016`
+
+1.2.8 release - a new feature and a few fixes are included in this release.
+
+Also, the logging framework has been changed from JUL to Slf4J due to several complaints about JUL making it hard to
+configure the logging behaviour of spock-reports. Now, you can easily choose a logger implementation that is compatible
+with slf4j, such as Log4j or Logback, and configure it to enable as much logging as you wish from spock-reports!
+
+The new feature: it is now possible to, optionally, include the stack-trace of a Throwable that caused a test failure
+in HTML reports. This should be useful for developers to track down bugs without having to chase stacktraces using
+other sources.
+
 * `15th of August 2015`
 
 1.2.7 release - a really quick release this time! That's because the previous release, 1.2.6, unfortunately missed
