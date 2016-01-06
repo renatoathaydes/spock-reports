@@ -4,8 +4,6 @@ import com.athaydes.spockframework.report.IReportCreator
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
 
-import java.util.logging.Level
-
 /**
  *
  * User: Renato
@@ -30,7 +28,7 @@ class ConfigLoader {
         props
     }
 
-    Properties loadDefaultProperties() {
+    private Properties loadDefaultProperties() {
         def defaultProperties = new Properties()
         ConfigLoader.class.getResource( 'config.properties' )?.withInputStream {
             defaultProperties.load it
@@ -38,7 +36,7 @@ class ConfigLoader {
         defaultProperties
     }
 
-    Properties loadCustomProperties( Properties properties ) {
+    private Properties loadCustomProperties( Properties properties ) {
         def resources = RunContext.classLoader.getResources( CUSTOM_CONFIG )
         for ( URL url in resources ) {
             try {
