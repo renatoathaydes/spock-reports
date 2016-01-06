@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.IterationInfo
 class ProblemBlockWriter {
 
     StringFormatHelper stringFormatter
+    boolean printThrowableStackTrace = false
 
     void writeProblemBlockForAllIterations( MarkupBuilder builder, FeatureRun run, boolean isError, boolean isFailure ) {
         if ( isError || isFailure ) {
@@ -68,7 +69,7 @@ class ProblemBlockWriter {
                     pre {
                         mkp.yieldUnescaped(
                                 stringFormatter.formatToHtml(
-                                        stringFormatter.escapeXml( msg.toString() ) ) )
+                                        stringFormatter.escapeXml( formatProblemMessage( msg ) ) ) )
                     }
                 }
             }
@@ -77,7 +78,19 @@ class ProblemBlockWriter {
 
     private static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
         Utils.problemsByIteration( failures ).collect { Map entry ->
-            entry + [ messages: entry.errors*.toString() ]
+            entry + [ messages: entry.errors ]
+        }
+    }
+
+    protected String formatProblemMessage( message ) {
+        if ( printThrowableStackTrace && message instanceof Throwable ) {
+            def writer = new StringWriter()
+            message.printStackTrace( new PrintWriter( writer ) )
+            return writer.toString()
+        } else if ( message == null ) {
+            return 'null'
+        } else {
+            return message.toString()
         }
     }
 

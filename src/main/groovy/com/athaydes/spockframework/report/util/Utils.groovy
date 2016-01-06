@@ -10,6 +10,7 @@ import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
+import java.util.regex.Pattern
 
 class Utils {
 
@@ -23,6 +24,13 @@ class Utils {
             'AND'                : 'And:',
             'EXAMPLES'           : 'Examples:'
     ]
+
+    private static final Pattern urlPattern
+
+    static {
+        def urlRegex = "\\(?\\b([A-z]+://|[A-z0-9]+[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]"
+        urlPattern = Pattern.compile( urlRegex )
+    }
 
     static File createDir( String outputDir ) {
         def reportsDir = new File( outputDir )
@@ -105,6 +113,10 @@ class Utils {
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
         data.info.description.testClass.getAnnotation( annotation )
+    }
+
+    static boolean isUrl( String text ) {
+        text ==~ urlPattern
     }
 
 }

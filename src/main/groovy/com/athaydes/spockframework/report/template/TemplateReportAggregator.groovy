@@ -4,25 +4,25 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
 
 @Singleton( lazy = true )
-@Log
+@Slf4j
 class TemplateReportAggregator {
 
     private final Map<String, Map> aggregatedData = [ : ]
 
     void addData( SpecData specData ) {
-        log.info( "Adding data to report ${specData.info.description.className}" )
+        log.debug( "Adding data to report ${specData.info.description.className}" )
         aggregatedData[ specData.info.description.className ] = Utils.stats( specData )
     }
 
     private String summary( String templateLocation, Map allData ) {
         def template = this.class.getResource( templateLocation )
         if ( !template ) {
-            log.warning( "Summary template location does not exist: $templateLocation" )
+            log.warn( "Summary template location does not exist: $templateLocation" )
             throw new RuntimeException( 'SpockReports: TemplateReportAggregator extension could not create ' +
                     'report as template could not be found at ' + templateLocation )
         }
@@ -45,7 +45,7 @@ class TemplateReportAggregator {
             aggregatedData.clear()
             summaryFile.write summary( templateLocation, allData )
         } catch ( e ) {
-            log.warning( "${this.class.name} failed to create aggregated report", e )
+            log.warn( "${this.class.name} failed to create aggregated report", e )
         }
     }
 

@@ -41,7 +41,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.7</version>
+  <version>1.2.8</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
+    testCompile( 'com.athaydes:spock-reports:1.2.8' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
 }
@@ -71,6 +71,36 @@ If you prefer, you can just download the jar directly from [JCenter](http://jcen
 
 The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
 
+
+## Customizing spock-reports logging
+
+`spock-reports` uses the `slf4j-api` for logging, so you can get logging information to investigate any issues you
+may face with your Spock tests.
+
+If your application does not have a slf4j implementation framework in the classpath, you may get this warning when running
+your tests:
+
+```
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+```
+
+To get rid of that, add a dependency on a logging framework that logs over the slf4j-api.
+
+For example, to use `slf4j-simple`, add this line to your Gradle dependencies (or the equivalent XML in your Maven pom):
+
+```groovy
+testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
+```
+
+To configure the logging framework itself, please check the documentation of the framework you decide to use.
+If you're using `slf4j-simple`, check [this](http://www.slf4j.org/apidocs/org/slf4j/impl/SimpleLogger.html).
+
+Most logging messages emitted by `spock-reports` use the `DEBUG` level, except when errors happen, in which case the
+`WARN` level is used.
+
+The base `spock-reports`'s logger name is `com.athaydes.spockframework.report`.
 
 ## Customizing the reports
 
@@ -99,6 +129,8 @@ com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.re
 # (the location of the css files is relative to the classpath):
 com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=spock-feature-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
+com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
+
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
 

@@ -2,7 +2,7 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
 import com.athaydes.spockframework.report.util.Utils
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
@@ -13,13 +13,12 @@ import spock.lang.See
 import spock.lang.Title
 
 import java.lang.annotation.Annotation
-import java.util.logging.Level
 
 /**
  *
  * User: Renato
  */
-@Log
+@Slf4j
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         implements IReportCreator {
 
@@ -36,6 +35,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         reportAggregator?.css = css
     }
 
+    void setPrintThrowableStackTrace( String printStacktrace ) {
+        problemWriter.printThrowableStackTrace = Boolean.parseBoolean( printStacktrace )
+    }
+
     void done() {
         reportAggregator?.writeOut( outputDir )
     }
@@ -49,11 +52,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
             } catch ( e ) {
-                log.log( Level.INFO, "${this.class.name} failed to create report for $specClassName", e )
+                log.warn( "${this.class.name} failed to create report for $specClassName", e )
             }
 
         } else {
-            log.info "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
+            log.warn "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
     }
 
@@ -287,10 +290,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             builder.div( 'class': 'issues' ) {
                 div( description )
                 ul {
-                    annotation.value().each { link ->
+                    annotation.value().each { String value ->
                         li {
-                            a( 'href': link ) {
-                                mkp.yield link
+                            if ( Utils.isUrl( value ) ) {
+                                a( 'href': value ) {
+                                    mkp.yield value
+                                }
+                            } else {
+                                span stringFormatter.escapeXml( value )
                             }
                         }
                     }

@@ -1,3 +1,9 @@
+1.2.8 - 2015 January 6
+
+* #51 Replaced usage of @Log with @Slf4j.
+* new option to include the stack-trace of a Throwable that caused a test failure in HTML reports.
+* #49 Only make Strings given by @See and @Issue hyperlinks if they seem to be URLs.
+
 1.2.7 - 2015 August 15
 
 * #46 Added support for showing comment on Spock's @Ignore, @Issue, @See, @Title, @Narrative annotations to reports.

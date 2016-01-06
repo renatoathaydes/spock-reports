@@ -4,7 +4,7 @@ import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
@@ -12,13 +12,11 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 
-import java.util.logging.Level
-
 /**
  *
  * User: Renato
  */
-@Log
+@Slf4j
 class SpockReportExtension implements IGlobalExtension {
 
     static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
@@ -41,7 +39,7 @@ class SpockReportExtension implements IGlobalExtension {
                 reportCreator = instantiateReportCreator()
                 configReportCreator( reportCreator )
             } catch ( e ) {
-                log.log( Level.INFO, "Failed to create instance of $reportCreatorClassName", e )
+                log.warn( "Failed to create instance of $reportCreatorClassName", e )
             }
     }
 
@@ -55,7 +53,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.info "Not creating report for ${specInfo.name} as reportCreator is null"
+            log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
         }
     }
 
@@ -64,7 +62,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     void config() {
-        log.info "Configuring ${this.class.name}"
+        log.debug "Configuring ${this.class.name}"
         config = configLoader.loadConfig()
         reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
@@ -81,7 +79,7 @@ class SpockReportExtension implements IGlobalExtension {
     }
 
     private static loadSettingsFor( String prefix, Properties config ) {
-        log.info "Loading settings for reportCreator of type $prefix"
+        log.debug "Loading settings for reportCreator of type $prefix"
         Collections.list( config.propertyNames() ).grep { String key ->
             key.startsWith prefix + '.'
         }.collect { String key ->
@@ -96,7 +94,7 @@ class SpockReportExtension implements IGlobalExtension {
         try {
             reportCreatorSettings << loadSettingsFor( reportCreator.class.name, config )
         } catch ( e ) {
-            log.warning( "Error configuring ${reportCreator.class.name}! ${e}" )
+            log.warn( "Error configuring ${reportCreator.class.name}!", e )
         }
 
         reportCreatorSettings.each { field, value ->

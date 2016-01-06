@@ -18,7 +18,7 @@ plugins {
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.7"
+version = "1.2.8"
 
 def groovyVersion = '2.0.8'
 def spockVersion = '1.0-groovy-2.0'
@@ -31,8 +31,9 @@ repositories {
 dependencies {
     compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     compile "org.spockframework:spock-core:${spockVersion}"
+    compile 'org.slf4j:slf4j-api:1.7.13'
 
-	testCompile "cglib:cglib-nodep:2.2.2"
+    testCompile "cglib:cglib-nodep:2.2.2"
 }
 
 test {
