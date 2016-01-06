@@ -290,10 +290,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             builder.div( 'class': 'issues' ) {
                 div( description )
                 ul {
-                    annotation.value().each { link ->
+                    annotation.value().each { String value ->
                         li {
-                            a( 'href': link ) {
-                                mkp.yield link
+                            if ( Utils.isUrl( value ) ) {
+                                a( 'href': value ) {
+                                    mkp.yield value
+                                }
+                            } else {
+                                span stringFormatter.escapeXml( value )
                             }
                         }
                     }
