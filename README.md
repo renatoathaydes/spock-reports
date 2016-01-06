@@ -51,6 +51,14 @@ Add ``spock-reports`` to your ``<dependencies>``:
     </exclusion>
   </exclusions>
 </dependency>
+
+<!-- // if you don't already have slf4j in the classpath, add this! -->
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-api</artifactId>
+  <version>1.7.13</version>
+  <scope>test</scope>
+</dependency>
 ```
 
 In Gradle:
@@ -64,6 +72,8 @@ dependencies {
     testCompile( 'com.athaydes:spock-reports:1.2.8' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
+    // if you don't already have slf4j in the classpath, add this!
+    testCompile 'org.slf4j:slf4j-api:1.7.13'
 }
 ```
 
