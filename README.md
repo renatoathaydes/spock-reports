@@ -99,6 +99,8 @@ com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.re
 # (the location of the css files is relative to the classpath):
 com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=spock-feature-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
+com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
+
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
 
