@@ -1,7 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
 
 import java.util.logging.Level
@@ -10,7 +10,7 @@ import java.util.logging.Level
  *
  * User: Renato
  */
-@Log
+@Slf4j
 class ConfigLoader {
     static final PROP_OUTPUT_DIR = 'com.athaydes.spockframework.report.outputDir'
     static final PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
@@ -22,11 +22,11 @@ class ConfigLoader {
         [ IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS ].each {
             def sysVal = System.properties[ it ]
             if ( sysVal ) {
-                log.info( "Overriding property [$it] with System property's value: $sysVal" )
+                log.debug( "Overriding property [$it] with System property's value: $sysVal" )
                 props[ it ] = sysVal
             }
         }
-        log.info( "SpockReports config loaded: $props" )
+        log.debug( "SpockReports config loaded: $props" )
         props
     }
 
@@ -42,10 +42,10 @@ class ConfigLoader {
         def resources = RunContext.classLoader.getResources( CUSTOM_CONFIG )
         for ( URL url in resources ) {
             try {
-                log.info( "Trying to load custom configuration at $url" )
+                log.debug( "Trying to load custom configuration at $url" )
                 url.withInputStream { properties.load it }
             } catch ( IOException | IllegalArgumentException e ) {
-                log.log( Level.FINE, "Unable to read config from ${url.path}", e )
+                log.warn( "Unable to read config from ${url.path}", e )
             }
         }
         properties

@@ -7,7 +7,7 @@ import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -15,7 +15,7 @@ import org.spockframework.runtime.model.IterationInfo
 /**
  * IReportCreator which uses a user-provided template to generate spock-reports.
  */
-@Log
+@Slf4j
 class TemplateReportCreator implements IReportCreator {
 
     final stringProcessor = new StringTemplateProcessor()
@@ -47,10 +47,10 @@ class TemplateReportCreator implements IReportCreator {
                 reportFile.write( reportFor( data ) )
                 TemplateReportAggregator.instance.addData( data )
             } else {
-                log.warning "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
+                log.warn "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
             }
         } catch ( e ) {
-            log.warning "Unexpected error creating report: $e"
+            log.warn "Unexpected error creating report", e
         }
     }
 

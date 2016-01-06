@@ -1,10 +1,8 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.util.Utils
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
-
-import java.util.logging.Level
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
 
@@ -13,7 +11,7 @@ import static com.athaydes.spockframework.report.internal.ReportDataAggregator.g
  * User: Renato
  */
 @Singleton( lazy = true )
-@Log
+@Slf4j
 class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     final Map<String, Map> aggregatedData = [ : ]
@@ -38,10 +36,10 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                 aggregatedData.clear()
                 aggregatedReport.write( reportFor( allData ) )
             } catch ( e ) {
-                log.log( Level.WARNING, "${this.class.name} failed to create aggregated report", e )
+                log.warn( "${this.class.name} failed to create aggregated report", e )
             }
         } else {
-            log.warning "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
+            log.warn "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
         }
     }
 
