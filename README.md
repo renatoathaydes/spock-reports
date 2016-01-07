@@ -3,6 +3,8 @@
 
 Check out [the latest news](news.md) about this project!
 
+[![Build Status](https://travis-ci.org/renatoathaydes/spock-reports.svg?branch=next)](https://travis-ci.org/renatoathaydes/spock-reports)
+
 ## What it is
 
 This project is a global extension for [Spock](https://code.google.com/p/spock/) to create test (or, in Spock terms, Specifications) reports.
