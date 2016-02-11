@@ -39,6 +39,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         problemWriter.printThrowableStackTrace = Boolean.parseBoolean( printStacktrace )
     }
 
+    void setInlineCss( String inline ) {
+        def doInline = Boolean.parseBoolean( inline )
+        this.doInlineCss = doInline
+        reportAggregator?.doInlineCss = doInline
+    }
+
+    @Override
+    String cssDefaultName() { 'feature-report.css' }
+
     void done() {
         reportAggregator?.writeOut( outputDir )
     }
@@ -96,8 +105,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
         def specTitle = Utils.specAnnotation( data, Title )?.value() ?: ''
-        def narrative = ( specTitle ? ( specTitle + '\n') : '' ) +
-                (data.info.narrative ?: '' )
+        def narrative = ( specTitle ? ( specTitle + '\n' ) : '' ) +
+                ( data.info.narrative ?: '' )
         if ( narrative ) {
             builder.pre( 'class': 'narrative', narrative )
         }

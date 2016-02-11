@@ -12,22 +12,22 @@ import groovy.xml.MarkupBuilder
 abstract class AbstractHtmlCreator<T> {
 
     String css
-    String outputDir
+    boolean doInlineCss = true
+    String outputDir = ''
     boolean hideEmptyBlocks = false
     KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
     String excludeToc = "false"
 
-    void setCss( String css ) {
-        if ( !css || css.trim().empty ) return
-        def cssResource = this.class.getResource( "/$css" )
-        if ( cssResource )
-            try {
-                this.@css = cssResource.text
-            } catch ( e ) {
-                log.warn( "${this.class.name}: Failed to set CSS file to $css", e )
-            }
-        else
-            log.info "${this.class.name}: The CSS file does not exist: ${css}"
+    private String resolvedCss
+
+    abstract String cssDefaultName()
+
+    String getCss() {
+        if ( resolvedCss ) {
+            return resolvedCss
+        }
+        if ( !css || css.trim().empty ) return ''
+        resolvedCss = new CssResource( css, doInlineCss, new File( outputDir, cssDefaultName() ) ).text
     }
 
     String reportFor( T data ) {
@@ -37,7 +37,8 @@ abstract class AbstractHtmlCreator<T> {
         builder.html {
             head {
                 meta( 'http-equiv': 'Content-Type', content: 'text/html; charset=utf-8' )
-                if ( css ) style css
+                if ( css && doInlineCss ) style css
+                else if ( css ) link( rel: 'stylesheet', type: 'text/css', href: css )
             }
             body {
                 h2 reportHeader( data )

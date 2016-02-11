@@ -22,6 +22,9 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         // provided for testing only (need to Mock it)
     }
 
+    @Override
+    String cssDefaultName() { 'summary-report.css' }
+
     void aggregateReport( String specName, Map stats ) {
         aggregatedData[ specName ] = stats
     }
