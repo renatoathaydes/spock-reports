@@ -13,7 +13,7 @@ abstract class AbstractHtmlCreator<T> {
 
     String css
     boolean doInlineCss = true
-    String outputDir = ''
+    String outputDirectory = ''
     boolean hideEmptyBlocks = false
     KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
     String excludeToc = "false"
@@ -27,7 +27,7 @@ abstract class AbstractHtmlCreator<T> {
             return resolvedCss
         }
         if ( !css || css.trim().empty ) return ''
-        resolvedCss = new CssResource( css, doInlineCss, new File( outputDir, cssDefaultName() ) ).text
+        resolvedCss = new CssResource( css, doInlineCss, new File( outputDirectory, cssDefaultName() ) ).text
     }
 
     String reportFor( T data ) {

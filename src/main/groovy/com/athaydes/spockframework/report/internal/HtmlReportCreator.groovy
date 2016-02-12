@@ -46,26 +46,32 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     @Override
+    void setOutputDir( String out ) {
+        this.outputDirectory = out
+        reportAggregator?.outputDirectory = out
+    }
+
+    @Override
     String cssDefaultName() { 'feature-report.css' }
 
     void done() {
-        reportAggregator?.writeOut( outputDir )
+        reportAggregator?.writeOut()
     }
 
     @Override
     void createReportFor( SpecData data ) {
         def specClassName = data.info.description.className
-        def reportsDir = outputDir ? Utils.createDir( outputDir ) : null
+        def reportsDir = outputDirectory ? Utils.createDir( outputDirectory ) : null
         if ( reportsDir?.isDirectory() ) {
             try {
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
             } catch ( e ) {
-                log.warn( "${this.class.name} failed to create report for $specClassName", e )
+                log.warn( "Failed to create report for {} due to {}", specClassName, e )
             }
 
         } else {
-            log.warn "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
+            log.warn "Cannot create output directory: {}", reportsDir?.absolutePath
         }
     }
 

@@ -23,7 +23,11 @@ class CssResource {
         if ( inlineCss ) {
             return text
         } else {
-            cssFile.write text
+            try {
+                cssFile.write text
+            } catch ( e ) {
+                log.warn( 'Unable to write CSS file to {} due to {}', text, e )
+            }
             return cssFile.name
         }
     }
