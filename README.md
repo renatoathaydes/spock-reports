@@ -142,6 +142,7 @@ com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.re
 com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=spock-feature-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
+com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss=true
 
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
@@ -151,13 +152,44 @@ com.athaydes.spockframework.report.outputDir=build/spock-reports
 
 # If set to true, hides blocks which do not have any description
 com.athaydes.spockframework.report.hideEmptyBlocks=false
+
+# Set properties specific to the TemplateReportCreator
+com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
 ```
 
-Notice that the location of the css file is relative to the classpath!
-That means that you have the freedom to place the css files in a separate jar, for example.
+The `outputDir` property is relative to the working directory.
 
-The output directory, on the other hand, is relative to the working directory.
 For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
+
+### Customizing the report stylesheets
+
+The CSS properties above can be set to either of the following kinds of values:
+
+* a classpath resource.
+* a URL (the value will be used to call Java's `new URL(value)`.
+
+If the value does not match a full URL starting with a protocol (eg. `file:///usr/local/css/report.css`),
+the value will be treated as an absolute path to a classpath resource.
+
+For example, if you set the value of a CSS property to `my-css/test-report.css`, the resource `/my-css/test-report.css`
+will be looked up in all Jars and directories which are part of the classpath.
+
+If you set the value to `http://myhost.com/css/test-report.css`, the resource at this URL will be read.
+
+#### Disabling CSS inlining
+
+By default, the CSS resource will be inlined in the HTML report.
+
+If you set the `inlineCss` property to `false`, then the CSS resource will be copied to the `outputDir` directory,
+together with the HTML reports, with the following names:
+
+* `feature-report.css` (for the `featureReportCss` property).
+* `summary-report.css` (for the `summaryReportCss` property).
+
+A link to the CSS resources with the above names will be added to the HTML file instead of inlining the CSS.
 
 ### System properties overrides
 
