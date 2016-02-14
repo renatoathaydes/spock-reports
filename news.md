@@ -1,6 +1,16 @@
 ## News
 
-> (most recent first)
+> Most recent first
+
+* `14th of February 2016`
+
+1.2.9 release - this is the first release to be published on Maven Central!
+
+Many users complained about restrictions regarding Maven repositories in their working place, so hopefully this
+will help a lot of users to start getting proper reports out of their Spock specifications.
+
+Another worthy new feature in this release is the option to not inline CSS in HTML files, avoiding CSP violations
+ (see issue #54).
 
 * `6th of January 2016`
 

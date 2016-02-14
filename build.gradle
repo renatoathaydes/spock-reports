@@ -1,24 +1,15 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
-        classpath "com.github.townsfolk:gradle-release:1.2"
-    }
-}
-
 plugins {
-    id "com.jfrog.bintray" version "1.1"
+    id "com.jfrog.bintray" version "1.6"
     id 'groovy'
     id 'idea'
-    id 'maven-publish'
+    id 'maven'
 }
 
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.2.8"
+version = "1.2.9"
+description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 def groovyVersion = '2.0.8'
 def spockVersion = '1.0-groovy-2.0'
@@ -38,49 +29,102 @@ dependencies {
 
 test {
     maxParallelForks = 4
-	exclude '**/FakeTest.class'
-	systemProperty 'project.buildDir', project.buildDir
-	testLogging.showStandardStreams = true
-	beforeTest { descriptor ->
-		logger.lifecycle( "Running test: " + descriptor )
-	}
+    exclude '**/FakeTest.class'
+    systemProperty 'project.buildDir', project.buildDir
+    testLogging.showStandardStreams = true
+    beforeTest { descriptor ->
+        logger.lifecycle( "Running test: " + descriptor )
+    }
 }
 
 jar {
-	manifest {
-		attributes(
-				"Implementation-Title": "Athaydes-Spock-Reports",
-				"Implementation-Version": version )
-	}
+    manifest {
+        attributes(
+                "Implementation-Title": "Athaydes-Spock-Reports",
+                "Implementation-Version": version )
+    }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+/* Publishing config */
+
+task javadocJar( type: Jar ) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar( type: Jar ) {
+    classifier = 'sources'
     from sourceSets.main.allSource
-    classifier "sources"
-    extension "jar"
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact sourcesJar
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+// add all the info required by Maven Central to the pom
+configure( install.repositories.mavenInstaller ) {
+    pom.project {
+        inceptionYear '2013'
+        name project.name
+        packaging 'jar'
+        description project.description
+
+        url 'https://github.com/renatoathaydes/spock-reports'
+
+        scm {
+            connection 'git@github.com:renatoathaydes/spock-reports.git'
+            developerConnection 'git@github.com:renatoathaydes/spock-reports.git'
+            url 'https://github.com/renatoathaydes/spock-reports'
+        }
+
+        licenses {
+            license {
+                name 'The Apache License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+        }
+
+        developers {
+            developer {
+                id 'renatoathaydes'
+                name 'Renato Athaydes'
+                email 'renato@athaydes.com'
+            }
         }
     }
 }
 
-apply plugin: 'release'
+def getProjectProperty = { String propertyName ->
+    project.properties[ propertyName ]
+}
 
 bintray {
-    user = project.hasProperty("bintrayUserName") ? bintrayUserName : null
-    key = project.hasProperty("bintrayApiKey") ? bintrayApiKey : null
-    publications = ["mavenJava"]
+    user = getProjectProperty "bintrayUserName"
+    key = getProjectProperty "bintrayApiKey"
+    configurations = [ 'archives' ]
+    publish = true
     pkg {
         repo = 'maven'
         name = 'spock-reports'
-        licenses = ['Apache-2.0']
+        licenses = [ 'Apache-2.0' ]
+        labels = [ 'groovy', 'java', 'spock', 'bdd', 'test', 'report' ]
+        publicDownloadNumbers = true
+
+        //noinspection GroovyAssignabilityCheck
+        version {
+            name = project.version
+            vcsTag = project.version
+            gpg {
+                sign = true
+            }
+            mavenCentralSync {
+                sync = true
+                user = getProjectProperty 'ossrhUsername'
+                password = getProjectProperty 'ossrhPassword'
+                close = '1' // '0' to NOT close
+            }
+        }
     }
 }
-bintrayUpload.dependsOn build, sourcesJar
-createReleaseTag.dependsOn bintrayUpload
 
+bintrayUpload.dependsOn build, sourcesJar

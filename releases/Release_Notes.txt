@@ -1,3 +1,10 @@
+1.2.9 - 2016 February 14
+
+* #54 optionally create separate css resources instead of inlining them in the html files.
+* improved Maven pom with much more information and correct dependencies declarations.
+* first version to be published on Maven Central as well as JCenter.
+* all artifacts are now signed with gpg by the Bintray public key
+
 1.2.8 - 2015 January 6
 
 * #51 Replaced usage of @Log with @Slf4j.

@@ -25,17 +25,9 @@ If you don't like the styles, you can use your own css stylesheets (see the cust
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
 
-In Maven:
+Spock-reports is available on Maven Central and on JCenter!
 
-Enable the JCenter repository:
-
-```xml
-    <repository>
-      <id>jcenter</id>
-      <name>JCenter Repo</name>
-      <url>http://jcenter.bintray.com</url>
-    </repository>
-```
+### If you are using Maven
 
 Add ``spock-reports`` to your ``<dependencies>``:
 
@@ -43,7 +35,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.8</version>
+  <version>1.2.9</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -54,28 +46,36 @@ Add ``spock-reports`` to your ``<dependencies>``:
   </exclusions>
 </dependency>
 
-<!-- // if you don't already have slf4j in the classpath, add this! -->
+<!-- // if you don't already have slf4j-api and an implementation of it in the classpath, add this! -->
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-api</artifactId>
   <version>1.7.13</version>
   <scope>test</scope>
 </dependency>
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-simple</artifactId>
+  <version>1.7.13</version>
+  <scope>test</scope>
+</dependency>
 ```
 
-In Gradle:
+### If you are using Gradle
 
 ```groovy
+// make sure to enable jcenter() or mavenCentral()
 repositories {
   jcenter()
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.8' ) {
+    testCompile( 'com.athaydes:spock-reports:1.2.9' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
-    // if you don't already have slf4j in the classpath, add this!
+    // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
     testCompile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'org.slf4j:slf4j-simple:1.7.13'
 }
 ```
 
@@ -142,6 +142,7 @@ com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.re
 com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=spock-feature-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
+com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss=true
 
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
@@ -151,13 +152,44 @@ com.athaydes.spockframework.report.outputDir=build/spock-reports
 
 # If set to true, hides blocks which do not have any description
 com.athaydes.spockframework.report.hideEmptyBlocks=false
+
+# Set properties specific to the TemplateReportCreator
+com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
 ```
 
-Notice that the location of the css file is relative to the classpath!
-That means that you have the freedom to place the css files in a separate jar, for example.
+The `outputDir` property is relative to the working directory.
 
-The output directory, on the other hand, is relative to the working directory.
 For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
+
+### Customizing the report stylesheets
+
+The CSS properties above can be set to either of the following kinds of values:
+
+* a classpath resource.
+* a URL (the value will be used to call Java's `new URL(value)`.
+
+If the value does not match a full URL starting with a protocol (eg. `file:///usr/local/css/report.css`),
+the value will be treated as an absolute path to a classpath resource.
+
+For example, if you set the value of a CSS property to `my-css/test-report.css`, the resource `/my-css/test-report.css`
+will be looked up in all Jars and directories which are part of the classpath.
+
+If you set the value to `http://myhost.com/css/test-report.css`, the resource at this URL will be read.
+
+#### Disabling CSS inlining
+
+By default, the CSS resource will be inlined in the HTML report.
+
+If you set the `inlineCss` property to `false`, then the CSS resource will be copied to the `outputDir` directory,
+together with the HTML reports, with the following names:
+
+* `feature-report.css` (for the `featureReportCss` property).
+* `summary-report.css` (for the `summaryReportCss` property).
+
+A link to the CSS resources with the above names will be added to the HTML file instead of inlining the CSS.
 
 ### System properties overrides
 

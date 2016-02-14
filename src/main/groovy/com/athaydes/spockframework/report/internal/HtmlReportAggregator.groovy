@@ -22,12 +22,15 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         // provided for testing only (need to Mock it)
     }
 
+    @Override
+    String cssDefaultName() { 'summary-report.css' }
+
     void aggregateReport( String specName, Map stats ) {
         aggregatedData[ specName ] = stats
     }
 
-    void writeOut( location ) {
-        final reportsDir = location as File // try to force it into being a File!
+    void writeOut() {
+        final reportsDir = outputDirectory as File // try to force it into being a File!
         if ( existsOrCanCreate( reportsDir ) ) {
             final aggregatedReport = new File( reportsDir, 'index.html' )
 
@@ -36,10 +39,10 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                 aggregatedData.clear()
                 aggregatedReport.write( reportFor( allData ) )
             } catch ( e ) {
-                log.warn( "${this.class.name} failed to create aggregated report", e )
+                log.warn( "Failed to create aggregated report", e )
             }
         } else {
-            log.warn "${this.class.name} cannot create output directory: ${reportsDir?.absolutePath}"
+            log.warn "Cannot create output directory: {}", reportsDir?.absolutePath
         }
     }
 
