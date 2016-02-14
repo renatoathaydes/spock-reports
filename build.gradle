@@ -94,9 +94,13 @@ configure( install.repositories.mavenInstaller ) {
     }
 }
 
+def getProjectProperty = { String propertyName ->
+    project.properties[ propertyName ]
+}
+
 bintray {
-    user = project.hasProperty( "bintrayUserName" ) ? bintrayUserName : null
-    key = project.hasProperty( "bintrayApiKey" ) ? bintrayApiKey : null
+    user = getProjectProperty "bintrayUserName"
+    key = getProjectProperty "bintrayApiKey"
     configurations = [ 'archives' ]
     publish = true
     pkg {
@@ -115,8 +119,8 @@ bintray {
             }
             mavenCentralSync {
                 sync = true
-                user = ossrhUsername
-                password = ossrhPassword
+                user = getProjectProperty 'ossrhUsername'
+                password = getProjectProperty 'ossrhPassword'
                 close = '1' // '0' to NOT close
             }
         }
