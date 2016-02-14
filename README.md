@@ -25,17 +25,9 @@ If you don't like the styles, you can use your own css stylesheets (see the cust
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
 
-In Maven:
+Spock-reports is available on Maven Central and on JCenter!
 
-Enable the JCenter repository:
-
-```xml
-    <repository>
-      <id>jcenter</id>
-      <name>JCenter Repo</name>
-      <url>http://jcenter.bintray.com</url>
-    </repository>
-```
+### If you are using Maven
 
 Add ``spock-reports`` to your ``<dependencies>``:
 
@@ -43,7 +35,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.8</version>
+  <version>1.2.9</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -54,28 +46,36 @@ Add ``spock-reports`` to your ``<dependencies>``:
   </exclusions>
 </dependency>
 
-<!-- // if you don't already have slf4j in the classpath, add this! -->
+<!-- // if you don't already have slf4j-api and an implementation of it in the classpath, add this! -->
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-api</artifactId>
   <version>1.7.13</version>
   <scope>test</scope>
 </dependency>
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-simple</artifactId>
+  <version>1.7.13</version>
+  <scope>test</scope>
+</dependency>
 ```
 
-In Gradle:
+### If you are using Gradle
 
 ```groovy
+// make sure to enable jcenter() or mavenCentral()
 repositories {
   jcenter()
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.8' ) {
+    testCompile( 'com.athaydes:spock-reports:1.2.9' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
-    // if you don't already have slf4j in the classpath, add this!
+    // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
     testCompile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'org.slf4j:slf4j-simple:1.7.13'
 }
 ```
 
