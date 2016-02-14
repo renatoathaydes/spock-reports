@@ -1,12 +1,11 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.util.Nullable
 
 @Slf4j
 class CssResource {
-
-    static final urlRegex = /[A-z]+:\/\/.+/
 
     final String css
     final boolean inlineCss
@@ -19,10 +18,19 @@ class CssResource {
     }
 
     String getText() {
-        def text = resource?.text ?: ''
+        def text = resource?.text
+        if ( !text ) {
+            log.warn( 'css resource seems to be empty: {}', resource )
+            return ''
+        }
+
+        log.debug( 'Found css resource ({} characters long)', text.size() )
+
         if ( inlineCss ) {
+            log.debug( "Inlining css in HTML report" )
             return text
         } else {
+            log.debug( "Writing css file to {}", cssFile.absolutePath )
             try {
                 cssFile.write text
             } catch ( e ) {
@@ -34,10 +42,8 @@ class CssResource {
 
     @Nullable
     private URL getResource() {
-        switch ( css ) {
-            case urlRegex: return urlResource
-            default: return classPathResource
-        }
+        if ( Utils.isUrl( css ) ) urlResource
+        else classPathResource
     }
 
     @Nullable
@@ -51,7 +57,7 @@ class CssResource {
                 log.warn( "Failed to set CSS resource to {} due to {}", css, e )
             }
         else
-            log.info "The CSS classpath resource does not exist: ${css}"
+            log.info "The CSS classpath resource does not exist: {}", css
         null
     }
 
@@ -59,7 +65,7 @@ class CssResource {
     private URL getUrlResource() {
         log.debug 'Getting URL resource text: {}', css
         try {
-            new URL( css )
+            return new URL( css )
         } catch ( e ) {
             log.warn( "Failed to set CSS resource as the URL {} could not be read due to {}", css, e )
         }
