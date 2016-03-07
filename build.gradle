@@ -25,6 +25,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
 
     testCompile "cglib:cglib-nodep:2.2.2"
+    testCompile "org.slf4j:slf4j-simple:1.7.13"
 }
 
 test {
