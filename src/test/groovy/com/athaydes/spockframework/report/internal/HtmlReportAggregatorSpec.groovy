@@ -22,8 +22,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.25, time: 0 ]
 
         and:
-        "An output directory"
+        "A clean output directory"
         def outputDir = "build/${this.class.simpleName}"
+        def outputDirFile = new File( outputDir )
+        if ( outputDirFile.directory ) {
+            assert outputDirFile.deleteDir()
+        }
 
         and:
         "A HtmlReportAggregator with mocked out dependencies and writeFooter() method"
@@ -107,7 +111,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
     def "Can aggregate reports data into a Map for persistence"() {
         given: 'A HtmlReportAggregator'
-        def aggregator = HtmlReportAggregator.instance
+        def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css', outputDirectory: 'out' )
 
         and: 'Some realistic, mocked out specData'
         def data = Stub( SpecData ) {
