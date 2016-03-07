@@ -13,13 +13,13 @@ import java.util.regex.Pattern
  */
 class ReportDataAggregator {
 
-    static final TEMP_AGGREGATED_DATA_FILE = '.aggregated_data'
+    static final AGGREGATED_DATA_FILE = 'aggregated_report.json'
 
     static final charset = Charset.forName( 'utf-8' )
     static final jsonParser = new JsonSlurper()
 
     static Map<String, Map> getAllAggregatedDataAndPersistLocalData( File dir, Map localData ) {
-        final rawFile = new File( dir, TEMP_AGGREGATED_DATA_FILE )
+        final rawFile = new File( dir, AGGREGATED_DATA_FILE )
         rawFile.createNewFile() // ensure file exists before locking it
 
         final dataFile = new RandomAccessFile( rawFile, 'rw' )
