@@ -27,7 +27,11 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     void aggregateReport( SpecData data, Map stats ) {
         def specName = data.info.description.className
-        aggregatedData[ specName ] = stats
+        def featureNames = data.featureRuns.feature.name
+        aggregatedData[ specName ] = [
+                features: featureNames,
+                stats: stats
+        ]
     }
 
     void writeOut() {
@@ -57,8 +61,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
     }
 
     @Override
-    protected void writeSummary( MarkupBuilder builder, Map stats ) {
-        def aggregateData = Utils.aggregateStats( stats )
+    protected void writeSummary( MarkupBuilder builder, Map json ) {
+        def stats = Utils.aggregateStats( json )
         def cssClassIfTrue = { isTrue, String cssClass ->
             if ( isTrue ) [ 'class': cssClass ] else Collections.emptyMap()
         }
@@ -77,14 +81,14 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                 }
                 tbody {
                     tr {
-                        td aggregateData.total
-                        td aggregateData.passed
-                        td( cssClassIfTrue( aggregateData.failed, 'failure' ), aggregateData.failed )
-                        td( cssClassIfTrue( aggregateData.fFails, 'failure' ), aggregateData.fFails )
-                        td( cssClassIfTrue( aggregateData.fErrors, 'error' ), aggregateData.fErrors )
-                        td( cssClassIfTrue( aggregateData.failed, 'failure' ), stringFormatter
-                                .toPercentage( Utils.successRate( aggregateData.total, aggregateData.failed ) ) )
-                        td stringFormatter.toTimeDuration( aggregateData.time )
+                        td stats.total
+                        td stats.passed
+                        td( cssClassIfTrue( stats.failed, 'failure' ), stats.failed )
+                        td( cssClassIfTrue( stats.fFails, 'failure' ), stats.fFails )
+                        td( cssClassIfTrue( stats.fErrors, 'error' ), stats.fErrors )
+                        td( cssClassIfTrue( stats.failed, 'failure' ), stringFormatter
+                                .toPercentage( Utils.successRate( stats.total, stats.failed ) ) )
+                        td stringFormatter.toTimeDuration( stats.time )
                     }
                 }
             }
@@ -106,7 +110,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             }
             tbody {
                 data.keySet().sort().each { String specName ->
-                    def stats = data[ specName ]
+                    def stats = data[ specName ].stats
                     def cssClasses = [ ]
                     if ( stats.failures ) cssClasses << 'failure'
                     if ( stats.errors ) cssClasses << 'error'

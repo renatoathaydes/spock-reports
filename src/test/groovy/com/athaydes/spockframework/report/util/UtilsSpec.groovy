@@ -61,18 +61,18 @@ class UtilsSpec extends Specification {
         where:
         aggregatedData | expected
         [
-                'A': [ failures   : 1, errors: 2,
-                       skipped    : 0, totalRuns: 10,
-                       successRate: 0.7, time: 1.25 ],
-                'B': [ failures   : 6, errors: 4,
-                       skipped    : 0, totalRuns: 20,
-                       successRate: 0.5, time: 2.0 ],
-                'C': [ failures   : 0, errors: 0,
-                       skipped    : 0, totalRuns: 1,
-                       successRate: 1.0, time: 3.0 ],
-                'D': [ failures   : 0, errors: 0,
-                       skipped    : 2, totalRuns: 3,
-                       successRate: 1.0, time: 2.0 ]
+                'A': [ stats: [ failures   : 1, errors: 2,
+                                skipped    : 0, totalRuns: 10,
+                                successRate: 0.7, time: 1.25 ] ],
+                'B': [ stats: [ failures   : 6, errors: 4,
+                                skipped    : 0, totalRuns: 20,
+                                successRate: 0.5, time: 2.0 ] ],
+                'C': [ stats: [ failures   : 0, errors: 0,
+                                skipped    : 0, totalRuns: 1,
+                                successRate: 1.0, time: 3.0 ] ],
+                'D': [ stats: [ failures   : 0, errors: 0,
+                                skipped    : 2, totalRuns: 3,
+                                successRate: 1.0, time: 2.0 ] ]
         ]              | [ total: 4, passed: 2, failed: 2, fFails: 7, fErrors: 6, time: 8.25, successRate: 0.5 ]
     }
 
