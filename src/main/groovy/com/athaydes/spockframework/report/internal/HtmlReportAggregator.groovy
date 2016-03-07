@@ -25,7 +25,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
     @Override
     String cssDefaultName() { 'summary-report.css' }
 
-    void aggregateReport( String specName, Map stats ) {
+    void aggregateReport( SpecData data, Map stats ) {
+        def specName = data.info.description.className
         aggregatedData[ specName ] = stats
     }
 

@@ -3,6 +3,8 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
 import groovy.xml.MarkupBuilder
+import org.junit.runner.Description
+import org.spockframework.runtime.model.SpecInfo
 
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
@@ -39,7 +41,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         when:
         "The spec data is provided to the HtmlReportAggregator"
-        aggregator.aggregateReport( 'Spec1', stats )
+        def specDataStub = Stub( SpecData ) {
+            getInfo() >> Stub( SpecInfo ) {
+                getDescription() >> Description.createTestDescription( 'Spec1', 'Spec1' )
+            }
+        }
+        aggregator.aggregateReport( specDataStub, stats )
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
 
@@ -78,7 +85,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         when:
         "The specs data is provided to the HtmlReportAggregator"
         allSpecs.each { String name, Map stats ->
-            aggregator.aggregateReport( name, stats )
+            def specDataStub = Stub( SpecData ) {
+                getInfo() >> Stub( SpecInfo ) {
+                    getDescription() >> Description.createTestDescription( name , name)
+                }
+            }
+            aggregator.aggregateReport( specDataStub, stats )
         }
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
