@@ -2,6 +2,22 @@
 
 > Most recent first
 
+* `08th of March 2016`
+
+1.2.10 release - this release brings an improved aggregated report in the JSON format.
+
+Previous versions of spock-reports already generated a file called .aggregated_data in the reports directory.
+This file was a JSON representation of all specifications run by Spock, and was used to keep track
+of tests running in separate processes, so that the index.html file could contain all tests, not only the ones
+running in the last process to terminate.
+
+This file, however, turned out to be useful when you have multi-projects and end up with multiple index.html reports
+for each project... because this file is in the json format and is so easy to parse, external tools can use these
+files to aggregate the summaries of all projects into a single, final report, much more easily.
+
+In this release, the JSON report aggregation file was improved and renamed to `aggregated_report.json`
+so that it is more visible and can be freely used by external tools.
+
 * `14th of February 2016`
 
 1.2.9 release - this is the first release to be published on Maven Central!
