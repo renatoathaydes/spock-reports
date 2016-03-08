@@ -102,7 +102,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         td stats.skipped
                         td stringFormatter.toPercentage( stats.successRate )
                         td stringFormatter.toTimeDuration( stats.time )
-                        reportAggregator?.aggregateReport( data.info.description.className, stats )
+                        reportAggregator?.aggregateReport( data, stats )
                     }
                 }
             }

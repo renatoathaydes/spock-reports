@@ -113,7 +113,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         then:
         "The stats shown in the summary report and the outputDir are passed on to the mock report aggregator"
-        1 * reportCreator.reportAggregator.aggregateReport( this.class.name, _ )
+        1 * reportCreator.reportAggregator.aggregateReport( _, _ )
     }
 
     def "The report aggregator should be passed on the summary css from the report creator"() {

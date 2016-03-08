@@ -3,6 +3,9 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
 import groovy.xml.MarkupBuilder
+import org.junit.runner.Description
+import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.runtime.model.SpecInfo
 
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
@@ -19,8 +22,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.25, time: 0 ]
 
         and:
-        "An output directory"
+        "A clean output directory"
         def outputDir = "build/${this.class.simpleName}"
+        def outputDirFile = new File( outputDir )
+        if ( outputDirFile.directory ) {
+            assert outputDirFile.deleteDir()
+        }
 
         and:
         "A HtmlReportAggregator with mocked out dependencies and writeFooter() method"
@@ -39,7 +46,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         when:
         "The spec data is provided to the HtmlReportAggregator"
-        aggregator.aggregateReport( 'Spec1', stats )
+        def specDataStub = Stub( SpecData ) {
+            getInfo() >> Stub( SpecInfo ) {
+                getDescription() >> Description.createTestDescription( 'Spec1', 'Spec1' )
+            }
+        }
+        aggregator.aggregateReport( specDataStub, stats )
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
 
@@ -78,7 +90,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         when:
         "The specs data is provided to the HtmlReportAggregator"
         allSpecs.each { String name, Map stats ->
-            aggregator.aggregateReport( name, stats )
+            def specDataStub = Stub( SpecData ) {
+                getInfo() >> Stub( SpecInfo ) {
+                    getDescription() >> Description.createTestDescription( name, name )
+                }
+            }
+            aggregator.aggregateReport( specDataStub, stats )
         }
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
@@ -90,6 +107,49 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         and:
         "The contents are functionally the same as expected"
         minify( reportFile.text ) == minify( testSummaryExpectedHtml() )
+    }
+
+    def "Can aggregate reports data into a Map for persistence"() {
+        given: 'A HtmlReportAggregator'
+        def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css', outputDirectory: 'out' )
+
+        and: 'Some realistic, mocked out specData'
+        def data = Stub( SpecData ) {
+            getInfo() >> Stub( SpecInfo ) {
+                getDescription() >> Description.createTestDescription( 'myClass', 'myClass' )
+                getAllFeatures() >> [
+                        Stub( FeatureInfo ) {
+                            isSkipped() >> false
+                            getName() >> 'cFeature'
+                        },
+                        Stub( FeatureInfo ) {
+                            isSkipped() >> true
+                            getName() >> 'aFeature'
+                        },
+                        Stub( FeatureInfo ) {
+                            isSkipped() >> false
+                            getName() >> 'bFeature'
+                        }
+                ]
+            }
+        }
+
+        and: 'Some statistics'
+        def stats = [ x: 1, y: 2 ]
+
+        when: 'The report aggregator aggregates the data and stats'
+        aggregator.aggregateReport( data, stats )
+
+        then: 'The resulting Map should contain an entry for the specData class'
+        aggregator.aggregatedData.containsKey( 'myClass' )
+        aggregator.aggregatedData.size() == 1
+
+        Map json = aggregator.aggregatedData.myClass
+
+        and: 'The Map within that key contains the correct information regarding the spec'
+        json.stats == stats
+        json.ignoredFeatures == [ 'aFeature' ]
+        json.executedFeatures == [ 'bFeature', 'cFeature' ]
     }
 
     private String testSummaryExpectedHtml() {

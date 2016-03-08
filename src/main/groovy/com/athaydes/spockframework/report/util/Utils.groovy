@@ -56,10 +56,12 @@ class Utils {
 
     static Map aggregateStats( Map<String, Map> aggregatedData ) {
         def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
-        aggregatedData.values().each { Map stats ->
+        aggregatedData.values().each { Map json ->
+            def stats = json.stats
+            def isFailure = stats.failures + stats.errors > 0
             result.total += 1
-            result.passed += ( stats.failures || stats.errors ? 0 : 1 )
-            result.failed += ( stats.failures || stats.errors ? 1 : 0 )
+            result.passed += ( isFailure ? 0 : 1 )
+            result.failed += ( isFailure ? 1 : 0 )
             result.fFails += stats.failures
             result.fErrors += stats.errors
             result.time += stats.time
