@@ -57,7 +57,7 @@ class ProblemBlockWriterSpec extends Specification {
         def result = problemBlockWriter.formatProblemMessage throwable
 
         then: 'The given String contains the stack-trace of the Throwable'
-        result.startsWith 'java.lang.RuntimeException: An error\n'
+        result.startsWith 'java.lang.RuntimeException: An error'
         result.readLines().size() > 5
         result.readLines().drop( 1 )*.trim().every { it.startsWith( 'at ' ) }
         result.contains( "at ${this.class.name}" )
