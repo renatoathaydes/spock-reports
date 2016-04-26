@@ -35,7 +35,7 @@ class TemplateReportCreatorSpec extends Specification {
     }
 
     String expectedText() {
-        this.class.getResource( '/FakeTest.md' ).text.replace( '${projectUrl}', SpockReportExtension.PROJECT_URL )
+        this.class.getResource( '/FakeTest.md' ).text.replace( '${projectUrl}', SpockReportExtension.PROJECT_URL ).replaceAll("\r",'')
     }
 
 }
