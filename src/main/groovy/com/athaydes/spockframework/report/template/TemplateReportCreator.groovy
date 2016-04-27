@@ -18,6 +18,8 @@ import org.spockframework.runtime.model.IterationInfo
 @Slf4j
 class TemplateReportCreator implements IReportCreator {
 
+    static final reportAggregator = new TemplateReportAggregator()
+
     final stringProcessor = new StringTemplateProcessor()
 
     // IReportCreator shared properties
@@ -32,8 +34,10 @@ class TemplateReportCreator implements IReportCreator {
 
     void done() {
         def reportsDir = Utils.createDir( outputDir )
-        TemplateReportAggregator.instance
-                .writeOut( new File( reportsDir, summaryFileName ), summaryTemplateFile )
+
+        reportAggregator.writeOut(
+                new File( reportsDir, summaryFileName ),
+                summaryTemplateFile )
     }
 
     @Override
@@ -45,7 +49,7 @@ class TemplateReportCreator implements IReportCreator {
         try {
             if ( reportsDir.isDirectory() ) {
                 reportFile.write( reportFor( data ) )
-                TemplateReportAggregator.instance.addData( data )
+                reportAggregator.addData( data )
             } else {
                 log.warn "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"
             }

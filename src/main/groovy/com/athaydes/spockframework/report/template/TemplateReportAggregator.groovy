@@ -8,7 +8,6 @@ import groovy.util.logging.Slf4j
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
 
-@Singleton( lazy = true )
 @Slf4j
 class TemplateReportAggregator {
 
