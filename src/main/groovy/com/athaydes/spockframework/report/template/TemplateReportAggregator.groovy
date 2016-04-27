@@ -14,9 +14,15 @@ class TemplateReportAggregator {
 
     private final Map<String, Map> aggregatedData = [ : ]
 
-    void addData( SpecData specData ) {
-        log.debug( "Adding data to report ${specData.info.description.className}" )
-        aggregatedData[ specData.info.description.className ] = Utils.stats( specData )
+    void addData( SpecData data ) {
+        log.debug( "Adding data to report {}", data.info.description.className )
+
+        def specName = data.info.description.className
+        def stats = Utils.stats( data )
+        def allFeatures = data.info.allFeatures.groupBy { feature -> feature.skipped }
+
+        aggregatedData[ specName ] = Utils.createAggregatedData(
+                allFeatures[ false ], allFeatures[ true ], stats )
     }
 
     private String summary( String templateLocation, Map allData ) {
@@ -38,7 +44,7 @@ class TemplateReportAggregator {
 
     void writeOut( File summaryFile, String templateLocation ) {
         final reportsDir = summaryFile.parentFile
-        log.info( "Writing summary report to ${summaryFile.absolutePath}" )
+        log.info( "Writing summary report to {}", summaryFile.absolutePath )
 
         try {
             def allData = getAllAggregatedDataAndPersistLocalData( reportsDir, aggregatedData )

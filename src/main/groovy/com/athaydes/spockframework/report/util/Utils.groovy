@@ -121,4 +121,14 @@ class Utils {
         text ==~ urlPattern
     }
 
+    static Map createAggregatedData( List<FeatureInfo> executedFeatures,
+                                     List<FeatureInfo> ignoredFeatures,
+                                     Map stats ) {
+        [
+                executedFeatures: executedFeatures?.name?.sort() ?: [ ],
+                ignoredFeatures : ignoredFeatures?.name?.sort() ?: [ ],
+                stats           : stats
+        ]
+    }
+
 }

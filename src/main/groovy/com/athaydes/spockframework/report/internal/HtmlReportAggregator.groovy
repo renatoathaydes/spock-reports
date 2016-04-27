@@ -29,11 +29,8 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         def specName = data.info.description.className
         def allFeatures = data.info.allFeatures.groupBy { feature -> feature.skipped }
 
-        aggregatedData[ specName ] = [
-                executedFeatures: allFeatures[ false ]?.name?.sort() ?: [ ],
-                ignoredFeatures : allFeatures[ true ]?.name?.sort() ?: [ ],
-                stats           : stats
-        ]
+        aggregatedData[ specName ] = Utils.createAggregatedData(
+                allFeatures[ false ], allFeatures[ true ], stats )
     }
 
     void writeOut() {
