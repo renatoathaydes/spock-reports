@@ -15,7 +15,8 @@
 |Name  | Features | Failed | Errors | Skipped | Success rate | Time |
 |------|----------|--------|--------|---------|--------------|------|
 <% data.each { name, map ->
- %>| $name | ${map.totalRuns} | ${map.failures} | ${map.errors} | ${map.skipped} | ${map.successRate} | ${map.time} |
+      def s = map.stats
+ %>| $name | ${s.totalRuns} | ${s.failures} | ${s.errors} | ${s.skipped} | ${s.successRate} | ${s.time} |
 <% }
  %>
 
