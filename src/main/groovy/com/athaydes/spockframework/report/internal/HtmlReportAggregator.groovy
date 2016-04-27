@@ -10,7 +10,6 @@ import static com.athaydes.spockframework.report.internal.ReportDataAggregator.g
  *
  * User: Renato
  */
-@Singleton( lazy = true )
 @Slf4j
 class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 

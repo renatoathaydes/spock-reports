@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         implements IReportCreator {
 
-    def reportAggregator = HtmlReportAggregator.instance
+    static reportAggregator = new HtmlReportAggregator()
     def stringFormatter = new StringFormatHelper()
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
