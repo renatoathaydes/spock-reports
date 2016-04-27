@@ -78,8 +78,8 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         when:
         "The css is set to the file location relative to the classpath"
-        def reportCreator = new HtmlReportCreator( css:
-                this.class.package.name.replace( '.', '/' ) + '/my.css' )
+        def reportCreator = new HtmlReportCreator( new HtmlReportAggregator() )
+        reportCreator.css = this.class.package.name.replace( '.', '/' ) + '/my.css'
 
         then:
         "The css property of the report becomes the contents of the css file"
@@ -91,8 +91,8 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     def "The report aggregator should be given the required information for each spec visited"() {
         given:
-        "A HtmlReportCreator"
-        def reportCreator = new HtmlReportCreator()
+        "A HtmlReportCreator with a mocked HtmlReportAggregator"
+        def reportCreator = new HtmlReportCreator( Mock( HtmlReportAggregator ) )
 
         and:
         "The HtmlReportCreator has a known outputDir"
@@ -100,7 +100,6 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "A mock report aggregator, a stubbed SpecData and an injected MarkupBuilder"
-        reportCreator.reportAggregator = Mock( HtmlReportAggregator )
         def stubSpecData = Stub( SpecData )
         def stubInfo = Stub( SpecInfo )
         stubSpecData.info >> stubInfo
@@ -119,7 +118,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
     def "The report aggregator should be passed on the summary css from the report creator"() {
         given:
         "A HtmlReportCreator"
-        def reportCreator = new HtmlReportCreator()
+        def reportCreator = new HtmlReportCreator( new HtmlReportAggregator() )
 
         and:
         "A css file location relative to the classpath"

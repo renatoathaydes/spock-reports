@@ -22,10 +22,21 @@ import java.lang.annotation.Annotation
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         implements IReportCreator {
 
-    static reportAggregator = new HtmlReportAggregator()
+    private static final defaultAggregator = new HtmlReportAggregator()
+
+    final HtmlReportAggregator reportAggregator
+
     def stringFormatter = new StringFormatHelper()
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
+
+    HtmlReportCreator() {
+        reportAggregator = defaultAggregator
+    }
+
+    HtmlReportCreator( HtmlReportAggregator reportAggregator ) {
+        this.reportAggregator = reportAggregator
+    }
 
     void setFeatureReportCss( String css ) {
         super.setCss( css )
