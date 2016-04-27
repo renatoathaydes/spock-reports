@@ -1,4 +1,4 @@
-<% /* 2nd param "true" is needed f*/
+<% /* 2nd param "true" is needed for summary, for report it is false (default) */
 def stats = utils.aggregateStats( data, true )
  %># Specification run results
 
