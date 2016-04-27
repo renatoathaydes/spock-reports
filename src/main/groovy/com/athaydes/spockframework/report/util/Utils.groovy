@@ -54,10 +54,10 @@ class Utils {
           successRate: successRate, time: data.totalTime ]
     }
 
-    static Map aggregateStats( Map<String, Map> aggregatedData ) {
+    static Map aggregateStats( Map<String, Map> aggregatedData, boolean summary = false) {
         def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
         aggregatedData.values().each { Map json ->
-            def stats = json.stats
+            def stats = summary ? json : json.stats
             def isFailure = stats.failures + stats.errors > 0
             result.total += 1
             result.passed += ( isFailure ? 0 : 1 )
