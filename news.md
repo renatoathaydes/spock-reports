@@ -2,6 +2,11 @@
 
 > Most recent first
 
+* `19th of May 2016`
+
+This is a small bug fix release.
+Importantly, though, it fixes the basic template report summary which had stopped working in version `1.2.10`.
+
 * `08th of March 2016`
 
 1.2.10 release - this release brings an improved aggregated report in the JSON format.

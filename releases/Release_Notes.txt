@@ -1,3 +1,8 @@
+1.2.11 - 2016 May 19
+
+* #63 #67 fixed template reports aggregator NPE
+* #65 fixed logging in report aggregator classes
+
 1.2.10 - 2016 March 08
 
 * Improved contents of the aggregated_data file so it may be used by external tools.
