@@ -152,8 +152,11 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void error( ErrorInfo error ) {
-        def iteration = currentIteration ?: dummySpecIteration()
-        currentRun().failuresByIteration[ iteration ] << new SpecProblem( error )
+        // ignore any errors not associated with a spec
+        if (specData != null) {
+           def iteration = currentIteration ?: dummySpecIteration()
+           currentRun().failuresByIteration[ iteration ] << new SpecProblem( error )
+        }
     }
 
     @Override
