@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
+import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
@@ -11,6 +12,7 @@ import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
+import org.spockframework.util.Nullable
 
 /**
  *
@@ -107,7 +109,9 @@ class SpockReportExtension implements IGlobalExtension {
 class SpecInfoListener implements IRunListener {
 
     final IReportCreator reportCreator
+    @Nullable
     SpecData specData
+    @Nullable
     IterationInfo currentIteration
     long startT
 
@@ -152,10 +156,25 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void error( ErrorInfo error ) {
-        // ignore any errors not associated with a spec
-        if (specData != null) {
-           def iteration = currentIteration ?: dummySpecIteration()
-           currentRun().failuresByIteration[ iteration ] << new SpecProblem( error )
+        try {
+            def noCurrentSpecData = ( specData == null )
+
+            if ( noCurrentSpecData ) { // Error in initialization!
+                // call beforeSpec because Spock does not do it in this case
+                beforeSpec error.method.parent
+            }
+
+            def errorInfo = new ErrorInfo( error.method, new SpecInitializationError( error.exception ) )
+            def iteration = currentIteration ?: dummySpecIteration()
+            currentRun( true ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
+
+            if ( noCurrentSpecData ) {
+                // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
+                afterSpec specData.info
+            }
+        } catch ( Throwable e ) {
+            // nothing we can do here
+            e.printStackTrace()
         }
     }
 
@@ -169,9 +188,18 @@ class SpecInfoListener implements IRunListener {
         // feature already knows if it's skipped
     }
 
-    private FeatureRun currentRun() {
+    private FeatureRun currentRun( boolean isInitializationError = false ) {
         if ( specData.featureRuns.empty ) {
             specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
+        }
+
+        if ( isInitializationError ) {
+            // it is necessary to modify the name of the actual FeatureInfo to avoid erroneously showing
+            // the first feature as having failed
+            specData.info.allFeatures.each {
+                def originalGetName = it.&getName
+                it.metaClass.getName = { '[SPEC INITIALIZATION ERROR] ' + originalGetName() }
+            }
         }
         specData.featureRuns.last()
     }
