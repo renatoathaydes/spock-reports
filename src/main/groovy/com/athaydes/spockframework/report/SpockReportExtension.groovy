@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report
 
 import com.athaydes.spockframework.report.internal.ConfigLoader
+import com.athaydes.spockframework.report.internal.EmptyInitializationException
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecInitializationError
@@ -155,27 +156,32 @@ class SpecInfoListener implements IRunListener {
     }
 
     @Override
-    void error( ErrorInfo error ) {
+    void error( ErrorInfo errorInfo ) {
         try {
-            def noCurrentSpecData = ( specData == null )
+            def errorInInitialization = ( specData == null )
 
-            ErrorInfo errorInfo
-
-            if ( noCurrentSpecData ) { // Error in initialization!
+            if ( errorInInitialization ) {
                 // call beforeSpec because Spock does not do it in this case
-                beforeSpec error.method.parent
+                beforeSpec errorInfo.method.parent
 
-                errorInfo = new ErrorInfo( error.method, new SpecInitializationError( error.exception ) )
-            } else {
-                errorInfo = error
-            }
+                def currentError = new ErrorInfo( errorInfo.method, new SpecInitializationError( errorInfo.exception ) )
 
-            def iteration = currentIteration ?: dummySpecIteration()
-            currentRun( noCurrentSpecData ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
+                // simulate all features failing
+                for ( featureInfo in errorInfo.method.parent.allFeatures ) {
+                    markWithInitializationError featureInfo
+                    beforeFeature featureInfo
+                    error currentError
+                    afterFeature featureInfo
 
-            if ( noCurrentSpecData ) {
+                    // only the first error needs to be complete, use a dummy error for the next features
+                    currentError = new ErrorInfo( errorInfo.method, EmptyInitializationException.instance )
+                }
+
                 // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
                 afterSpec specData.info
+            } else {
+                def iteration = currentIteration ?: dummySpecIteration()
+                currentRun().failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
             }
         } catch ( Throwable e ) {
             // nothing we can do here
@@ -193,20 +199,16 @@ class SpecInfoListener implements IRunListener {
         // feature already knows if it's skipped
     }
 
-    private FeatureRun currentRun( boolean isInitializationError = false ) {
+    private FeatureRun currentRun() {
         if ( specData.featureRuns.empty ) {
             specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
         }
-
-        if ( isInitializationError ) {
-            // it is necessary to modify the name of the actual FeatureInfo to avoid erroneously showing
-            // the first feature as having failed
-            specData.info.allFeatures.each {
-                def originalGetName = it.&getName
-                it.metaClass.getName = { '[SPEC INITIALIZATION ERROR] ' + originalGetName() }
-            }
-        }
         specData.featureRuns.last()
+    }
+
+    private void markWithInitializationError( FeatureInfo featureInfo ) {
+        def originalGetName = featureInfo.&getName
+        featureInfo.metaClass.getName = { '[INITIALIZATION ERROR] ' + originalGetName() }
     }
 
     private IterationInfo dummySpecIteration() {
