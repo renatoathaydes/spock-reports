@@ -78,7 +78,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
             } catch ( e ) {
-                log.warn( "Failed to create report for {} due to {}", specClassName, e )
+                log.warn( "Failed to create report for $specClassName", e )
             }
 
         } else {
@@ -149,7 +149,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
         builder.ul( id: 'toc' ) {
-            data.info.allFeatures.each { FeatureInfo feature ->
+            for ( FeatureInfo feature in data.info.allFeatures ) {
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.each { iteration, problems ->
@@ -175,7 +175,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeature( MarkupBuilder builder, SpecData data ) {
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
-        data.info.allFeatures.each { FeatureInfo feature ->
+        for ( FeatureInfo feature in data.info.allFeatures ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.each { iteration, problems ->
@@ -208,7 +208,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
-        feature.blocks.each { BlockInfo block ->
+        for ( BlockInfo block in feature.blocks ) {
             writeBlock( builder, block, feature, iteration )
         }
     }
@@ -250,7 +250,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 div( 'class': 'spec-examples' ) {
                     table( 'class': 'ex-table' ) {
                         thead {
-                            run.feature.parameterNames.each { param ->
+                            for ( param in run.feature.parameterNames ) {
                                 th( 'class': 'ex-header', param )
                             }
                         }
@@ -272,7 +272,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     private void writeIteration( MarkupBuilder builder, IterationInfo iteration,
                                  List<SpecProblem> errors ) {
         builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
-            iteration.dataValues.each { value ->
+            for ( value in iteration.dataValues ) {
                 td( 'class': 'ex-value', value )
             }
             td( 'class': 'ex-result', iterationResult( errors ) )
@@ -316,7 +316,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             builder.div( 'class': 'issues' ) {
                 div( description )
                 ul {
-                    annotation.value().each { String value ->
+                    for ( String value in annotation.value() ) {
                         li {
                             if ( Utils.isUrl( value ) ) {
                                 a( 'href': value ) {
