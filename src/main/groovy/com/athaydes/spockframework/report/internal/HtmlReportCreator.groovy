@@ -152,8 +152,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             for ( FeatureInfo feature in data.info.allFeatures ) {
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
-                    run.failuresByIteration.each { iteration, problems ->
-                        final String name = featureNameFrom( feature, iteration )
+                    run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
+                        final String name = featureNameFrom( feature, iteration, index )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         feature.skipped ? 'ignored' : 'pass'
@@ -178,8 +178,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         for ( FeatureInfo feature in data.info.allFeatures ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
-                run.failuresByIteration.each { iteration, problems ->
-                    String name = featureNameFrom( feature, iteration )
+                run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
+                    String name = featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
@@ -207,14 +207,21 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private static String featureNameFrom( FeatureInfo feature, IterationInfo iteration ) {
-        final String name
+    private static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
         if ( feature.iterationNameProvider ) {
-            name = feature.iterationNameProvider.getName( iteration )
+            def name = feature.iterationNameProvider.getName( iteration )
+
+            // reset the index instance to fix #70
+            def nameMatcher = name =~ /(.*)\[\d+\]$/
+            if ( nameMatcher.matches() ) {
+                def rawName = nameMatcher.group( 1 )
+                return "$rawName [$index]"
+            } else {
+                return name
+            }
         } else {
-            name = feature.name
+            return feature.name
         }
-        name
     }
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
