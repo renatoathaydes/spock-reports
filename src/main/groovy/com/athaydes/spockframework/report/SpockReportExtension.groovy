@@ -159,14 +159,19 @@ class SpecInfoListener implements IRunListener {
         try {
             def noCurrentSpecData = ( specData == null )
 
+            ErrorInfo errorInfo
+
             if ( noCurrentSpecData ) { // Error in initialization!
                 // call beforeSpec because Spock does not do it in this case
                 beforeSpec error.method.parent
+
+                errorInfo = new ErrorInfo( error.method, new SpecInitializationError( error.exception ) )
+            } else {
+                errorInfo = error
             }
 
-            def errorInfo = new ErrorInfo( error.method, new SpecInitializationError( error.exception ) )
             def iteration = currentIteration ?: dummySpecIteration()
-            currentRun( true ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
+            currentRun( noCurrentSpecData ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
 
             if ( noCurrentSpecData ) {
                 // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
