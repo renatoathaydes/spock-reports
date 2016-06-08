@@ -153,7 +153,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.each { iteration, problems ->
-                        final name = feature.iterationNameProvider.getName( iteration )
+                        final String name = featureNameFrom( feature, iteration )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         feature.skipped ? 'ignored' : 'pass'
@@ -179,7 +179,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.each { iteration, problems ->
-                    final name = feature.iterationNameProvider.getName( iteration )
+                    String name = featureNameFrom( feature, iteration )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
@@ -205,6 +205,16 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 }
             }
         }
+    }
+
+    private static String featureNameFrom( FeatureInfo feature, IterationInfo iteration ) {
+        final String name
+        if ( feature.iterationNameProvider ) {
+            name = feature.iterationNameProvider.getName( iteration )
+        } else {
+            name = feature.name
+        }
+        name
     }
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
