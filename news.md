@@ -6,8 +6,12 @@
 
 Version 1.2.12 has been released!
 
-Several bug fixes in this release. Also, some modest performance improvements.
-This version ensures that the report will show features in their execution order. This was not the case previously.
+Besides a few bug fixes and modest performance improvements, this release brings much better handling of failures
+during Specification setup. All features of the Specification will be shown as FAILED, and the error will be displayed 
+in the report under the first feature (to show the stacktrace, just enable that option in the config file).
+
+This version also ensures that the report will show features in their execution order.
+This was not necessarily the case previously.
 Thanks to @tilmanginzel for the contribution to this feature. 
 
 * `19th of May 2016`
