@@ -117,7 +117,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def data = Stub( SpecData ) {
             getInfo() >> Stub( SpecInfo ) {
                 getDescription() >> Description.createTestDescription( 'myClass', 'myClass' )
-                getAllFeatures() >> [
+                getAllFeaturesInExecutionOrder() >> [
                         Stub( FeatureInfo ) {
                             isSkipped() >> false
                             getName() >> 'cFeature'

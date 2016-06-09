@@ -47,7 +47,7 @@ class Utils {
     static Map stats( SpecData data ) {
         def failures = countProblems( data.featureRuns, this.&isFailure )
         def errors = countProblems( data.featureRuns, this.&isError )
-        def skipped = data.info.allFeatures.count { FeatureInfo f -> f.skipped }
+        def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> f.skipped }
         def total = countFeatures( data.featureRuns )
         def successRate = successRate( total, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: total,
