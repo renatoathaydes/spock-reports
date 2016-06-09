@@ -167,7 +167,7 @@ class SpecInfoListener implements IRunListener {
                 def currentError = new ErrorInfo( errorInfo.method, new SpecInitializationError( errorInfo.exception ) )
 
                 // simulate all features failing
-                for ( featureInfo in errorInfo.method.parent.allFeatures ) {
+                for ( featureInfo in errorInfo.method.parent.allFeaturesInExecutionOrder ) {
                     markWithInitializationError featureInfo
                     beforeFeature featureInfo
                     error currentError

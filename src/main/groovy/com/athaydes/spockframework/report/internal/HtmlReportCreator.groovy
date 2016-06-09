@@ -149,7 +149,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
         builder.ul( id: 'toc' ) {
-            for ( FeatureInfo feature in data.info.allFeatures ) {
+            for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
@@ -175,7 +175,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeature( MarkupBuilder builder, SpecData data ) {
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
-        for ( FeatureInfo feature in data.info.allFeatures ) {
+        for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
