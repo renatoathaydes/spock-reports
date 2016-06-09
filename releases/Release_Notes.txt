@@ -1,3 +1,11 @@
+1.2.12 - 2016 June 09
+
+* #68 fixed NPE caused by Spec setup method throwing an Exception
+* small performance improvements in HTML report creator
+* #70 fixed index of unrolled feature items
+* ToC link to unrolled features now works correctly
+* #71 report shows features in execution order consistently (by @tilmanginzel)
+
 1.2.11 - 2016 May 19
 
 * #63 #67 fixed template reports aggregator NPE

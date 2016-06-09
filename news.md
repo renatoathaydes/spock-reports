@@ -2,6 +2,14 @@
 
 > Most recent first
 
+* `09th of June 2016`
+
+Version 1.2.12 has been released!
+
+Several bug fixes in this release. Also, some modest performance improvements.
+This version ensures that the report will show features in their execution order. This was not the case previously.
+Thanks to @tilmanginzel for the contribution to this feature. 
+
 * `19th of May 2016`
 
 This is a small bug fix release.
