@@ -153,7 +153,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
-                        final String name = featureNameFrom( feature, iteration, index )
+                        final String name = Utils.featureNameFrom( feature, iteration, index )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         feature.skipped ? 'ignored' : 'pass'
@@ -179,7 +179,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
-                    String name = featureNameFrom( feature, iteration, index )
+                    String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
@@ -207,22 +207,6 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
-        if ( feature.iterationNameProvider ) {
-            def name = feature.iterationNameProvider.getName( iteration )
-
-            // reset the index instance to fix #70
-            def nameMatcher = name =~ /(.*)\[\d+\]$/
-            if ( nameMatcher.matches() ) {
-                def rawName = nameMatcher.group( 1 )
-                return "$rawName [$index]"
-            } else {
-                return name
-            }
-        } else {
-            return feature.name
-        }
-    }
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
         for ( BlockInfo block in feature.blocks ) {

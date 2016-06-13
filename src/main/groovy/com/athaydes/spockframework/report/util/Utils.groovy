@@ -131,4 +131,20 @@ class Utils {
         ]
     }
 
+    static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
+        if ( feature.iterationNameProvider ) {
+            def name = feature.iterationNameProvider.getName( iteration )
+
+            // reset the index instance to fix #70
+            def nameMatcher = name =~ /(.*)\[\d+\]$/
+            if ( nameMatcher.matches() ) {
+                def rawName = nameMatcher.group( 1 )
+                return "$rawName [$index]"
+            } else {
+                return name
+            }
+        } else {
+            return feature.name
+        }
+    }
 }
