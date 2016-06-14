@@ -132,7 +132,7 @@ class Utils {
     }
 
     static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
-        if ( feature.iterationNameProvider ) {
+        if ( feature.iterationNameProvider && iteration.dataValues?.length > 0) {
             def name = feature.iterationNameProvider.getName( iteration )
 
             // reset the index instance to fix #70
