@@ -78,7 +78,7 @@ add( 1, 2 ) == 3
 #### Issues:
 
 * http://myhost.com/issues/995
-* http://myhost.com/issues/973
+* https://myhost.com/issues/973
 
 Result: **ERROR**
 
