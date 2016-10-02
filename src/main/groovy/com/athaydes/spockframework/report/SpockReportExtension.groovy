@@ -6,6 +6,7 @@ import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
+import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
@@ -107,6 +108,7 @@ class SpockReportExtension implements IGlobalExtension {
 
 }
 
+@Slf4j
 class SpecInfoListener implements IRunListener {
 
     final IReportCreator reportCreator
@@ -123,33 +125,38 @@ class SpecInfoListener implements IRunListener {
     @Override
     synchronized void beforeSpec( SpecInfo spec ) {
         specData = new SpecData( info: spec )
+        log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
         startT = System.currentTimeMillis()
     }
 
     @Override
     void beforeFeature( FeatureInfo feature ) {
+        log.debug( "Before feature: {}", feature.name )
         specData.featureRuns << new FeatureRun( feature: feature )
     }
 
     @Override
     void beforeIteration( IterationInfo iteration ) {
+        log.debug( "Before iteration: {}", iteration.name )
         currentRun().failuresByIteration[ iteration ] = [ ]
         currentIteration = iteration
     }
 
     @Override
     void afterIteration( IterationInfo iteration ) {
+        log.debug( "After iteration: {}", iteration.name )
         currentIteration = null
     }
 
     @Override
     void afterFeature( FeatureInfo feature ) {
-
+        log.debug( "After feature: {}", feature.name )
     }
 
     @Override
     void afterSpec( SpecInfo spec ) {
         assert specData.info == spec
+        log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - startT
         reportCreator.createReportFor specData
         specData = null
@@ -159,15 +166,20 @@ class SpecInfoListener implements IRunListener {
     void error( ErrorInfo errorInfo ) {
         try {
             def errorInInitialization = ( specData == null )
+            log.debug( "Error on spec: {}", errorInInitialization ?
+                    "<${EmptyInitializationException.INIT_ERROR}>" :
+                    Utils.getSpecClassName( specData ) )
 
             if ( errorInInitialization ) {
                 // call beforeSpec because Spock does not do it in this case
-                beforeSpec errorInfo.method.parent
+                def specInfo = errorInfo.method.parent
+                beforeSpec specInfo
 
                 def currentError = new ErrorInfo( errorInfo.method, new SpecInitializationError( errorInfo.exception ) )
+                def features = specInfo.allFeaturesInExecutionOrder
 
                 // simulate all features failing
-                for ( featureInfo in errorInfo.method.parent.allFeaturesInExecutionOrder ) {
+                if ( features ) for ( featureInfo in features ) {
                     markWithInitializationError featureInfo
                     beforeFeature featureInfo
                     error currentError
@@ -175,6 +187,14 @@ class SpecInfoListener implements IRunListener {
 
                     // only the first error needs to be complete, use a dummy error for the next features
                     currentError = new ErrorInfo( errorInfo.method, EmptyInitializationException.instance )
+                } else {
+                    // the error occurred before even the features could be initialized,
+                    // make up a fake failed feature to show in the report
+                    specData.initializationError = currentError
+                    def featureInfo = dummyFeature()
+                    beforeFeature featureInfo
+                    error currentError
+                    afterFeature featureInfo
                 }
 
                 // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
@@ -208,7 +228,7 @@ class SpecInfoListener implements IRunListener {
 
     private void markWithInitializationError( FeatureInfo featureInfo ) {
         def originalGetName = featureInfo.&getName
-        featureInfo.metaClass.getName = { '[INITIALIZATION ERROR] ' + originalGetName() }
+        featureInfo.metaClass.getName = { "[${EmptyInitializationException.INIT_ERROR}] ${originalGetName()}" }
     }
 
     private IterationInfo dummySpecIteration() {

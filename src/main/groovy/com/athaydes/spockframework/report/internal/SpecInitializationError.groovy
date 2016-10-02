@@ -11,7 +11,6 @@ class SpecInitializationError extends Exception {
         super( wrapped )
     }
 
-
     @Override
     public String toString() {
         cause.toString()

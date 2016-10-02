@@ -14,9 +14,9 @@ class TemplateReportAggregator {
     private final Map<String, Map> aggregatedData = [ : ]
 
     void addData( SpecData data ) {
-        log.debug( "Adding data to report {}", data.info.description.className )
+        def specName = Utils.getSpecClassName( data )
+        log.debug( "Adding data to report {}", specName )
 
-        def specName = data.info.description.className
         def stats = Utils.stats( data )
         def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> feature.skipped }
 

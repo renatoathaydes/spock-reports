@@ -35,7 +35,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.12</version>
+  <version>1.2.13</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -70,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.12' ) {
+    testCompile( 'com.athaydes:spock-reports:1.2.13' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -255,7 +255,7 @@ There are two templates you should provide:
 Here's the most basic Spec template you could imagine, which simply outputs the name of the Specification that ran:
 
 ```
-This is a Report for ${data.info.description.className}
+This is a Report for ${utils.getSpecClassName(data)}
 ```
 
 As you can see, you can use `${variable}` to run actual code whose result will be printed in the report.

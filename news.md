@@ -2,6 +2,14 @@
 
 > Most recent first
 
+* `02nd of October 2016`
+
+Version 1.2.13 has been released!
+
+This is a minor release with a few minor bug fixes, many of which are related to Specifications that fail to initialize.
+Now, a report will be created for every Specification that is attempted to run, even if failing catastrophically on
+initialization, with a useful error message shown on the report.
+
 * `09th of June 2016`
 
 Version 1.2.12 has been released!
