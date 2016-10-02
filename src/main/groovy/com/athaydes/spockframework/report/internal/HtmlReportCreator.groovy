@@ -71,7 +71,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     @Override
     void createReportFor( SpecData data ) {
-        def specClassName = data.info.description.className
+        def specClassName = Utils.getSpecClassName( data )
         def reportsDir = outputDirectory ? Utils.createDir( outputDirectory ) : null
         if ( reportsDir?.isDirectory() ) {
             try {
@@ -88,7 +88,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     @Override
     protected String reportHeader( SpecData data ) {
-        "Report for ${data.info.description.className}"
+        "Report for ${Utils.getSpecClassName( data )}"
     }
 
     void writeSummary( MarkupBuilder builder, SpecData data ) {
@@ -174,6 +174,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private void writeFeature( MarkupBuilder builder, SpecData data ) {
+        if ( data.initializationError ) {
+            problemWriter.problemsContainer( builder ) {
+                problemWriter.writeProblemMsgs( builder, [ data.initializationError.exception ] )
+            }
+            return
+        }
+
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }

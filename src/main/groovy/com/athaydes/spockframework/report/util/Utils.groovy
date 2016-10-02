@@ -7,6 +7,7 @@ import com.athaydes.spockframework.report.internal.SpecProblem
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
@@ -114,7 +115,7 @@ class Utils {
     }
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
-        data.info.description.testClass.getAnnotation( annotation )
+        data.info.description?.testClass?.getAnnotation( annotation )
     }
 
     static boolean isUrl( String text ) {
@@ -132,7 +133,7 @@ class Utils {
     }
 
     static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
-        if ( feature.iterationNameProvider && iteration.dataValues?.length > 0) {
+        if ( feature.iterationNameProvider && iteration.dataValues?.length > 0 ) {
             def name = feature.iterationNameProvider.getName( iteration )
 
             // reset the index instance to fix #70
@@ -146,5 +147,18 @@ class Utils {
         } else {
             return feature.name
         }
+    }
+
+    static String getSpecClassName( SpecData data ) {
+        data.info.description?.className ?: specNameFromFileName( data.info )
+    }
+
+    static String specNameFromFileName( SpecInfo specInfo ) {
+        def fileName = specInfo.filename
+
+        def lastDotInFileName = fileName.lastIndexOf( '.' )
+        def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
+
+        return specInfo.package + name
     }
 }

@@ -42,7 +42,7 @@ class TemplateReportCreator implements IReportCreator {
 
     @Override
     void createReportFor( SpecData data ) {
-        def specClassName = data.info.description.className
+        def specClassName = Utils.getSpecClassName( data )
         def reportsDir = Utils.createDir( outputDir )
         def reportFile = new File( reportsDir, specClassName + '.' + reportFileExtension )
         reportFile.delete()

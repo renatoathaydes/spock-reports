@@ -62,7 +62,7 @@ class ProblemBlockWriter {
         }
     }
 
-    private void writeProblemMsgs( MarkupBuilder builder, List msgs ) {
+    void writeProblemMsgs( MarkupBuilder builder, List msgs ) {
         builder.ul {
             msgs.each { msg ->
                 li {
@@ -85,6 +85,9 @@ class ProblemBlockWriter {
     protected String formatProblemMessage( message ) {
         if ( printThrowableStackTrace && message instanceof Throwable ) {
             def writer = new StringWriter()
+            if ( message instanceof SpecInitializationError ) {
+                message = message.cause
+            }
             message.printStackTrace( new PrintWriter( writer ) )
             return writer.toString()
         } else if ( message == null ) {

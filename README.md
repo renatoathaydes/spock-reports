@@ -255,7 +255,7 @@ There are two templates you should provide:
 Here's the most basic Spec template you could imagine, which simply outputs the name of the Specification that ran:
 
 ```
-This is a Report for ${data.info.description.className}
+This is a Report for ${utils.getSpecClassName(data)}
 ```
 
 As you can see, you can use `${variable}` to run actual code whose result will be printed in the report.

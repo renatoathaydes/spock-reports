@@ -14,6 +14,7 @@ class SpecData {
     SpecInfo info
     List<FeatureRun> featureRuns = [ ]
     long totalTime
+    ErrorInfo initializationError
 }
 
 class FeatureRun {

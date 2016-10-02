@@ -1,6 +1,6 @@
 <%
     def stats = utils.stats( data )
- %># Report for ${data.info.description.className}
+ %># Report for ${utils.getSpecClassName( data )}
 
 ##Summary
 
