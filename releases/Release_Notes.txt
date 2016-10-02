@@ -1,3 +1,10 @@
+1.2.13 - 2016 October 02
+
+* #70 template report showed wrong index for unrolled features.
+* #73 ArrayIndexOutOfBoundsException for reports which faile at initialization.
+* #75 show error in reports even when the Spec fields fail to initialize.
+* #82 do not execute Runnables in the where block examples.
+
 1.2.12 - 2016 June 09
 
 * #68 fixed NPE caused by Spec setup method throwing an Exception.
