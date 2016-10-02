@@ -281,7 +281,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                  List<SpecProblem> errors ) {
         builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
             for ( value in iteration.dataValues ) {
-                td( 'class': 'ex-value', value )
+                def writableValue = value instanceof Runnable ? "<executable>" : ( value?.toString() ?: '<null>' )
+                td( 'class': 'ex-value', writableValue )
             }
             td( 'class': 'ex-result', iterationResult( errors ) )
         }
