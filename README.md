@@ -4,6 +4,7 @@
 Check out [the latest news](news.md) about this project!
 
 [![Build Status](https://travis-ci.org/renatoathaydes/spock-reports.svg?branch=next)](https://travis-ci.org/renatoathaydes/spock-reports)
+[ ![Download](https://api.bintray.com/packages/renatoathaydes/maven/spock-reports/images/download.svg) ](https://bintray.com/renatoathaydes/maven/spock-reports/_latestVersion)
 
 ## What it is
 
