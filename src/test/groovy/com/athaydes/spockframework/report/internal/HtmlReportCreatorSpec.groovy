@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
+import com.athaydes.spockframework.report.UnrolledSpec
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
@@ -57,6 +58,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         when:
         "A Specification containing different types of features is run by Spock"
+        PredictableStringHashCode.code = 0
         use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
             new Sputnik( FakeTest ).run( new RunNotifier() )
         }
@@ -138,6 +140,55 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     }
 
+    def "A correct HTML report is generated for a spec where @Unrolled is added to the Specification itself"() {
+        given:
+        "The project build folder location is known"
+        def buildDir = System.getProperty( 'project.buildDir', 'build' )
+
+        and:
+        "A known location where the report file will be saved that does not exist"
+        def reportFile = Paths.get( buildDir, 'spock-reports',
+                UnrolledSpec.class.name + '.html' ).toFile()
+        if ( reportFile.exists() ) {
+            assert reportFile.delete()
+        }
+
+        and:
+        "The expected HTML report (not counting time fields and errors)"
+        String expectedHtml = expectedUnrolledSpecHtmlReport()
+
+        and:
+        "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
+        // using PredictableTimeResponse category to mock that
+
+        and:
+        "ProblemBlockWriter is mocked out to fill error blocks with known contents"
+        // using PredictableProblems category to mock that
+
+        and:
+        "ToC Writer if mocked out to write something predictable"
+        // using NoTocGenerated
+
+        and:
+        "String hashCodes produce predictable values"
+        // using PredictableStringHashCode
+
+        when:
+        "A Specification containing different types of features is run by Spock"
+        PredictableStringHashCode.code = 0
+        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+            new Sputnik( UnrolledSpec ).run( new RunNotifier() )
+        }
+
+        then:
+        "A nice HTML report to have been generated under the build directory"
+        reportFile.exists()
+
+        and:
+        "The contents are functionally the same as expected"
+        minify( reportFile.text ) == minify( expectedHtml )
+    }
+
     private String textOf( String cssPath ) {
         new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
     }
@@ -155,6 +206,25 @@ class HtmlReportCreatorSpec extends ReportSpec {
                 errors          : 2,
                 skipped         : 1,
                 successRate     : "50${ds}0%",
+                time            : UNKNOWN,
+                projectUrl      : SpockReportExtension.PROJECT_URL
+        ]
+        replacePlaceholdersInRawHtml( rawHtml, binding )
+    }
+
+
+    private String expectedUnrolledSpecHtmlReport() {
+        def rawHtml = HtmlReportCreator.getResource( 'UnrolledSpecReport.html' ).text
+        def binding = [
+                classOnTest     : UnrolledSpec.class.name,
+                style           : defaultStyle(),
+                dateTestRan     : DATE_TEST_RAN,
+                username        : TEST_USER_NAME,
+                executedFeatures: 5,
+                failures        : 0,
+                errors          : 0,
+                skipped         : 0,
+                successRate     : "100${ds}0%",
                 time            : UNKNOWN,
                 projectUrl      : SpockReportExtension.PROJECT_URL
         ]

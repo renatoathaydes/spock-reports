@@ -76,7 +76,8 @@ class Utils {
     }
 
     static boolean isUnrolled( FeatureInfo feature ) {
-        feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
+        feature.spec.isAnnotationPresent( Unroll ) ||
+                feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
     }
 
     static boolean isFailure( SpecProblem problem ) {
