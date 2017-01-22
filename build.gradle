@@ -20,7 +20,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
+    compile "org.codehaus.groovy:groovy:${groovyVersion}"
+    compile "org.codehaus.groovy:groovy-xml:${groovyVersion}"
+    compile "org.codehaus.groovy:groovy-json:${groovyVersion}"
     compile "org.spockframework:spock-core:${spockVersion}"
     compile 'org.slf4j:slf4j-api:1.7.13'
 
