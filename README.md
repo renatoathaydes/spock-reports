@@ -145,6 +145,7 @@ com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=s
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
 com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss=true
+com.athaydes.spockframework.report.internal.HtmlReportCreator.enabled=true
 
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
@@ -160,6 +161,7 @@ com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFi
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
 ```
 
 The `outputDir` property is relative to the working directory.

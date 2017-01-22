@@ -29,6 +29,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     def stringFormatter = new StringFormatHelper()
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
+    boolean enabled = true
 
     HtmlReportCreator() {
         reportAggregator = defaultAggregator
@@ -56,6 +57,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         reportAggregator?.doInlineCss = doInline
     }
 
+    void setEnabled( String enabled ) {
+        try {
+            this.@enabled = Boolean.parseBoolean( enabled )
+        } catch ( e ) {
+            log.warn( "Problem parsing 'enabled' property, invalid value: $enabled", e )
+        }
+    }
+
     @Override
     void setOutputDir( String out ) {
         this.outputDirectory = out
@@ -66,11 +75,17 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     String cssDefaultName() { 'feature-report.css' }
 
     void done() {
-        reportAggregator?.writeOut()
+        if ( enabled ) {
+            reportAggregator?.writeOut()
+        }
     }
 
     @Override
     void createReportFor( SpecData data ) {
+        if ( !enabled ) {
+            return
+        }
+
         def specClassName = Utils.getSpecClassName( data )
         def reportsDir = outputDirectory ? Utils.createDir( outputDirectory ) : null
         if ( reportsDir?.isDirectory() ) {

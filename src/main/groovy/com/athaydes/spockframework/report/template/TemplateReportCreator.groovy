@@ -31,8 +31,21 @@ class TemplateReportCreator implements IReportCreator {
     String reportFileExtension
     String summaryTemplateFile
     String summaryFileName
+    boolean enabled = true
+
+    void setEnabled( String enabled ) {
+        try {
+            this.@enabled = Boolean.parseBoolean( enabled )
+        } catch ( e ) {
+            log.warn( "Problem parsing 'enabled' property, invalid value: $enabled", e )
+        }
+    }
 
     void done() {
+        if ( !enabled ) {
+            return
+        }
+
         def reportsDir = Utils.createDir( outputDir )
 
         reportAggregator.writeOut(
@@ -42,6 +55,10 @@ class TemplateReportCreator implements IReportCreator {
 
     @Override
     void createReportFor( SpecData data ) {
+        if ( !enabled ) {
+            return
+        }
+
         def specClassName = Utils.getSpecClassName( data )
         def reportsDir = Utils.createDir( outputDir )
         def reportFile = new File( reportsDir, specClassName + '.' + reportFileExtension )
@@ -101,7 +118,7 @@ class TemplateReportCreator implements IReportCreator {
 
     protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
         run.failuresByIteration.eachWithIndex { iteration, problems, index ->
-            final name = Utils.featureNameFrom(feature, iteration, index)
+            final name = Utils.featureNameFrom( feature, iteration, index )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAILURE' :
                             feature.skipped ? 'IGNORED' : 'PASS'
