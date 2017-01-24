@@ -1,5 +1,14 @@
 body {
-  font-family: Helvetica;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+h2 {
+  font-weight: 400;
+}
+
+h3 {
+  font-weight: 200;
 }
 
 table {
@@ -14,7 +23,7 @@ div.date-test-ran {
 table.summary-table {
   width: 800px;
   text-align: left;
-  font-weight: bold;
+  font-weight: 500;
   font-size: small;
 }
 
