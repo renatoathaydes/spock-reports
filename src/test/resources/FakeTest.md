@@ -9,10 +9,13 @@
 * Skipped:  1
 * Total time: Unknown
 
-###As a user
-###I want foo
-###So that bar
+##This is just a Fake test to test spock-reports
 
+<pre>
+As a user
+I want foo
+So that bar
+</pre>
 
 ## Features
 
