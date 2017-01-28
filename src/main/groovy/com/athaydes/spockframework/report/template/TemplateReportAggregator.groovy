@@ -13,6 +13,9 @@ class TemplateReportAggregator {
 
     private final Map<String, Map> aggregatedData = [ : ]
 
+    volatile String projectName
+    volatile String projectVersion
+
     void addData( SpecData data ) {
         def specName = Utils.getSpecClassName( data )
         log.debug( "Adding data to report {}", specName )
@@ -35,9 +38,11 @@ class TemplateReportAggregator {
         def engine = new GStringTemplateEngine()
 
         engine.createTemplate( template )
-                .make( [ data   : allData,
-                         'utils': Utils,
-                         'fmt'  : new StringFormatHelper() ] )
+                .make( [ data          : allData,
+                         'utils'       : Utils,
+                         'fmt'         : new StringFormatHelper(),
+                         projectName   : projectName,
+                         projectVersion: projectVersion ] )
                 .toString()
     }
 

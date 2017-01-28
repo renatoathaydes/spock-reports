@@ -25,8 +25,6 @@ class TemplateReportCreator implements IReportCreator {
     // IReportCreator shared properties
     String outputDir
     boolean hideEmptyBlocks
-    String projectName
-    String projectVersion
 
     // TemplateReportCreator properties
     String specTemplateFile
@@ -41,6 +39,16 @@ class TemplateReportCreator implements IReportCreator {
         } catch ( e ) {
             log.warn( "Problem parsing 'enabled' property, invalid value: $enabled", e )
         }
+    }
+
+    @Override
+    void setProjectName( String projectName ) {
+        reportAggregator.projectName = projectName
+    }
+
+    @Override
+    void setProjectVersion( String projectVersion ) {
+        reportAggregator.projectVersion = projectVersion
     }
 
     void done() {
