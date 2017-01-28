@@ -17,6 +17,9 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     def stringFormatter = new StringFormatHelper()
 
+    String projectName
+    String projectVersion
+
     protected HtmlReportAggregator() {
         // provided for testing only (need to Mock it)
     }
@@ -64,6 +67,14 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         def cssClassIfTrue = { isTrue, String cssClass ->
             if ( isTrue ) [ 'class': cssClass ] else Collections.emptyMap()
         }
+
+        if ( projectName && projectVersion ) {
+            builder.div( 'class': 'project-header' ) {
+                span( 'class': 'project-name', "Project: ${projectName}" )
+                span( 'class': 'project-version', "Version: ${projectVersion}" )
+            }
+        }
+
         builder.div( 'class': 'summary-report' ) {
             h3 'Specifications summary:'
             builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )

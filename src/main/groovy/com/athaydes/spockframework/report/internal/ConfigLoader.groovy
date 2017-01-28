@@ -12,19 +12,30 @@ import org.spockframework.runtime.RunContext
 class ConfigLoader {
     static final PROP_OUTPUT_DIR = 'com.athaydes.spockframework.report.outputDir'
     static final PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
+    static final PROP_PROJECT_NAME = 'com.athaydes.spockframework.report.projectName'
+    static final PROP_PROJECT_VERSION = 'com.athaydes.spockframework.report.projectVersion'
 
     final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
 
     Properties loadConfig() {
-        def props = loadCustomProperties( loadDefaultProperties() )
-        [ IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS ].each {
+        def props = loadSystemProperties(
+                loadCustomProperties(
+                        loadDefaultProperties() ) )
+
+        log.info( "SpockReports config loaded: {}", props )
+
+        props
+    }
+
+    private Properties loadSystemProperties( Properties props ) {
+        [ IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS,
+          PROP_PROJECT_NAME, PROP_PROJECT_VERSION ].each {
             def sysVal = System.properties[ it ]
             if ( sysVal ) {
                 log.debug( "Overriding property [$it] with System property's value: $sysVal" )
                 props[ it ] = sysVal
             }
         }
-        log.debug( "SpockReports config loaded: $props" )
         props
     }
 

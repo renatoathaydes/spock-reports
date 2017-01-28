@@ -156,6 +156,12 @@ com.athaydes.spockframework.report.outputDir=build/spock-reports
 # If set to true, hides blocks which do not have any description
 com.athaydes.spockframework.report.hideEmptyBlocks=false
 
+# Set the name of the project under test so it can be displayed in the report
+com.athaydes.spockframework.report.projectName=
+
+# Set the version of the project under test so it can be displayed in the report
+com.athaydes.spockframework.report.projectVersion=Unknown
+
 # Set properties specific to the TemplateReportCreator
 com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md

@@ -15,6 +15,19 @@ table {
   margin: 5px;
 }
 
+div.project-header {
+  margin-bottom: 10px;
+  font-size: large;
+}
+
+div.project-header > span.project-name {
+
+}
+
+div.project-header > span.project-version {
+  padding-left: 20px;
+}
+
 div.date-test-ran {
   font-size: small;
   font-style: italic;

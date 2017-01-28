@@ -25,6 +25,8 @@ class TemplateReportCreator implements IReportCreator {
     // IReportCreator shared properties
     String outputDir
     boolean hideEmptyBlocks
+    String projectName
+    String projectVersion
 
     // TemplateReportCreator properties
     String specTemplateFile

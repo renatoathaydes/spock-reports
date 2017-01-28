@@ -66,6 +66,16 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     @Override
+    void setProjectName( String projectName ) {
+        reportAggregator.projectName = projectName
+    }
+
+    @Override
+    void setProjectVersion( String projectVersion ) {
+        reportAggregator.projectVersion = projectVersion
+    }
+
+    @Override
     void setOutputDir( String out ) {
         this.outputDirectory = out
         reportAggregator?.outputDirectory = out
@@ -140,7 +150,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( specTitle ) {
             builder.pre( 'class': 'title', specTitle )
         }
-        def narrative =  data.info.narrative ?: ''
+        def narrative = data.info.narrative ?: ''
         if ( narrative ) {
             builder.pre( 'class': 'narrative', narrative )
         }
