@@ -1,4 +1,5 @@
-<% def stats = utils.aggregateStats( data )
+<% /* 2nd param "true" is needed for summary, for report it is false (default) */
+def stats = utils.aggregateStats( data, true )
  %># Specification run results
 
 ## Specifications summary
