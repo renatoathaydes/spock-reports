@@ -166,7 +166,7 @@ class TemplateReportCreator implements IReportCreator {
 
     private List<String> getBlockTexts(FeatureInfo feature, BlockInfo block) {
         List<String> blockCode = showCodeBlocks ? codeReader.getLines(feature, block) : []
-        return blockCode ? blockCode : block.texts
+        return blockCode ?: block.texts
     }
 
 }

@@ -1,10 +1,12 @@
 package com.athaydes.spockframework.report.vivid
 
+import groovy.transform.CompileStatic
 import groovy.transform.ToString
 import org.codehaus.groovy.ast.MethodNode
 import org.spockframework.runtime.model.BlockKind
 
 @ToString
+@CompileStatic
 class SpecSourceCode {
 
     private final Map<String, FeatureSourceCode> features = [:]
