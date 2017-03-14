@@ -15,6 +15,7 @@ abstract class AbstractHtmlCreator<T> {
     boolean doInlineCss = true
     String outputDirectory = ''
     boolean hideEmptyBlocks = false
+    boolean showCodeBlocks = false
     KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
     String excludeToc = "false"
 

@@ -12,6 +12,7 @@ import org.spockframework.runtime.RunContext
 class ConfigLoader {
     static final PROP_OUTPUT_DIR = 'com.athaydes.spockframework.report.outputDir'
     static final PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
+    static final PROP_SHOW_CODE_BLOCKS = 'com.athaydes.spockframework.report.showCodeBlocks'
     static final PROP_PROJECT_NAME = 'com.athaydes.spockframework.report.projectName'
     static final PROP_PROJECT_VERSION = 'com.athaydes.spockframework.report.projectVersion'
 
@@ -27,9 +28,18 @@ class ConfigLoader {
         props
     }
 
+    boolean getBoolean(String key, Properties props) {
+        try {
+            return Boolean.parseBoolean(props.getProperty(key))
+        } catch (e) {
+            log.warn("Invalid value for ${key}. Should be true or false. Error: $e")
+            return false
+        }
+    }
+
     private Properties loadSystemProperties( Properties props ) {
         [ IReportCreator.class.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS,
-          PROP_PROJECT_NAME, PROP_PROJECT_VERSION ].each {
+          PROP_SHOW_CODE_BLOCKS, PROP_PROJECT_NAME, PROP_PROJECT_VERSION ].each {
             def sysVal = System.properties[ it ]
             if ( sysVal ) {
                 log.debug( "Overriding property [$it] with System property's value: $sysVal" )

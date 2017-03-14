@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
+import java.nio.file.Paths
 import java.util.regex.Pattern
 
 class Utils {
@@ -161,5 +162,11 @@ class Utils {
         def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
 
         return specInfo.package + name
+    }
+
+    static File getSpecFile(SpecData data) {
+        String prefix = "src.test.groovy.${data.info.package}"
+                .replaceAll("\\.", File.separator)
+        return Paths.get(prefix, data.info.filename).toFile()
     }
 }

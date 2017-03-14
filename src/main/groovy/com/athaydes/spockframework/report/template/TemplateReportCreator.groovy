@@ -6,6 +6,7 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
@@ -25,6 +26,7 @@ class TemplateReportCreator implements IReportCreator {
     // IReportCreator shared properties
     String outputDir
     boolean hideEmptyBlocks
+    boolean showCodeBlocks
 
     // TemplateReportCreator properties
     String specTemplateFile
@@ -32,6 +34,8 @@ class TemplateReportCreator implements IReportCreator {
     String summaryTemplateFile
     String summaryFileName
     boolean enabled = true
+
+    SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
 
     void setEnabled( String enabled ) {
         try {
@@ -95,6 +99,10 @@ class TemplateReportCreator implements IReportCreator {
 
         def featuresCallback = createFeaturesCallback data
 
+        if (showCodeBlocks) {
+            codeReader.read(data)
+        }
+
         engine.createTemplate( templateFileUrl )
                 .make( [ reportCreator: this,
                          'utils'      : Utils,
@@ -139,19 +147,26 @@ class TemplateReportCreator implements IReportCreator {
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
         feature.blocks.collect { BlockInfo block ->
-            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) ) {
+            List<String> blockTexts = getBlockTexts(feature, block)
+            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
-                block.texts.collect { blockText ->
+                blockTexts.collect { blockText ->
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
                     [ kind: Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ], text: blockText ]
                 }
-            } else if ( !hideEmptyBlocks )
+            } else if ( !hideEmptyBlocks ) {
                 [ kind: Utils.block2String[ block.kind ], text: '----' ]
-            else
+            } else {
                 [ : ]
+            }
         }.findAll { !it.empty }.flatten()
+    }
+
+    private List<String> getBlockTexts(FeatureInfo feature, BlockInfo block) {
+        List<String> blockCode = showCodeBlocks ? codeReader.getLines(feature, block) : []
+        return blockCode ? blockCode : block.texts
     }
 
 }

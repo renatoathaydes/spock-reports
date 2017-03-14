@@ -33,6 +33,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     HtmlReportCreator() {
         reportAggregator = defaultAggregator
+        if(showCodeBlocks){
+            log.warn('"showCodeBlocks" is not implemented in HtmlReportCreator. Use TemplateReportCreator.')
+        }
     }
 
     HtmlReportCreator( HtmlReportAggregator reportAggregator ) {

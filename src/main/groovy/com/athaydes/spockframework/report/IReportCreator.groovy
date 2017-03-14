@@ -14,6 +14,8 @@ interface IReportCreator {
 
     void setHideEmptyBlocks( boolean hide )
 
+    void setShowCodeBlocks(boolean show )
+
     void setProjectName( String projectName )
 
     void setProjectVersion( String projectVersion )
