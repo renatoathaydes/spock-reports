@@ -9,21 +9,24 @@ import org.spockframework.runtime.model.FeatureInfo
 @Slf4j
 class SpecSourceCodeReader {
 
-    private SpecSourceCode specSourceCode
+    private SpecSourceCode specSourceCode = new SpecSourceCode()
 
-    void read(SpecData data) {
+    void read( SpecData data ) {
         try {
             VividAstInspector inspector = new VividAstInspector()
-            File file = Utils.getSpecFile(data)
-            inspector.load(file)
-            specSourceCode = inspector.visitCallback.codeCollector.result
-        } catch (Exception e) {
-            log.error("Cannot create SpecSourceCode: $e.message", e)
-            specSourceCode = new SpecSourceCode()
+
+            File file = Utils.getSpecFile( data )
+            if ( file ) {
+                specSourceCode = inspector.load( file )
+            } else {
+                log.warn( "Could not locate the source code for Spec: ${Utils.specNameFromFileName( data.info )}" )
+            }
+        } catch ( Exception e ) {
+            log.error( "Cannot create SpecSourceCode: $e.message", e )
         }
     }
 
-    List<String> getLines(FeatureInfo feature, BlockInfo block) {
-        return specSourceCode.getLines(feature.name, block.kind)
+    List<String> getLines( FeatureInfo feature, BlockInfo block ) {
+        return specSourceCode.getLines( feature.name, block.kind )
     }
 }

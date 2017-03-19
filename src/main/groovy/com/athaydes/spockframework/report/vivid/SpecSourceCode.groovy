@@ -9,23 +9,23 @@ import org.spockframework.runtime.model.BlockKind
 @CompileStatic
 class SpecSourceCode {
 
-    private final Map<String, FeatureSourceCode> features = [:]
+    private final Map<String, FeatureSourceCode> features = [ : ]
 
-    void addLine(MethodNode feature, BlockKind blockKind, String line) {
-        features.get(feature.name, new FeatureSourceCode())
+    void addLine( MethodNode feature, BlockKind blockKind, String line ) {
+        features.get( feature.name, new FeatureSourceCode() )
                 .blocks
-                .get(blockKind, [])
-                .add(line)
+                .get( blockKind, [ ] )
+                .add( line )
     }
 
-    List<String> getLines(String featureName, BlockKind blockKind) {
-        features.get(featureName, new FeatureSourceCode())
+    List<String> getLines( String featureName, BlockKind blockKind ) {
+        features.get( featureName, new FeatureSourceCode() )
                 .blocks
-                .get(blockKind, [])
+                .get( blockKind, [ ] )
     }
 
 }
 
 class FeatureSourceCode {
-    HashMap<BlockKind, List<String>> blocks = [:]
+    final Map<BlockKind, List<String>> blocks = [ : ]
 }

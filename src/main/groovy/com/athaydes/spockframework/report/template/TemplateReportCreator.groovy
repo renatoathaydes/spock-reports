@@ -35,7 +35,7 @@ class TemplateReportCreator implements IReportCreator {
     String summaryFileName
     boolean enabled = true
 
-    SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
+    private final SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
 
     void setEnabled( String enabled ) {
         try {
@@ -99,8 +99,8 @@ class TemplateReportCreator implements IReportCreator {
 
         def featuresCallback = createFeaturesCallback data
 
-        if (showCodeBlocks) {
-            codeReader.read(data)
+        if ( showCodeBlocks ) {
+            codeReader.read( data )
         }
 
         engine.createTemplate( templateFileUrl )
@@ -147,7 +147,7 @@ class TemplateReportCreator implements IReportCreator {
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
         feature.blocks.collect { BlockInfo block ->
-            List<String> blockTexts = getBlockTexts(feature, block)
+            List<String> blockTexts = getBlockTexts( feature, block )
             if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
                 blockTexts.collect { blockText ->
@@ -164,9 +164,15 @@ class TemplateReportCreator implements IReportCreator {
         }.findAll { !it.empty }.flatten()
     }
 
-    private List<String> getBlockTexts(FeatureInfo feature, BlockInfo block) {
-        List<String> blockCode = showCodeBlocks ? codeReader.getLines(feature, block) : []
-        return blockCode ?: block.texts
+    private List<String> getBlockTexts( FeatureInfo feature, BlockInfo block ) {
+        if ( showCodeBlocks ) {
+            def lines = codeReader.getLines( feature, block )
+            if ( !lines.isEmpty() ) {
+                return lines
+            }
+        }
+
+        return block.texts
     }
 
 }

@@ -8,6 +8,7 @@ import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
+import org.spockframework.util.Nullable
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
@@ -164,9 +165,17 @@ class Utils {
         return specInfo.package + name
     }
 
-    static File getSpecFile(SpecData data) {
+    @Nullable
+    static File getSpecFile( SpecData data ) {
         String prefix = "src.test.groovy.${data.info.package}"
-                .replaceAll("\\.", File.separator)
-        return Paths.get(prefix, data.info.filename).toFile()
+                .replaceAll( "\\.", File.separator )
+
+        def file = Paths.get( prefix, data.info.filename ).toFile()
+
+        if ( file.exists() ) {
+            return file
+        }
+
+        return null
     }
 }
