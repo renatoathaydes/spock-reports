@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.vivid
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -25,6 +26,7 @@ import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.SourceUnit
 import org.spockframework.compiler.AstUtil
 import org.spockframework.compiler.SourceLookup
+import org.spockframework.util.Nullable
 import org.spockframework.util.inspector.AstInspector
 import org.spockframework.util.inspector.AstInspectorException
 import org.spockframework.util.inspector.Inspect
@@ -34,12 +36,13 @@ import java.security.CodeSource
 /**
  * Based on org.spockframework.util.inspector.AstInspector by Peter Niederwieser
  */
+@CompileStatic
 class VividAstInspector extends AstInspector {
 
-    private static final String EXPRESSION_MARKER_PREFIX = "inspect_"
+    static final String EXPRESSION_MARKER_PREFIX = "inspect_"
 
     private CompilePhase compilePhase = CompilePhase.CONVERSION
-    private boolean throwOnNodeNotFound = true
+    private boolean throwOnNodeNotFound = false
     private final MyClassLoader classLoader
     private final MyVisitor visitor = new MyVisitor()
 
@@ -52,8 +55,8 @@ class VividAstInspector extends AstInspector {
     private final Map<String, MethodNode> methods = new HashMap<String, MethodNode>()
     private final Map<String, Statement> statements = new HashMap<String, Statement>()
     private final Map<String, Expression> expressions = new HashMap<String, Expression>()
-    final VividVisitCallback visitCallback = new VividVisitCallback()
 
+    final VividVisitCallback visitCallback = new VividVisitCallback()
 
     VividAstInspector() {
         classLoader = new MyClassLoader( VividAstInspector.class.getClassLoader(), null )
@@ -74,18 +77,24 @@ class VividAstInspector extends AstInspector {
         throw new AstInspectorException( "internal error" )
     }
 
+    @Nullable
     Expression getExpression( String name ) {
-        return getNode( expressions, name )
+        def node = getNode( expressions, name )
+        if ( node instanceof Expression ) {
+            return node as Expression
+        }
+
+        return null
     }
 
     @SuppressWarnings( "unchecked" )
     private void indexAstNodes() {
-        visitor.visitBlockStatement( module.getStatementBlock() )
+        visitor.visitBlockStatement( module.statementBlock )
 
-        for ( MethodNode method : module.getMethods() )
+        for ( MethodNode method : module.methods )
             visitor.visitMethod( method )
 
-        for ( ClassNode clazz : module.getClasses() )
+        for ( ClassNode clazz : module.classes )
             visitor.visitClass( clazz )
     }
 
@@ -101,12 +110,13 @@ class VividAstInspector extends AstInspector {
         expressions.clear()
     }
 
-    private <T extends ASTNode> void addNode( Map<String, T> map, String name, T node ) {
+    private static void addNode( Map<String, ? extends ASTNode> map, String name, ASTNode node ) {
         if ( !map.containsKey( name ) ) map.put( name, node )
     }
 
-    private <T> T getNode( Map<String, T> nodes, String key ) {
-        T node = nodes.get( key )
+    @Nullable
+    private getNode( Map nodes, String key ) {
+        def node = nodes[ key ]
         if ( node == null && throwOnNodeNotFound )
             throw new AstInspectorException(
                     String.format( "cannot find a node named '%s' of the requested kind", key ) )
@@ -121,15 +131,20 @@ class VividAstInspector extends AstInspector {
         @Override
         protected CompilationUnit createCompilationUnit( CompilerConfiguration config, CodeSource source ) {
             CompilationUnit unit = super.createCompilationUnit( config, source )
+
+            // Groovy cannot see these fields from the nested class below, so let's use some Closures to help it
+            final setModule = { ModuleNode mod -> module = mod }
+            final setCodeCollector = { SpecSourceCodeCollector c -> visitCallback.codeCollector = c }
+
             unit.addPhaseOperation( new CompilationUnit.SourceUnitOperation() {
                 @Override
                 void call( SourceUnit sourceUnit ) throws CompilationFailedException {
-                    VividAstInspector.this.module = sourceUnit.getAST()
+                    setModule sourceUnit.AST
                     SourceLookup sourceLookup = new SourceLookup( sourceUnit )
-                    VividAstInspector.this.visitCallback.codeCollector = new SpecSourceCodeCollector( sourceLookup )
+                    setCodeCollector new SpecSourceCodeCollector( sourceLookup )
                     throw new AstSuccessfullyCaptured()
                 }
-            }, compilePhase.getPhaseNumber() )
+            }, compilePhase.phaseNumber )
             return unit
         }
     }
@@ -138,15 +153,16 @@ class VividAstInspector extends AstInspector {
         @Override
         @SuppressWarnings( "unchecked" )
         void visitAnnotations( AnnotatedNode node ) {
-            for ( AnnotationNode an : node.getAnnotations() ) {
-                ClassNode cn = an.getClassNode()
+            for ( AnnotationNode an in node.annotations ) {
+                ClassNode cn = an.classNode
 
                 // this comparison should be good enough, and also works in phase conversion
-                if ( cn.getNameWithoutPackage().equals( Inspect.class.getSimpleName() ) ) {
+                if ( cn.nameWithoutPackage == Inspect.simpleName ) {
                     ConstantExpression name = ( ConstantExpression ) an.getMember( "value" )
-                    if ( name == null || !( name.getValue() instanceof String ) )
+                    if ( name == null || !( name.value instanceof String ) )
                         throw new AstInspectorException( "@Inspect must have a String argument" )
-                    addNode( markedNodes, ( String ) name.getValue(), node )
+                    //noinspection UnnecessaryQualifiedReference
+                    VividAstInspector.addNode( markedNodes, ( String ) name.value, node )
                     break
                 }
             }
@@ -156,54 +172,60 @@ class VividAstInspector extends AstInspector {
 
         @Override
         void visitClass( ClassNode node ) {
-            addNode( classes, node.getNameWithoutPackage(), node )
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( classes, node.nameWithoutPackage, node )
             super.visitClass( node )
         }
 
         @Override
         void visitField( FieldNode node ) {
-            addNode( fields, node.getName(), node )
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( fields, node.name, node )
             super.visitField( node )
         }
 
         @Override
         void visitProperty( PropertyNode node ) {
-            addNode( properties, node.getName(), node )
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( properties, node.name, node )
             super.visitProperty( node )
         }
 
         @Override
         protected void visitConstructorOrMethod( MethodNode node, boolean isConstructor ) {
             // ClassCodeVisitorSupport doesn't seem to visit parameters
-            for ( Parameter param : node.getParameters() ) {
+            for ( Parameter param : node.parameters ) {
                 visitAnnotations( param )
-                if ( param.getInitialExpression() != null )
-                    param.getInitialExpression().visit( this )
+                param.initialExpression?.visit( this )
             }
             super.visitConstructorOrMethod( node, isConstructor )
         }
 
         @Override
         void visitConstructor( ConstructorNode node ) {
-            addNode( constructors, node.getDeclaringClass().getNameWithoutPackage(), node )
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( constructors, node.declaringClass.nameWithoutPackage, node )
             super.visitConstructor( node )
         }
 
         @Override
         void visitMethod( MethodNode node ) {
             visitCallback.onMethodEntry( node )
-            addNode( methods, node.getName(), node )
+
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( methods, node.getName(), node )
             super.visitMethod( node )
             visitCallback.onMethodExit()
         }
 
         @Override
         void visitStatement( Statement node ) {
-            if ( node.getStatementLabel() != null ) {
-                addNode( statements, node.getStatementLabel(), node )
+            if ( node.statementLabel ) {
+                //noinspection UnnecessaryQualifiedReference
+                VividAstInspector.addNode( statements, node.statementLabel, node )
                 if ( node instanceof ExpressionStatement ) {
-                    Expression expression = ( ( ExpressionStatement ) node ).getExpression()
-                    addExpressionNode( node.getStatementLabel(), expression )
+                    Expression expression = ( ( ExpressionStatement ) node ).expression
+                    addExpressionNode( node.statementLabel, expression )
                 }
             }
             super.visitStatement( node )
@@ -226,17 +248,18 @@ class VividAstInspector extends AstInspector {
 
         private void doVisitMethodCall( Expression node ) {
             String methodName = AstUtil.getMethodName( node )
-            if ( methodName != null && methodName.startsWith( EXPRESSION_MARKER_PREFIX ) ) {
+            if ( methodName?.startsWith( EXPRESSION_MARKER_PREFIX ) ) {
                 ArgumentListExpression args = ( ArgumentListExpression ) AstUtil.getArguments( node )
-                if ( args != null && args.getExpressions().size() == 1 ) {
+                if ( args != null && args.expressions.size() == 1 ) {
                     String name = methodName.substring( EXPRESSION_MARKER_PREFIX.length() )
-                    addExpressionNode( name, args.getExpressions().get( 0 ) )
+                    addExpressionNode( name, args.expressions.get( 0 ) )
                 }
             }
         }
 
         private addExpressionNode( String name, Expression expression ) {
-            addNode( expressions, name, expression )
+            //noinspection UnnecessaryQualifiedReference
+            VividAstInspector.addNode( expressions, name, expression )
             visitCallback.addExpressionNode( name, expression )
         }
 
