@@ -9,13 +9,15 @@ import org.spockframework.runtime.model.FeatureInfo
 @Slf4j
 class SpecSourceCodeReader {
 
+    String testSourceRoots = 'src/test/groovy'
+
     private SpecSourceCode specSourceCode = new SpecSourceCode()
 
     void read( SpecData data ) {
         try {
             VividAstInspector inspector = new VividAstInspector()
 
-            File file = Utils.getSpecFile( data )
+            File file = Utils.getSpecFile( testSourceRoots, data )
             if ( file ) {
                 specSourceCode = inspector.load( file )
             } else {

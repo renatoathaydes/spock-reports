@@ -16,6 +16,7 @@ abstract class AbstractHtmlCreator<T> {
     String outputDirectory = ''
     boolean hideEmptyBlocks = false
     boolean showCodeBlocks = false
+    String testSourceRoots
     KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
     String excludeToc = "false"
 

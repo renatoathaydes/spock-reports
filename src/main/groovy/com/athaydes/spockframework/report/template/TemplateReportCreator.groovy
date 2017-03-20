@@ -37,6 +37,13 @@ class TemplateReportCreator implements IReportCreator {
 
     private final SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
 
+    @Override
+    void setTestSourceRoots( String roots ) {
+        if (roots) {
+            codeReader.testSourceRoots = roots
+        }
+    }
+
     void setEnabled( String enabled ) {
         try {
             this.@enabled = Boolean.parseBoolean( enabled )

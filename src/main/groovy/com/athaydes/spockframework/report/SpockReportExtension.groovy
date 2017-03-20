@@ -31,6 +31,7 @@ class SpockReportExtension implements IGlobalExtension {
     String outputDir
     boolean hideEmptyBlocks = false
     boolean showCodeBlocks = false
+    String testSourceRoots
     String projectName
     String projectVersion
 
@@ -74,8 +75,9 @@ class SpockReportExtension implements IGlobalExtension {
         reportCreatorClassName = config.getProperty( IReportCreator.name )
         outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
 
-        hideEmptyBlocks = configLoader.getBoolean(ConfigLoader.PROP_HIDE_EMPTY_BLOCKS, config)
-        showCodeBlocks = configLoader.getBoolean(ConfigLoader.PROP_SHOW_CODE_BLOCKS, config)
+        hideEmptyBlocks = configLoader.getBoolean( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS, config )
+        showCodeBlocks = configLoader.getBoolean( ConfigLoader.PROP_SHOW_CODE_BLOCKS, config )
+        testSourceRoots = config.getProperty( ConfigLoader.PROP_TEST_SOURCE_ROOTS )
 
         projectName = config.getProperty( ConfigLoader.PROP_PROJECT_NAME )
         projectVersion = config.getProperty( ConfigLoader.PROP_PROJECT_VERSION )
@@ -101,6 +103,7 @@ class SpockReportExtension implements IGlobalExtension {
         reportCreator.outputDir = outputDir
         reportCreator.hideEmptyBlocks = hideEmptyBlocks
         reportCreator.showCodeBlocks = showCodeBlocks
+        reportCreator.testSourceRoots = testSourceRoots
         reportCreator.projectName = projectName
         reportCreator.projectVersion = projectVersion
 
