@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.template
 
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
+import com.athaydes.spockframework.report.util.Files
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
@@ -17,7 +18,7 @@ class TemplateReportAggregator {
     volatile String projectVersion
 
     void addData( SpecData data ) {
-        def specName = Utils.getSpecClassName( data )
+        def specName = Files.getSpecClassName( data )
         log.debug( "Adding data to report {}", specName )
 
         def stats = Utils.stats( data )

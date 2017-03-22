@@ -1,7 +1,7 @@
 package com.athaydes.spockframework.report.vivid
 
 import com.athaydes.spockframework.report.internal.SpecData
-import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.util.Files
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
@@ -17,11 +17,11 @@ class SpecSourceCodeReader {
         try {
             VividAstInspector inspector = new VividAstInspector()
 
-            File file = Utils.getSpecFile( testSourceRoots, data )
+            File file = Files.getSpecFile( testSourceRoots, data )
             if ( file ) {
                 specSourceCode = inspector.load( file )
             } else {
-                log.warn( "Could not locate the source code for Spec: ${Utils.specNameFromFileName( data.info )}" )
+                log.warn( "Could not locate the source code for Spec: ${Files.specNameFromFileName( data.info )}" )
             }
         } catch ( Exception e ) {
             log.error( "Cannot create SpecSourceCode: $e.message", e )

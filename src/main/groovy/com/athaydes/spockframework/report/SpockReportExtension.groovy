@@ -6,7 +6,7 @@ import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
-import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.util.Files
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
@@ -138,7 +138,7 @@ class SpecInfoListener implements IRunListener {
     @Override
     synchronized void beforeSpec( SpecInfo spec ) {
         specData = new SpecData( info: spec )
-        log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
+        log.debug( "Before spec: {}", Files.getSpecClassName( specData ) )
         startT = System.currentTimeMillis()
     }
 
@@ -169,7 +169,7 @@ class SpecInfoListener implements IRunListener {
     @Override
     void afterSpec( SpecInfo spec ) {
         assert specData.info == spec
-        log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
+        log.debug( "After spec: {}", Files.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - startT
         reportCreator.createReportFor specData
         specData = null
@@ -181,7 +181,7 @@ class SpecInfoListener implements IRunListener {
             def errorInInitialization = ( specData == null )
             log.debug( "Error on spec: {}", errorInInitialization ?
                     "<${EmptyInitializationException.INIT_ERROR}>" :
-                    Utils.getSpecClassName( specData ) )
+                    Files.getSpecClassName( specData ) )
 
             if ( errorInInitialization ) {
                 // call beforeSpec because Spock does not do it in this case

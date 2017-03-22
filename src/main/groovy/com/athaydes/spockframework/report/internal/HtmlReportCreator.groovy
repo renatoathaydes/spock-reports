@@ -1,6 +1,9 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+import com.athaydes.spockframework.report.util.Files
+import com.athaydes.spockframework.report.util.Formatter
+import com.athaydes.spockframework.report.util.Strings
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
@@ -99,8 +102,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             return
         }
 
-        def specClassName = Utils.getSpecClassName( data )
-        def reportsDir = outputDirectory ? Utils.createDir( outputDirectory ) : null
+        def specClassName = Files.getSpecClassName( data )
+        def reportsDir = outputDirectory ? Files.createDir( outputDirectory ) : null
         if ( reportsDir?.isDirectory() ) {
             try {
                 new File( reportsDir, specClassName + '.html' )
@@ -116,7 +119,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     @Override
     protected String reportHeader( SpecData data ) {
-        "Report for ${Utils.getSpecClassName( data )}"
+        "Report for ${Files.getSpecClassName( data )}"
     }
 
     void writeSummary( MarkupBuilder builder, SpecData data ) {
@@ -183,7 +186,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 FeatureRun run = data.featureRuns.find { it.feature == feature }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
-                        final String name = Utils.featureNameFrom( feature, iteration, index )
+                        final String name = Formatter.featureNameFrom( feature, iteration, index )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         feature.skipped ? 'ignored' : 'pass'
@@ -216,7 +219,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
-                    String name = Utils.featureNameFrom( feature, iteration, index )
+                    String name = Formatter.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     feature.skipped ? 'ignored' : ''
@@ -253,7 +256,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeBlock( MarkupBuilder builder, BlockInfo block, FeatureInfo feature, IterationInfo iteration ) {
         def trCssClassArg = ( feature.skipped ? [ 'class': 'ignored' ] : null )
-        if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
+        if ( !Strings.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
             block.texts.eachWithIndex { blockText, index ->
                 if ( iteration ) {
                     blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
@@ -276,7 +279,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
         builder.td {
-            div( 'class': 'block-kind', Utils.block2String[ blockKindKey ] )
+            div( 'class': 'block-kind', Formatter.block2String[ blockKindKey ] )
         }
     }
 
@@ -301,7 +304,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 }
             }
             td {
-                div( 'class': 'spec-status', Utils.iterationsResult( run ) )
+                div( 'class': 'spec-status', Formatter.iterationsResult( run ) )
             }
         }
 
@@ -359,7 +362,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 ul {
                     for ( String value in annotation.value() ) {
                         li {
-                            if ( Utils.isUrl( value ) ) {
+                            if ( Strings.isUrl( value ) ) {
                                 a( 'href': value ) {
                                     mkp.yield value
                                 }
