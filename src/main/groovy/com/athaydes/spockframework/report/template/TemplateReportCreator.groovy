@@ -164,10 +164,10 @@ class TemplateReportCreator implements IReportCreator {
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
-                    [kind: Formatter.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ], text: blockText ]
+                    [kind: Formatter.blockToString( ( index++ ) == 0 ? block.kind : 'AND' ), text: blockText ]
                 }
             } else if ( !hideEmptyBlocks ) {
-                [ kind: Formatter.block2String[ block.kind ], text: '----' ]
+                [kind: Formatter.blockToString( block.kind ), text: '----' ]
             } else {
                 [ : ]
             }

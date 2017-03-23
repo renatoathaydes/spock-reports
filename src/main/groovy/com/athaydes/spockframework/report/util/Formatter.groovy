@@ -7,7 +7,7 @@ import org.spockframework.runtime.model.IterationInfo
 
 final class Formatter {
 
-    public static final Map block2String = [
+    private static final Map blocksMapping = [
             ( BlockKind.SETUP )  : 'Given:',
             ( BlockKind.CLEANUP ): 'Cleanup:',
             ( BlockKind.THEN )   : 'Then:',
@@ -17,6 +17,10 @@ final class Formatter {
             'AND'                : 'And:',
             'EXAMPLES'           : 'Examples:'
     ]
+
+    static blockToString(def blockName){
+        blocksMapping[blockName]
+    }
 
     static String featureNameFrom(FeatureInfo feature, IterationInfo iteration, int index ) {
         if ( feature.iterationNameProvider && iteration.dataValues?.length > 0 ) {

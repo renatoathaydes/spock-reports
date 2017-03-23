@@ -279,7 +279,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
         builder.td {
-            div( 'class': 'block-kind', Formatter.block2String[ blockKindKey ] )
+            div( 'class': 'block-kind', Formatter.blockToString( blockKindKey ) )
         }
     }
 
