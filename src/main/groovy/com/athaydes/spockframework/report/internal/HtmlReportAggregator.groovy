@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
+import com.athaydes.spockframework.report.util.Files
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
@@ -28,7 +29,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
     String cssDefaultName() { 'summary-report.css' }
 
     void aggregateReport( SpecData data, Map stats ) {
-        def specName = Utils.getSpecClassName( data )
+        def specName = Files.getSpecClassName( data )
         def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> feature.skipped }
 
         aggregatedData[ specName ] = Utils.createAggregatedData(
@@ -37,7 +38,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     void writeOut() {
         final reportsDir = outputDirectory as File // try to force it into being a File!
-        if ( existsOrCanCreate( reportsDir ) ) {
+        if ( Files.existsOrCanCreate( reportsDir ) ) {
             final aggregatedReport = new File( reportsDir, 'index.html' )
 
             try {
@@ -50,10 +51,6 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         } else {
             log.warn "Cannot create output directory: {}", reportsDir?.absolutePath
         }
-    }
-
-    def boolean existsOrCanCreate( File reportsDir ) {
-        reportsDir?.exists() || reportsDir?.mkdirs()
     }
 
     @Override

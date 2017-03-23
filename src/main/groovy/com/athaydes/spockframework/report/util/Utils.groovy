@@ -4,42 +4,13 @@ import com.athaydes.spockframework.report.internal.FailureKind
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
-import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
-import org.spockframework.runtime.model.SpecInfo
-import org.spockframework.util.Nullable
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
-import java.nio.file.Paths
-import java.util.regex.Pattern
 
 class Utils {
-
-    public static final Map block2String = [
-            ( BlockKind.SETUP )  : 'Given:',
-            ( BlockKind.CLEANUP ): 'Cleanup:',
-            ( BlockKind.THEN )   : 'Then:',
-            ( BlockKind.EXPECT ) : 'Expect:',
-            ( BlockKind.WHEN )   : 'When:',
-            ( BlockKind.WHERE )  : 'Where:',
-            'AND'                : 'And:',
-            'EXAMPLES'           : 'Examples:'
-    ]
-
-    private static final Pattern urlPattern
-
-    static {
-        def urlRegex = "\\(?\\b([A-z]+://|[A-z0-9]+[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]"
-        urlPattern = Pattern.compile( urlRegex )
-    }
-
-    static File createDir( String outputDir ) {
-        def reportsDir = new File( outputDir )
-        reportsDir.mkdirs()
-        reportsDir
-    }
 
     static double successRate( int total, int reproved ) {
         double dTotal = total
@@ -73,10 +44,6 @@ class Utils {
         result
     }
 
-    static boolean isEmptyOrContainsOnlyEmptyStrings( List<String> strings ) {
-        !strings || strings.every { String it -> it.trim() == '' }
-    }
-
     static boolean isUnrolled( FeatureInfo feature ) {
         feature.spec?.isAnnotationPresent( Unroll ) ||
                 feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
@@ -105,11 +72,6 @@ class Utils {
         } as int
     }
 
-    static String iterationsResult( FeatureRun run ) {
-        def totalErrors = run.failuresByIteration.values().count { List it -> !it.empty }
-        "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
-    }
-
     static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
         failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
@@ -119,10 +81,6 @@ class Utils {
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
         data.info.description?.testClass?.getAnnotation( annotation )
-    }
-
-    static boolean isUrl( String text ) {
-        text ==~ urlPattern
     }
 
     static Map createAggregatedData( List<FeatureInfo> executedFeatures,
@@ -135,57 +93,8 @@ class Utils {
         ]
     }
 
-    static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
-        if ( feature.iterationNameProvider && iteration.dataValues?.length > 0 ) {
-            def name = feature.iterationNameProvider.getName( iteration )
-
-            // reset the index instance to fix #70
-            def nameMatcher = name =~ /(.*)\[\d+\]$/
-            if ( nameMatcher.matches() ) {
-                def rawName = nameMatcher.group( 1 )
-                return "$rawName [$index]"
-            } else {
-                return name
-            }
-        } else {
-            return feature.name
-        }
-    }
-
+    @Deprecated
     static String getSpecClassName( SpecData data ) {
-        data.info.description?.className ?: specNameFromFileName( data.info )
-    }
-
-    static String specNameFromFileName( SpecInfo specInfo ) {
-        def fileName = specInfo.filename
-
-        def lastDotInFileName = fileName.lastIndexOf( '.' )
-        def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
-
-        return specInfo.package + '.' + name
-    }
-
-    @Nullable
-    static File getSpecFile( String testSourceRoots, SpecData data ) {
-        def existingRoots = testSourceRoots.split( File.pathSeparator ).collect { testRoot ->
-            if ( testRoot ) {
-                def dir = new File( testRoot )
-                if ( dir.isDirectory() ) {
-                    return dir
-                }
-            }
-            null
-        }.findAll { it != null }
-
-        for ( File root in existingRoots ) {
-            List<String> pathParts = data.info.package.split( /\./ ).toList() + [ data.info.filename ]
-            def specFile = Paths.get( root.absolutePath, *pathParts ).toFile()
-
-            if ( specFile.isFile() ) {
-                return specFile
-            }
-        }
-
-        return null
+        Files.getSpecClassName( data )
     }
 }

@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.util.Strings
 import groovy.util.logging.Slf4j
 import org.spockframework.util.Nullable
 
@@ -42,8 +42,7 @@ class CssResource {
 
     @Nullable
     private URL getResource() {
-        if ( Utils.isUrl( css ) ) urlResource
-        else classPathResource
+        Strings.isUrl( css ) ? urlResource : classPathResource
     }
 
     @Nullable
