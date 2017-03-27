@@ -177,8 +177,21 @@ class Utils {
             null
         }.findAll { it != null }
 
+        def className = getSpecClassName( data )
+
         for ( File root in existingRoots ) {
-            List<String> pathParts = data.info.package.split( /\./ ).toList() + [ data.info.filename ]
+            // bug in Spock: if the package name and class name are the same, the package is just the default package
+            def packageName = ''
+            if ( data.info.package && data.info.package != className ) {
+                packageName = data.info.package
+            }
+
+            List<String> pathParts = [ ]
+            if ( packageName ) {
+                pathParts += packageName.split( /\./ ).toList()
+            }
+            pathParts << data.info.filename
+
             def specFile = Paths.get( root.absolutePath, *pathParts ).toFile()
 
             if ( specFile.isFile() ) {
