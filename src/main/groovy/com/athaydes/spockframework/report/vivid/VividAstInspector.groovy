@@ -44,6 +44,7 @@ class VividAstInspector {
     private ModuleNode module
     private final VividASTVisitor visitor = new VividASTVisitor()
     private final VividVisitCallback visitCallback = new VividVisitCallback()
+    private final Set<File> visitedFiles = [ ]
 
     VividAstInspector() {
         classLoader = new VividClassLoader( VividAstInspector.class.getClassLoader(), null )
@@ -53,14 +54,24 @@ class VividAstInspector {
     SpecSourceCode load( @Nullable File sourceFile, String className ) {
         log.debug "Trying to read source file $sourceFile"
 
-        if ( sourceFile == null ) {
-            // spec is in same file as some other specs, but we probably already parsed the file before
-            def code = visitCallback.codeCollector.getResultFor( className )
-            if (!code) {
-                log.warn( "Unable to find source code for $className" )
-            }
+        // spec is in same file as some other specs, but we probably already parsed the file before
+        def code = visitCallback.codeCollector?.getResultFor( className )
 
+        if ( code != null ) {
+            log.debug( "Found class file in specs that had already been parsed" )
             return code
+        }
+
+        if ( sourceFile == null ) {
+            log.warn( "Cannot find source code for spec $className" )
+            return null
+        }
+
+        boolean alreadyVisited = !visitedFiles.add( sourceFile )
+
+        if ( alreadyVisited ) {
+            log.debug( "Cancelling visit to source file, already seen it: $sourceFile" )
+            return null
         }
 
         try {
@@ -69,7 +80,7 @@ class VividAstInspector {
             throw new AstInspectorException( "cannot read source file", e )
         } catch ( AstSuccessfullyCaptured ignore ) {
             indexAstNodes()
-            return visitCallback.codeCollector.getResultFor( className )
+            return visitCallback.codeCollector?.getResultFor( className )
         }
 
         throw new AstInspectorException( "internal error" )
