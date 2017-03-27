@@ -39,7 +39,7 @@ class TemplateReportCreator implements IReportCreator {
 
     @Override
     void setTestSourceRoots( String roots ) {
-        if (roots) {
+        if ( roots ) {
             codeReader.testSourceRoots = roots
         }
     }

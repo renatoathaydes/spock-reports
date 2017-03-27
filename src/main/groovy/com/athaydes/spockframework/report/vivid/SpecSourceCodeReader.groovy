@@ -5,30 +5,28 @@ import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.util.Nullable
 
 @Slf4j
 class SpecSourceCodeReader {
 
     String testSourceRoots = 'src/test/groovy'
 
-    private SpecSourceCode specSourceCode = new SpecSourceCode()
+    @Nullable
+    private SpecSourceCode specSourceCode
 
     void read( SpecData data ) {
         try {
             VividAstInspector inspector = new VividAstInspector()
 
             File file = Utils.getSpecFile( testSourceRoots, data )
-            if ( file ) {
-                specSourceCode = inspector.load( file )
-            } else {
-                log.warn( "Could not locate the source code for Spec: ${Utils.specNameFromFileName( data.info )}" )
-            }
+            specSourceCode = inspector.load( file, Utils.getSpecClassName( data ) )
         } catch ( Exception e ) {
-            log.error( "Cannot create SpecSourceCode: $e.message", e )
+            log.error( "Cannot create SpecSourceCode: ${e.message ?: e}", e )
         }
     }
 
     List<String> getLines( FeatureInfo feature, BlockInfo block ) {
-        return specSourceCode.getLines( feature.name, block.kind )
+        return specSourceCode?.getLines( feature.name, block.kind ) ?: [ ]
     }
 }

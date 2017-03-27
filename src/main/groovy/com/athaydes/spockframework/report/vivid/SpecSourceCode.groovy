@@ -27,5 +27,6 @@ class SpecSourceCode {
 }
 
 class FeatureSourceCode {
+    // FIXME block kind is not unique
     final Map<BlockKind, List<String>> blocks = [ : ]
 }
