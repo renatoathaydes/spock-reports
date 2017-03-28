@@ -73,12 +73,16 @@ class VividFakeTest extends Specification {
 
         and:
         int b = 1
+        int c = 2
+        int d = b + c
 
         when:
-        int c = a + b
+        int e = a + b + c + d
 
         then:
-        c == 1
+        e == 6
+        a == 0
+        c == 2 * b
 
         and:
         c > 0

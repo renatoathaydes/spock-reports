@@ -6,15 +6,13 @@ import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport
 import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.ConstructorNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.ModuleNode
-import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
+import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilationFailedException
@@ -125,6 +123,8 @@ class VividAstInspector {
 
     class VividASTVisitor extends ClassCodeVisitorSupport {
 
+        int methodExpressionIndex = 0
+
         @Override
         @SuppressWarnings( "unchecked" )
         void visitAnnotations( AnnotatedNode node ) {
@@ -150,22 +150,8 @@ class VividAstInspector {
         }
 
         @Override
-        protected void visitConstructorOrMethod( MethodNode node, boolean isConstructor ) {
-            // ClassCodeVisitorSupport doesn't seem to visit parameters
-            for ( Parameter param : node.parameters ) {
-                visitAnnotations( param )
-                param.initialExpression?.visit( this )
-            }
-            super.visitConstructorOrMethod( node, isConstructor )
-        }
-
-        @Override
-        void visitConstructor( ConstructorNode node ) {
-            super.visitConstructor( node )
-        }
-
-        @Override
         void visitMethod( MethodNode node ) {
+            methodExpressionIndex = 0
             visitCallback.onMethodEntry( node )
             super.visitMethod( node )
             visitCallback.onMethodExit()
@@ -173,21 +159,22 @@ class VividAstInspector {
 
         @Override
         void visitStatement( Statement node ) {
-            if ( node.statementLabel ) {
+            if ( methodExpressionIndex == 0 && node instanceof BlockStatement ) {
+                // expected first statement in a block, just keep going
+            } else {
                 if ( node instanceof ExpressionStatement ) {
                     Expression expression = ( ( ExpressionStatement ) node ).expression
-                    addExpressionNode( node.statementLabel, expression )
-                }
-            }
-            super.visitStatement( node )
-        }
 
-        @Override
-        void visitMethodCallExpression( MethodCallExpression node ) {
-            if ( node.isImplicitThis() ) {
-                doVisitMethodCall( node )
+                    // only add expression if it's not the first one or it's not a constant,
+                    // otherwise we just capture the block.text
+                    if ( methodExpressionIndex > 0 || !isStringConstant( expression ) ) {
+                        addExpressionNode( node.statementLabel, expression )
+                    }
+                }
+                methodExpressionIndex++
             }
-            super.visitMethodCallExpression( node )
+
+            super.visitStatement( node )
         }
 
         @Override
@@ -195,6 +182,10 @@ class VividAstInspector {
             // note: we don't impose any constraints on the receiver type here
             doVisitMethodCall( node )
             super.visitStaticMethodCallExpression( node )
+        }
+
+        private static boolean isStringConstant( Expression expression ) {
+            expression instanceof ConstantExpression && expression.type.name == 'java.lang.String'
         }
 
         private void doVisitMethodCall( Expression node ) {

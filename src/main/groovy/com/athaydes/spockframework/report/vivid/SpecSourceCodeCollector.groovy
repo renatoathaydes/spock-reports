@@ -1,21 +1,24 @@
 package com.athaydes.spockframework.report.vivid
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.spockframework.compiler.SourceLookup
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.util.Nullable
 
+@Slf4j
 @CompileStatic
 class SpecSourceCodeCollector {
 
-    private static final String[] IGNORED_LABELS = [ "where" ]
-    private static final Map<String, String> MAPPING = [ given: "setup", and: ( String ) null ]
+    private static final Set<String> IGNORED_LABELS = ( [ "where" ] as Set ).asImmutable()
 
     private final SourceLookup sourceLookup
     private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ]
-    private BlockKind lastBlockKind
+
+    @Nullable
+    private BlockKey previousBlockKey
 
     // the current class being parsed
     private String className
@@ -35,22 +38,46 @@ class SpecSourceCodeCollector {
     }
 
     void addExpression( MethodNode feature, String label, Expression expression ) {
-        if ( IGNORED_LABELS.contains( label ) ) {
+        if ( label in IGNORED_LABELS ) {
             return
         }
 
         BlockKind blockKind = toBlockKind( label )
-        if ( blockKind ) {
-            lastBlockKind = blockKind
+        int index = 0
+
+        if ( !blockKind ) {
+            if ( previousBlockKey ) {
+                blockKind = previousBlockKey.kind
+                index = previousBlockKey.index + 1
+            } else {
+                log.info( "Can't find block kind for label '$label'. Will use SETUP instead" )
+                blockKind = BlockKind.SETUP
+            }
         }
 
+        final blockKey = new BlockKey( blockKind, index )
+
         String sourceLine = toSourceCode( expression )
-        specSourceCodeByClassName[ className ].addLine( feature, lastBlockKind, sourceLine )
+
+        specSourceCodeByClassName[ className ]?.addLine( feature, blockKey, sourceLine )
+
+        previousBlockKey = blockKey
     }
 
+    @Nullable
     static BlockKind toBlockKind( String label ) {
-        String kind = MAPPING.get( label, label )
-        return kind ? BlockKind.valueOf( kind.toUpperCase() ) : null
+        if ( label == null ) {
+            return null
+        }
+
+        def kindName = label.toUpperCase()
+        BlockKind kind = BlockKind.values().find { BlockKind it -> it.name() == kindName }
+
+        if ( !kind && kindName == 'GIVEN' ) {
+            kind = BlockKind.SETUP // GIVEN is missing for some reason
+        }
+
+        return kind
     }
 
     private String toSourceCode( Expression expression ) {

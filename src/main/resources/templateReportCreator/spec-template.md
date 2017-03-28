@@ -48,6 +48,13 @@ Result: **$result**
  %>
 * ${block.kind} ${block.text}
 <%
+          if ( block.sourceCode ) {
+              out << "\n```\n"
+              block.sourceCode.each { codeLine ->
+                  out << codeLine << '\n'
+              }
+              out << "```\n"
+          }
         }
         def executedIterations = iterations.findAll { it.dataValues || it.errors }
         if ( params && executedIterations ) {

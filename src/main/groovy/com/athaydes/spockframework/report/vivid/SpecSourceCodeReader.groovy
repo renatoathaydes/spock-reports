@@ -3,7 +3,6 @@ package com.athaydes.spockframework.report.vivid
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
-import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.util.Nullable
 
@@ -26,7 +25,7 @@ class SpecSourceCodeReader {
         }
     }
 
-    List<String> getLines( FeatureInfo feature, BlockInfo block ) {
-        return specSourceCode?.getLines( feature.name, block.kind ) ?: [ ]
+    List<String> getLines( FeatureInfo feature, BlockKey blockKey ) {
+        return specSourceCode?.getLines( feature.name, blockKey ) ?: [ ]
     }
 }

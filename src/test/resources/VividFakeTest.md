@@ -27,7 +27,11 @@ Result: **FAIL**
 
 * When: I do crazy things
 
-* Then: x == y
+* Then: 
+
+```
+x == y
+```
 
 * Where: The examples below are used
 
@@ -64,7 +68,11 @@ Result: **PASS**
 
 Result: **PASS**
 
-* Expect: add(1, 2) == 3
+* Expect: 
+
+```
+add(1, 2) == 3
+```
 
 ### A test with an error
 
@@ -97,6 +105,10 @@ Result: **FAIL**
 
 * Then: Test fails
 
+```
+assert 3 == 2
+```
+
 The following problems occurred:
 
 ```
@@ -112,15 +124,39 @@ Condition not satisfied:
 
 Result: **PASS**
 
-* Given: int a = 0
+* Given: 
 
-* And: int b = 1
+```
+int a = 0
+```
 
-* When: int c = a + b
+* And: 
 
-* Then: c == 1
+```
+int b = 1
+int c = 2
+int d = b + c
+```
 
-* And: c > 0
+* When: 
+
+```
+int e = a + b + c + d
+```
+
+* Then:
+
+```
+e == 6
+a == 0
+c == 2 * b
+```
+
+* And: 
+
+```
+c > 0
+```
 
 ### An @Unrolled spec with x=0 and y=1
 
@@ -128,9 +164,17 @@ Result: **PASS**
 
 * Given: nothing
 
-* Expect: x == 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
+
+```
+if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+```
 
 * Where: ----
 
@@ -144,9 +188,17 @@ Result: **FAILURE**
 
 * Given: nothing
 
-* Expect: x == 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
+
+```
+if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+```
 
 * Where: ----
 
@@ -172,9 +224,17 @@ Result: **ERROR**
 
 * Given: nothing
 
-* Expect: x == 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
+
+```
+if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+```
 
 * Where: ----
 

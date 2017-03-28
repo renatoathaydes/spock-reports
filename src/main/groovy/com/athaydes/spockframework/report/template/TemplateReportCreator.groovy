@@ -6,10 +6,12 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.vivid.BlockKey
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
+import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 
@@ -153,33 +155,37 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
+        BlockKey blockKey = new BlockKey( BlockKind.CLEANUP, 0 )
+
         feature.blocks.collect { BlockInfo block ->
-            List<String> blockTexts = getBlockTexts( feature, block )
+            def isRepeatedBlock = block.kind == blockKey.kind
+            blockKey = new BlockKey( block.kind, isRepeatedBlock ? blockKey.index + 1 : 0 )
+
+            List<String> blockTexts = block.texts
+            List<String> code = getSourceCode( feature, blockKey )
+
             if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
                 blockTexts.collect { blockText ->
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
-                    [ kind: Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ], text: blockText ]
+                    [ kind      : Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ],
+                      text      : blockText,
+                      sourceCode: code ]
                 }
-            } else if ( !hideEmptyBlocks ) {
-                [ kind: Utils.block2String[ block.kind ], text: '----' ]
+            } else if ( code || !hideEmptyBlocks ) {
+                [ [ kind      : Utils.block2String[ block.kind ],
+                    text      : code ? '' : '----',
+                    sourceCode: code ] ]
             } else {
-                [ : ]
+                [ [ : ] ]
             }
-        }.findAll { !it.empty }.flatten()
+        }.flatten().findAll { Map item -> !item.isEmpty() }
     }
 
-    private List<String> getBlockTexts( FeatureInfo feature, BlockInfo block ) {
-        if ( showCodeBlocks ) {
-            def lines = codeReader.getLines( feature, block )
-            if ( !lines.isEmpty() ) {
-                return lines
-            }
-        }
-
-        return block.texts
+    private List<String> getSourceCode( FeatureInfo feature, BlockKey blockKey ) {
+        codeReader.getLines( feature, blockKey )
     }
 
 }

@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.vivid
 
 import groovy.transform.CompileStatic
+import groovy.transform.Immutable
 import groovy.transform.ToString
 import org.codehaus.groovy.ast.MethodNode
 import org.spockframework.runtime.model.BlockKind
@@ -11,22 +12,27 @@ class SpecSourceCode {
 
     private final Map<String, FeatureSourceCode> features = [ : ]
 
-    void addLine( MethodNode feature, BlockKind blockKind, String line ) {
+    void addLine( MethodNode feature, BlockKey blockKey, String line ) {
         features.get( feature.name, new FeatureSourceCode() )
                 .blocks
-                .get( blockKind, [ ] )
+                .get( blockKey, [ ] )
                 .add( line )
     }
 
-    List<String> getLines( String featureName, BlockKind blockKind ) {
+    List<String> getLines( String featureName, BlockKey blockKey ) {
         features.get( featureName, new FeatureSourceCode() )
                 .blocks
-                .get( blockKind, [ ] )
+                .get( blockKey, [ ] )
     }
 
 }
 
 class FeatureSourceCode {
-    // FIXME block kind is not unique
-    final Map<BlockKind, List<String>> blocks = [ : ]
+    final Map<BlockKey, List<String>> blocks = [ : ]
+}
+
+@Immutable
+class BlockKey {
+    BlockKind kind
+    int index
 }
