@@ -18,10 +18,11 @@ class SpecSourceCodeCollector {
     private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ]
 
     @Nullable
-    private BlockKey previousBlockKey
-
     // the current class being parsed
     private String className
+
+    @Nullable
+    private BlockKind previousBlockKind = null
 
     SpecSourceCodeCollector( SourceLookup sourceLookup ) {
         this.sourceLookup = sourceLookup
@@ -37,31 +38,27 @@ class SpecSourceCodeCollector {
         specSourceCodeByClassName.remove( className )
     }
 
-    void addExpression( MethodNode feature, String label, Expression expression ) {
+    void addExpression( MethodNode feature, int blockIndex, String label, Expression expression ) {
         if ( label in IGNORED_LABELS ) {
             return
         }
 
         BlockKind blockKind = toBlockKind( label )
-        int index = 0
 
         if ( !blockKind ) {
-            if ( previousBlockKey ) {
-                blockKind = previousBlockKey.kind
-                index = previousBlockKey.index + 1
+            if ( previousBlockKind ) {
+                blockKind = previousBlockKind
             } else {
                 log.info( "Can't find block kind for label '$label'. Will use SETUP instead" )
                 blockKind = BlockKind.SETUP
             }
         }
 
-        final blockKey = new BlockKey( blockKind, index )
-
         String sourceLine = toSourceCode( expression )
 
-        specSourceCodeByClassName[ className ]?.addLine( feature, blockKey, sourceLine )
+        specSourceCodeByClassName[ className ].addLine( feature, blockIndex, sourceLine )
 
-        previousBlockKey = blockKey
+        previousBlockKind = blockKind
     }
 
     @Nullable
@@ -81,11 +78,7 @@ class SpecSourceCodeCollector {
     }
 
     private String toSourceCode( Expression expression ) {
-        String source = sourceLookup.lookup( expression )
-        return isInQuotationMarks( source ) ? source[ 1..-2 ] : source
+        sourceLookup.lookup( expression )
     }
 
-    private static boolean isInQuotationMarks( String source ) {
-        return source && source.startsWith( '"' ) && source.endsWith( '"' )
-    }
 }

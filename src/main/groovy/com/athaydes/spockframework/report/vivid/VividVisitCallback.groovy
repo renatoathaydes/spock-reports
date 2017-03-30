@@ -30,13 +30,13 @@ class VividVisitCallback {
         methodsVisits.poll()
     }
 
-    void addExpressionNode( String label, Expression expression ) {
+    void addExpressionNode( int blockIndex, String label, Expression expression ) {
         if ( codeCollector == null ) {
             throw new NullPointerException( "codeCollector was not set" )
         }
 
         MethodNode currentMethod = methodsVisits.peek()
-        codeCollector.addExpression( currentMethod, label, expression )
+        codeCollector.addExpression( currentMethod, blockIndex, label, expression )
     }
 
 }

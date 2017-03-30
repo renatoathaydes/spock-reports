@@ -25,7 +25,7 @@ class SpecSourceCodeReader {
         }
     }
 
-    List<String> getLines( FeatureInfo feature, BlockKey blockKey ) {
-        return specSourceCode?.getLines( feature.name, blockKey ) ?: [ ]
+    List<String> getLines( FeatureInfo feature, int blockIndex ) {
+        return specSourceCode?.getLines( feature.name, blockIndex ) ?: [ ]
     }
 }

@@ -6,12 +6,10 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
-import com.athaydes.spockframework.report.vivid.BlockKey
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
-import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 
@@ -155,14 +153,10 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
-        BlockKey blockKey = new BlockKey( BlockKind.CLEANUP, 0 )
-
+        int blockIndex = 0
         feature.blocks.collect { BlockInfo block ->
-            def isRepeatedBlock = block.kind == blockKey.kind
-            blockKey = new BlockKey( block.kind, isRepeatedBlock ? blockKey.index + 1 : 0 )
-
             List<String> blockTexts = block.texts
-            List<String> code = getSourceCode( feature, blockKey )
+            List<String> code = getSourceCode( feature, blockIndex++ )
 
             if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
@@ -184,8 +178,8 @@ class TemplateReportCreator implements IReportCreator {
         }.flatten().findAll { Map item -> !item.isEmpty() }
     }
 
-    private List<String> getSourceCode( FeatureInfo feature, BlockKey blockKey ) {
-        codeReader.getLines( feature, blockKey )
+    private List<String> getSourceCode( FeatureInfo feature, int blockIndex ) {
+        codeReader.getLines( feature, blockIndex )
     }
 
 }
