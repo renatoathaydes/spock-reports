@@ -3,9 +3,11 @@ package com.athaydes.spockframework.report.vivid
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.stmt.ExpressionStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.spockframework.compiler.SourceLookup
-import org.spockframework.runtime.model.BlockKind
 import org.spockframework.util.Nullable
 
 @Slf4j
@@ -14,15 +16,13 @@ class SpecSourceCodeCollector {
 
     private static final Set<String> IGNORED_LABELS = ( [ "where" ] as Set ).asImmutable()
 
-    private final SourceLookup sourceLookup
+    final SourceLookup sourceLookup
     private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ]
 
     @Nullable
     // the current class being parsed
     private String className
-
-    @Nullable
-    private BlockKind previousBlockKind = null
+    int blockIndex = -1
 
     SpecSourceCodeCollector( SourceLookup sourceLookup ) {
         this.sourceLookup = sourceLookup
@@ -38,47 +38,25 @@ class SpecSourceCodeCollector {
         specSourceCodeByClassName.remove( className )
     }
 
-    void addExpression( MethodNode feature, int blockIndex, String label, Expression expression ) {
-        if ( label in IGNORED_LABELS ) {
-            return
-        }
-
-        BlockKind blockKind = toBlockKind( label )
-
-        if ( !blockKind ) {
-            if ( previousBlockKind ) {
-                blockKind = previousBlockKind
-            } else {
-                log.info( "Can't find block kind for label '$label'. Will use SETUP instead" )
-                blockKind = BlockKind.SETUP
+    void add( MethodNode feature, Statement st ) {
+        def code = sourceLookup.lookup( st )
+        def label = st.statementLabel
+        println "LABEL: $label -> $code"
+        if ( label ) {
+            blockIndex++
+            if ( st instanceof ExpressionStatement ) {
+                def expr = ( st as ExpressionStatement ).expression
+                if ( isStringConstant( expr ) ) {
+                    return
+                }
             }
         }
 
-        String sourceLine = toSourceCode( expression )
-
-        specSourceCodeByClassName[ className ].addLine( feature, blockIndex, sourceLine )
-
-        previousBlockKind = blockKind
+        specSourceCodeByClassName[ className ].addLine( feature, blockIndex, code )
     }
 
-    @Nullable
-    static BlockKind toBlockKind( String label ) {
-        if ( label == null ) {
-            return null
-        }
-
-        def kindName = label.toUpperCase()
-        BlockKind kind = BlockKind.values().find { BlockKind it -> it.name() == kindName }
-
-        if ( !kind && kindName == 'GIVEN' ) {
-            kind = BlockKind.SETUP // GIVEN is missing for some reason
-        }
-
-        return kind
-    }
-
-    private String toSourceCode( Expression expression ) {
-        sourceLookup.lookup( expression )
+    private static boolean isStringConstant( Expression expression ) {
+        expression instanceof ConstantExpression && expression.type.name == 'java.lang.String'
     }
 
 }

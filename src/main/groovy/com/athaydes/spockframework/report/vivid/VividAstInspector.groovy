@@ -2,14 +2,10 @@ package com.athaydes.spockframework.report.vivid
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.ast.AnnotatedNode
-import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.ModuleNode
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilationFailedException
@@ -20,12 +16,8 @@ import org.codehaus.groovy.control.SourceUnit
 import org.spockframework.compiler.SourceLookup
 import org.spockframework.util.Nullable
 import org.spockframework.util.inspector.AstInspectorException
-import org.spockframework.util.inspector.Inspect
 
-import java.lang.reflect.Method
 import java.security.CodeSource
-
-import static ExpressionParser.parseExpression
 
 /**
  * Based on org.spockframework.util.inspector.AstInspector by Peter Niederwieser
@@ -33,8 +25,6 @@ import static ExpressionParser.parseExpression
 @CompileStatic
 @Slf4j
 class VividAstInspector {
-
-    static final String EXPRESSION_MARKER_PREFIX = "inspect_"
 
     private CompilePhase compilePhase = CompilePhase.CONVERSION
     private final VividClassLoader classLoader
@@ -127,24 +117,7 @@ class VividAstInspector {
 
         @Nullable
         private String currentLabel = null
-
-        @Override
-        @SuppressWarnings( "unchecked" )
-        void visitAnnotations( AnnotatedNode node ) {
-            for ( AnnotationNode an in node.annotations ) {
-                ClassNode cn = an.classNode
-
-                // this comparison should be good enough, and also works in phase conversion
-                if ( cn.nameWithoutPackage == Inspect.simpleName ) {
-                    ConstantExpression name = ( ConstantExpression ) an.getMember( "value" )
-                    if ( name == null || !( name.value instanceof String ) )
-                        throw new AstInspectorException( "@Inspect must have a String argument" )
-                    break
-                }
-            }
-
-            super.visitAnnotations( node )
-        }
+        MethodNode methodNode
 
         @Override
         void visitClass( ClassNode node ) {
@@ -162,6 +135,7 @@ class VividAstInspector {
                 blockIndex = 0
                 currentLabel = null
                 visitCallback.onMethodEntry( node )
+                methodNode = node
             }
 
             super.visitMethod( node )
@@ -176,41 +150,14 @@ class VividAstInspector {
 
         @Override
         void visitStatement( Statement node ) {
-            if ( !isTestMethod || ( blockIndex == 0 && node instanceof BlockStatement ) ) {
-                // not in test method or expected first statement in a block, just keep going
-            } else {
-                println "Checking statement as it is test method? $isTestMethod"
-                Expression expression = node instanceof Expression ?
-                        node as Expression :
-                        parseExpression( node )
-
-                if ( expression != null ) {
-                    if ( node.statementLabel != currentLabel ) {
-                        // do not set label to null if the node has no label
-
-                        currentLabel = node.statementLabel ?: currentLabel
-
-                    } else {
-                        blockIndex++
-                    }
-
-                    // only add expression if it's not the first one or it's not a constant,
-                    // otherwise we just capture the block.text
-                    if ( blockIndex > 0 || !isStringConstant( expression ) ) {
-                        addExpressionNode( currentLabel, expression )
-                    }
+            if ( isTestMethod && node instanceof BlockStatement ) {
+                def stmts = ( node as BlockStatement ).statements
+                if ( stmts ) for ( st in stmts ) {
+                    visitCallback.codeCollector.add( methodNode, st )
                 }
             }
 
             super.visitStatement( node )
-        }
-
-        private static boolean isStringConstant( Expression expression ) {
-            expression instanceof ConstantExpression && expression.type.name == 'java.lang.String'
-        }
-
-        private addExpressionNode( String name, Expression expression ) {
-            visitCallback.addExpressionNode( blockIndex, name, expression )
         }
 
         @Override
@@ -220,33 +167,4 @@ class VividAstInspector {
     }
 
     private static class AstSuccessfullyCaptured extends Error {}
-}
-
-// FIXME for each subtype of Statement, this class should try to extract an Expression
-// which can be converted to the original source code
-@CompileStatic
-class ExpressionParser {
-
-    // try these methods dynamically for now!
-    final methodNames = [ 'getExpression', 'getBooleanExpression' ] as Set
-
-    static Expression parseExpression( Statement statement ) {
-
-        def candidateMethods = statement.class.methods.findAll { Method m ->
-            m.parameterCount == 0 && m.name in methodNames
-        }
-
-        for ( method in candidateMethods ) {
-            if ( statement ) {
-                try {
-                    return method.invoke( statement ) as Expression
-                } catch ( e ) {
-                    e.printStackTrace()
-                }
-            }
-        }
-
-        // no luck
-        null
-    }
 }
