@@ -42,6 +42,50 @@ class VividAstInspectorSpec extends Specification {
         then == [ 'x == 20' ]
     }
 
+    def "Vivid AST Inspector can load empty code blocks from Groovy Specification files"() {
+        given: 'A Groovy source file'
+        def groovySource = '''|
+        |class Abc extends Specification {
+        |  def "A first test with Then code block"() {
+        |    given:
+        |    "we have x and y"
+        |
+        |    and:
+        |    "some more things"
+        |
+        |    when:
+        |    "I do crazy things"
+        |
+        |    and:
+        |
+        |    then:
+        |    2 == 2
+        |  }
+        |}
+        |'''.stripMargin()
+
+        def groovyFile = File.createTempFile( 'spock-reports', 'groovy' )
+        groovyFile << groovySource
+
+        when: 'The Groovy file is loaded by the inspector'
+        def result = inspector.load( groovyFile, 'Abc' )
+
+        then: 'The inspector should be able to provide the source code for each block'
+        def given = result.getLines( 'A first test with Then code block', 0 )
+        given.isEmpty()
+
+        def given2 = result.getLines( 'A first test with Then code block', 1 )
+        given2.isEmpty()
+
+        def when = result.getLines( 'A first test with Then code block', 2 )
+        when.isEmpty()
+
+        // the "and" block does not have a label or statements, so it's completely ignored
+
+        def then = result.getLines( 'A first test with Then code block', 3 )
+        then == [ '2 == 2' ]
+    }
+
     def "Vivid AST Inspector can load multi-line code blocks from Groovy Specification files"() {
         given: 'A Groovy source file'
         def groovySource = '''|

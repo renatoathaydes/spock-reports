@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.vivid
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import groovy.transform.ToString
 import org.codehaus.groovy.ast.MethodNode
 
@@ -10,17 +11,18 @@ class SpecSourceCode {
 
     private final Map<String, FeatureSourceCode> features = [ : ]
 
-    void addLine( MethodNode feature, int blockIndex, String line ) {
-        line = removeIndent( line )
-        println "Adding ${feature.name} index = $blockIndex: $line"
-        features.get( feature.name, new FeatureSourceCode() )
-                .getBlockLines( blockIndex )
-                .add( line )
+    void startBlock( MethodNode feature ) {
+        features.get( feature.name, new FeatureSourceCode() ).startBlock()
+    }
+
+    void addStatement( MethodNode feature, String statement ) {
+        statement = removeIndent( statement )
+        features[ feature.name ].addStatement( statement )
+        println "Adding to ${feature.name}: $statement"
     }
 
     List<String> getLines( String featureName, int blockIndex ) {
-        features.get( featureName, new FeatureSourceCode() )
-                .getBlockLines( blockIndex )
+        features.get( featureName )?.getBlockStatements( blockIndex ) ?: [ ]
     }
 
     static String removeIndent( String code ) {
@@ -45,14 +47,20 @@ class SpecSourceCode {
 
 @ToString
 @CompileStatic
+@PackageScope
 class FeatureSourceCode {
     private final List<List<String>> blocks = [ ]
 
-    List<String> getBlockLines( int blockIndex ) {
-        if ( blocks.size() < blockIndex + 1 ) {
-            blocks << [ ]
-        }
-        assert blockIndex < blocks.size()
+    void startBlock() {
+        blocks << [ ]
+    }
+
+    void addStatement( String statement ) {
+        blocks.last().add( statement )
+        println "ALL BLOCKS: $blocks"
+    }
+
+    List<String> getBlockStatements( int blockIndex ) {
         blocks[ blockIndex ]
     }
 }

@@ -28,8 +28,6 @@ class SpecSourceCodeCollector {
     @Nullable
     private MethodNode method
 
-    int blockIndex = -1
-
     SpecSourceCodeCollector( SourceUnit sourceUnit ) {
         this.sourceLookup = new SourceLookup( sourceUnit )
         this.module = sourceUnit.AST
@@ -54,9 +52,17 @@ class SpecSourceCodeCollector {
 
         def code = sourceLookup.lookup( st )
         def label = st.statementLabel
+        def specCode = specSourceCodeByClassName[ className ]
+
+        if ( !specCode ) {
+            log.warn( "Ignoring statement, class has not been initialized: $className" )
+            return
+        }
+
         println "LABEL: $label -> $code"
         if ( label ) {
-            blockIndex++
+            specCode.startBlock( method )
+
             if ( st instanceof ExpressionStatement ) {
                 def expr = ( st as ExpressionStatement ).expression
                 if ( isStringConstant( expr ) ) {
@@ -65,7 +71,7 @@ class SpecSourceCodeCollector {
             }
         }
 
-        specSourceCodeByClassName[ className ].addLine( method, blockIndex, code )
+        specCode.addStatement( method, code )
     }
 
     private static boolean isStringConstant( Expression expression ) {
