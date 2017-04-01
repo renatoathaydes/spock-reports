@@ -5,7 +5,6 @@ import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.ModuleNode
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilationFailedException
@@ -13,11 +12,11 @@ import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.SourceUnit
-import org.spockframework.compiler.SourceLookup
 import org.spockframework.util.Nullable
 import org.spockframework.util.inspector.AstInspectorException
 
 import java.security.CodeSource
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Based on org.spockframework.util.inspector.AstInspector by Peter Niederwieser
@@ -28,25 +27,21 @@ class VividAstInspector {
 
     private CompilePhase compilePhase = CompilePhase.CONVERSION
     private final VividClassLoader classLoader
-    private ModuleNode module
-    private final VividASTVisitor visitor = new VividASTVisitor()
-    private final VividVisitCallback visitCallback = new VividVisitCallback()
-    private final Set<File> visitedFiles = [ ]
+    private final Map<File, SpecSourceCodeCollector> specCodesByFile = [ : ] as ConcurrentHashMap
 
     VividAstInspector() {
-        classLoader = new VividClassLoader( VividAstInspector.class.getClassLoader(), null )
+        classLoader = new VividClassLoader( this.class.classLoader )
     }
 
     @Nullable
     SpecSourceCode load( @Nullable File sourceFile, String className ) {
-        log.debug "Trying to read source file $sourceFile"
-
-        // spec is in same file as some other specs, but we probably already parsed the file before
-        def code = visitCallback.codeCollector?.getResultFor( className )
-
-        if ( code != null ) {
-            log.debug( "Found class file in specs that had already been parsed" )
-            return code
+        // first, check if a previous spec file contained this class
+        for ( codeCollector in specCodesByFile.values() ) {
+            def code = codeCollector.getResultFor( className )
+            if ( code ) {
+                log.debug( "Found source code for $className in previously parsed file" )
+                return code
+            }
         }
 
         if ( sourceFile == null ) {
@@ -54,26 +49,32 @@ class VividAstInspector {
             return null
         }
 
-        boolean alreadyVisited = !visitedFiles.add( sourceFile )
+        boolean alreadyVisited = specCodesByFile.containsKey( sourceFile )
 
         if ( alreadyVisited ) {
             log.debug( "Cancelling visit to source file, already seen it: $sourceFile" )
             return null
         }
 
+        log.debug "Trying to read source file $sourceFile"
+
         try {
             classLoader.parseClass( sourceFile )
         } catch ( IOException e ) {
             throw new AstInspectorException( "cannot read source file", e )
-        } catch ( AstSuccessfullyCaptured ignore ) {
-            indexAstNodes()
-            return visitCallback.codeCollector?.getResultFor( className )
+        } catch ( AstSuccessfullyCaptured captured ) {
+            def source = getSpecSource( captured.codeCollector )
+            specCodesByFile[ sourceFile ] = source
+            return source.getResultFor( className )
         }
 
         throw new AstInspectorException( "internal error" )
     }
 
-    private void indexAstNodes() {
+    private SpecSourceCodeCollector getSpecSource( SpecSourceCodeCollector codeCollector ) {
+        final visitor = new VividASTVisitor( codeCollector )
+        final module = codeCollector.module
+
         visitor.visitBlockStatement( module.statementBlock )
 
         for ( MethodNode method in module.methods ) {
@@ -83,93 +84,101 @@ class VividAstInspector {
         for ( ClassNode clazz in module.classes ) {
             visitor.visitClass( clazz )
         }
+
+        codeCollector
     }
 
     private class VividClassLoader extends GroovyClassLoader {
-        VividClassLoader( ClassLoader parent, CompilerConfiguration config ) {
-            super( parent, config )
+        VividClassLoader( ClassLoader parent ) {
+            super( parent, null )
         }
 
         @Override
         protected CompilationUnit createCompilationUnit( CompilerConfiguration config, CodeSource source ) {
             CompilationUnit unit = super.createCompilationUnit( config, source )
 
-            // Groovy cannot see these fields from the nested class below, so let's use some Closures to help it
-            final setModule = { ModuleNode mod -> module = mod }
-            final setCodeCollector = { SpecSourceCodeCollector c -> visitCallback.codeCollector = c }
-
             unit.addPhaseOperation( new CompilationUnit.SourceUnitOperation() {
                 @Override
                 void call( SourceUnit sourceUnit ) throws CompilationFailedException {
-                    setModule sourceUnit.AST
-                    setCodeCollector new SpecSourceCodeCollector( new SourceLookup( sourceUnit ) )
-                    throw new AstSuccessfullyCaptured()
+                    throw new AstSuccessfullyCaptured( new SpecSourceCodeCollector( sourceUnit ) )
                 }
             }, compilePhase.phaseNumber )
             return unit
         }
     }
 
-    class VividASTVisitor extends ClassCodeVisitorSupport {
+    private static class AstSuccessfullyCaptured extends Error {
+        final SpecSourceCodeCollector codeCollector
 
-        private int blockIndex = 0
-        private boolean visitStatements = false
-
-        @Nullable
-        private String currentLabel = null
-        MethodNode methodNode
-
-        @Override
-        void visitClass( ClassNode node ) {
-            visitCallback.startClass node.name
-            super.visitClass( node )
+        AstSuccessfullyCaptured( SpecSourceCodeCollector codeCollector ) {
+            super()
+            this.codeCollector = codeCollector
         }
 
-        @Override
-        void visitMethod( MethodNode node ) {
-            def previousIsTestMethod = visitStatements
-            visitStatements = node.isPublic() && node.parameters.size() == 0
-            println "Visiting method ${node.name}, is test? $visitStatements, previous: $previousIsTestMethod"
-
-            if ( visitStatements ) {
-                blockIndex = 0
-                currentLabel = null
-                visitCallback.onMethodEntry( node )
-                methodNode = node
-            }
-
-            super.visitMethod( node )
-
-            if ( visitStatements ) {
-                visitCallback.onMethodExit()
-            }
-
-            println "done visiting method ${node.name}, setting isTestMethod to ${previousIsTestMethod}"
-            visitStatements = previousIsTestMethod
-        }
-
-        @Override
-        void visitStatement( Statement node ) {
-            if ( visitStatements && node instanceof BlockStatement ) {
-                def stmts = ( node as BlockStatement ).statements
-                if ( stmts ) for ( st in stmts ) {
-                    if ( st.statementLabel == 'where' ) {
-                        break
-                    } else {
-                        visitCallback.codeCollector.add( methodNode, st )
-                    }
-                }
-                visitStatements = false
-            }
-
-            super.visitStatement( node )
-        }
-
-        @Override
-        protected SourceUnit getSourceUnit() {
-            throw new AstInspectorException( "internal error" )
-        }
     }
 
-    private static class AstSuccessfullyCaptured extends Error {}
 }
+
+@CompileStatic
+class VividASTVisitor extends ClassCodeVisitorSupport {
+
+    private final SpecSourceCodeCollector codeCollector
+    private int blockIndex = 0
+    private boolean visitStatements = false
+
+    @Nullable
+    private String currentLabel = null
+
+    VividASTVisitor( SpecSourceCodeCollector codeCollector ) {
+        this.codeCollector = codeCollector
+    }
+
+    @Override
+    void visitClass( ClassNode node ) {
+        codeCollector.className = node.name
+        super.visitClass( node )
+    }
+
+    @Override
+    void visitMethod( MethodNode node ) {
+        def previousIsTestMethod = visitStatements
+        visitStatements = node.isPublic() && node.parameters.size() == 0
+        println "Visiting method ${node.name}, is test? $visitStatements, previous: $previousIsTestMethod"
+
+        if ( visitStatements ) {
+            blockIndex = 0
+            currentLabel = null
+            codeCollector.method = node
+        }
+
+        super.visitMethod( node )
+
+        codeCollector.method = null
+
+        println "done visiting method ${node.name}, setting isTestMethod to ${previousIsTestMethod}"
+        visitStatements = previousIsTestMethod
+    }
+
+    @Override
+    void visitStatement( Statement node ) {
+        if ( visitStatements && node instanceof BlockStatement ) {
+            def stmts = ( node as BlockStatement ).statements
+            if ( stmts ) for ( statement in stmts ) {
+                if ( statement.statementLabel == 'where' ) {
+                    break
+                } else {
+                    codeCollector.add( statement )
+                }
+            }
+            visitStatements = false
+        }
+
+        super.visitStatement( node )
+    }
+
+    @Override
+    protected SourceUnit getSourceUnit() {
+        throw new AstInspectorException( "internal error" )
+    }
+}
+

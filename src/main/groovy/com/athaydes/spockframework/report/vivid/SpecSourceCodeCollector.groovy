@@ -3,29 +3,36 @@ package com.athaydes.spockframework.report.vivid
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.ModuleNode
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.control.SourceUnit
 import org.spockframework.compiler.SourceLookup
 import org.spockframework.util.Nullable
+
+import java.util.concurrent.ConcurrentHashMap
 
 @Slf4j
 @CompileStatic
 class SpecSourceCodeCollector {
 
-    private static final Set<String> IGNORED_LABELS = ( [ "where" ] as Set ).asImmutable()
-
     final SourceLookup sourceLookup
-    private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ]
+    final ModuleNode module
+
+    private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ] as ConcurrentHashMap
 
     @Nullable
-    // the current class being parsed
     private String className
+    @Nullable
+    private MethodNode method
+
     int blockIndex = -1
 
-    SpecSourceCodeCollector( SourceLookup sourceLookup ) {
-        this.sourceLookup = sourceLookup
+    SpecSourceCodeCollector( SourceUnit sourceUnit ) {
+        this.sourceLookup = new SourceLookup( sourceUnit )
+        this.module = sourceUnit.AST
     }
 
     void setClassName( String className ) {
@@ -33,12 +40,18 @@ class SpecSourceCodeCollector {
         specSourceCodeByClassName[ className ] = new SpecSourceCode()
     }
 
+    void setMethod( MethodNode methodNode ) {
+        this.@method = methodNode
+    }
+
     @Nullable
     SpecSourceCode getResultFor( String className ) {
         specSourceCodeByClassName.remove( className )
     }
 
-    void add( MethodNode feature, Statement st ) {
+    void add( Statement st ) {
+        assert className && method
+
         def code = sourceLookup.lookup( st )
         def label = st.statementLabel
         println "LABEL: $label -> $code"
@@ -52,7 +65,7 @@ class SpecSourceCodeCollector {
             }
         }
 
-        specSourceCodeByClassName[ className ].addLine( feature, blockIndex, code )
+        specSourceCodeByClassName[ className ].addLine( method, blockIndex, code )
     }
 
     private static boolean isStringConstant( Expression expression ) {
