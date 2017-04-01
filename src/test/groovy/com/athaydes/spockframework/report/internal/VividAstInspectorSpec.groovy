@@ -150,6 +150,47 @@ class VividAstInspectorSpec extends Specification {
         blocks[ 1 ].text == 'the result is right'
     }
 
+    def "Vivid AST Inspector can parse specifications containing methods that look like test methods but are not"() {
+        given: 'A Groovy source file containing a method within a Specification that is public and takes no args'
+        def groovySource = '''|
+        |class Abc extends Specification {
+        |  def "my feature"() {
+        |    when:
+        |    def x = notTest()
+        |
+        |    then: 'the result is right'
+        |    x == 20
+        |  }
+        |
+        |  def notTest() {
+        |    int i = 10
+        |    return i * 2    
+        |  }
+        |}'''.stripMargin()
+
+        def groovyFile = File.createTempFile( 'spock-reports', 'groovy' )
+        groovyFile << groovySource
+
+        when: 'The Groovy file is loaded by the inspector'
+        def result = inspector.load( groovyFile, 'Abc' )
+
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my feature' )
+
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 2
+
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'def x = notTest()' ]
+        blocks[ 1 ].statements == [ 'x == 20' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'when'
+        blocks[ 0 ].text == null
+        blocks[ 1 ].label == 'then'
+        blocks[ 1 ].text == 'the result is right'
+    }
+
     def "Vivid AST Inspector can load multi-line expressions from Groovy Specification files"() {
         given: 'A Groovy source file'
         def groovySource = '''|

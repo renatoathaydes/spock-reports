@@ -4,10 +4,12 @@ import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.ToString
+import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
 import org.spockframework.util.Nullable
 
 @ToString
+@Slf4j
 @CompileStatic
 class SpecSourceCode {
 
@@ -18,9 +20,13 @@ class SpecSourceCode {
     }
 
     void addStatement( MethodNode feature, String statement ) {
-        statement = removeIndent( statement )
-        features[ feature.name ].addStatement( statement )
-        println "Adding to ${feature.name}: $statement"
+        def currentFeature = features[ feature.name ]
+        if ( currentFeature ) {
+            statement = removeIndent( statement )
+            currentFeature.addStatement( statement )
+        } else {
+            log.debug( "Skipping statement on method {}, not a test method?", feature?.name )
+        }
     }
 
     List<BlockCode> getBlocks( String featureName ) {
