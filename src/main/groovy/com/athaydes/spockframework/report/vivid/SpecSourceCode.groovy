@@ -1,9 +1,11 @@
 package com.athaydes.spockframework.report.vivid
 
+import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.ToString
 import org.codehaus.groovy.ast.MethodNode
+import org.spockframework.util.Nullable
 
 @ToString
 @CompileStatic
@@ -11,8 +13,8 @@ class SpecSourceCode {
 
     private final Map<String, FeatureSourceCode> features = [ : ]
 
-    void startBlock( MethodNode feature ) {
-        features.get( feature.name, new FeatureSourceCode() ).startBlock()
+    void startBlock( MethodNode feature, String label, @Nullable String text ) {
+        features.get( feature.name, new FeatureSourceCode() ).startBlock( label, text )
     }
 
     void addStatement( MethodNode feature, String statement ) {
@@ -21,8 +23,8 @@ class SpecSourceCode {
         println "Adding to ${feature.name}: $statement"
     }
 
-    List<String> getLines( String featureName, int blockIndex ) {
-        features.get( featureName )?.getBlockStatements( blockIndex ) ?: [ ]
+    List<BlockCode> getBlocks( String featureName ) {
+        features.get( featureName )?.blocks ?: [ ]
     }
 
     static String removeIndent( String code ) {
@@ -49,18 +51,26 @@ class SpecSourceCode {
 @CompileStatic
 @PackageScope
 class FeatureSourceCode {
-    private final List<List<String>> blocks = [ ]
+    private final List<BlockCode> blocks = [ ]
 
-    void startBlock() {
-        blocks << [ ]
+    void startBlock( String label, @Nullable String text ) {
+        blocks << new BlockCode( label, text, [ ] )
     }
 
     void addStatement( String statement ) {
-        blocks.last().add( statement )
+        blocks.last().statements.add( statement )
         println "ALL BLOCKS: $blocks"
     }
 
-    List<String> getBlockStatements( int blockIndex ) {
-        blocks[ blockIndex ]
+    List<BlockCode> getBlocks() {
+        return this.@blocks.asImmutable()
     }
+}
+
+@Canonical
+class BlockCode {
+    final String label
+    @Nullable
+    final String text
+    final List<String> statements
 }

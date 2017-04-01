@@ -31,15 +31,24 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'Abc' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def given = result.getLines( 'my feature', 0 )
-        given == [ 'def x = 10' ]
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my feature' )
 
-        def when = result.getLines( 'my feature', 1 )
-        when == [ 'x += 10' ]
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 3
 
-        def then = result.getLines( 'my feature', 2 )
-        then == [ 'x == 20' ]
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'def x = 10' ]
+        blocks[ 1 ].statements == [ 'x += 10' ]
+        blocks[ 2 ].statements == [ 'x == 20' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'given'
+        blocks[ 0 ].text == 'the given block'
+        blocks[ 1 ].label == 'when'
+        blocks[ 1 ].text == 'an action is taken'
+        blocks[ 2 ].label == 'then'
+        blocks[ 2 ].text == 'the result is right'
     }
 
     def "Vivid AST Inspector can load empty code blocks from Groovy Specification files"() {
@@ -59,7 +68,13 @@ class VividAstInspectorSpec extends Specification {
         |    and:
         |
         |    then:
-        |    2 == 2
+        |      x == y
+        |
+        |    where:
+        |    "The examples below are used"
+        |      x | y
+        |    'a' | 'a'
+        |    'b' | 'c'        
         |  }
         |}
         |'''.stripMargin()
@@ -70,20 +85,30 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'Abc' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def given = result.getLines( 'A first test with Then code block', 0 )
-        given.isEmpty()
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'A first test with Then code block' )
 
-        def given2 = result.getLines( 'A first test with Then code block', 1 )
-        given2.isEmpty()
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 5
 
-        def when = result.getLines( 'A first test with Then code block', 2 )
-        when.isEmpty()
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements.isEmpty()
+        blocks[ 1 ].statements.isEmpty()
+        blocks[ 2 ].statements.isEmpty()
+        blocks[ 3 ].statements == [ 'x == y' ]
+        blocks[ 4 ].statements.isEmpty() // where statements are not captured
 
-        // the "and" block does not have a label or statements, so it's completely ignored
-
-        def then = result.getLines( 'A first test with Then code block', 3 )
-        then == [ '2 == 2' ]
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'given'
+        blocks[ 0 ].text == 'we have x and y'
+        blocks[ 1 ].label == 'and'
+        blocks[ 1 ].text == 'some more things'
+        blocks[ 2 ].label == 'when'
+        blocks[ 2 ].text == 'I do crazy things'
+        blocks[ 3 ].label == 'then'
+        blocks[ 3 ].text == null
+        blocks[ 4 ].label == 'where'
+        blocks[ 4 ].text == 'The examples below are used'
     }
 
     def "Vivid AST Inspector can load multi-line code blocks from Groovy Specification files"() {
@@ -108,12 +133,21 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'Abc' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def when = result.getLines( 'my feature', 0 )
-        when == [ 'def x = 10', 'def y = 20', 'def z = x + y' ]
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my feature' )
 
-        def then = result.getLines( 'my feature', 1 )
-        then == [ 'x + y == z', 'assert x * 2 == y' ]
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 2
+
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'def x = 10', 'def y = 20', 'def z = x + y' ]
+        blocks[ 1 ].statements == [ 'x + y == z', 'assert x * 2 == y' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'when'
+        blocks[ 0 ].text == null
+        blocks[ 1 ].label == 'then'
+        blocks[ 1 ].text == 'the result is right'
     }
 
     def "Vivid AST Inspector can load multi-line expressions from Groovy Specification files"() {
@@ -147,24 +181,34 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'Abc' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def when = result.getLines( 'my feature', 0 )
-        when == [ 'def x = 10 +\n20 +\n30' ]
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my feature' )
 
-        def when2 = result.getLines( 'my feature', 1 )
-        when2 == [ 'def y = """\n' +
-                           '  hello\n' +
-                           '  world\n' +
-                           '"""' ]
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 4
 
-        def then = result.getLines( 'my feature', 2 )
-        then == [ 'x ==\n60' ]
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'def x = 10 +\n20 +\n30' ]
+        blocks[ 1 ].statements == [ 'def y = """\n' +
+                                            '  hello\n' +
+                                            '  world\n' +
+                                            '"""' ]
+        blocks[ 2 ].statements == [ 'x ==\n60' ]
+        blocks[ 3 ].statements == [ "y == 'hello world'" ]
 
-        def then2 = result.getLines( 'my feature', 3 )
-        then2 == [ "y == 'hello world'" ]
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'when'
+        blocks[ 0 ].text == null
+        blocks[ 1 ].label == 'and'
+        blocks[ 1 ].text == null
+        blocks[ 2 ].label == 'then'
+        blocks[ 2 ].text == 'the result is right'
+        blocks[ 3 ].label == 'and'
+        blocks[ 3 ].text == null
+
     }
 
-    def "Vivid AST Inspector does not load the where and cleanup code blocks from Groovy Specification files"() {
+    def "Vivid AST Inspector does not load statements of the where block from Groovy Specification files"() {
         given: 'A Groovy source file'
         def groovySource = '''|
         |class SomeSpec extends Specification {
@@ -188,17 +232,28 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'SomeSpec' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def then = result.getLines( 'examples feature', 0 )
-        then == [ 'x < y' ]
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'examples feature' )
+
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 3
+
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'x < y' ]
 
         and: 'The where block is not captured'
-        def where = result.getLines( 'examples feature', 1 )
-        where.isEmpty()
+        blocks[ 1 ].statements.isEmpty()
 
-        and: 'The cleanup block is not captured'
-        def cleanup = result.getLines( 'examples feature', 2 )
-        cleanup.isEmpty()
+        and: 'The cleanup block is captured'
+        blocks[ 2 ].statements == [ 'x = null' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'expect'
+        blocks[ 0 ].text == null
+        blocks[ 1 ].label == 'where'
+        blocks[ 1 ].text == 'the examples are'
+        blocks[ 2 ].label == 'cleanup'
+        blocks[ 2 ].text == 'Just pretend to cleanup'
     }
 
     def "Vivid AST Inspector captures all nested statements from Groovy Specification files"() {
@@ -242,26 +297,37 @@ class VividAstInspectorSpec extends Specification {
         when: 'The Groovy file is loaded by the inspector'
         def result = inspector.load( groovyFile, 'Abc' )
 
-        then: 'The inspector should be able to provide the source code for each block'
-        def given = result.getLines( 'my feature', 0 )
-        given == [ 'def x = []',
-                   'for (i in 0..10) {\n  x << i\n  x << i * 2\n}',
-                   'int i = 0',
-                   'while (i < 4) {\n  for (j in 0..i) {\n    x << [i, j]\n  }\n  println x\n}' ]
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my feature' )
 
-        def when = result.getLines( 'my feature', 1 )
-        when == [ 'def y = x.collect { item ->\n' +
-                          '  (0..item).filter { i ->\n' +
-                          '    if (i > 4) {\n' +
-                          '      true\n' +
-                          '    } else false\n' +
-                          '  }\n' +
-                          '}' ]
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 3
 
-        def then = result.getLines( 'my feature', 2 )
-        then == [ 'x.collect { i ->\n' +
-                          '  i as String\n' +
-                          "} == [ '1', '2' ]" ]
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ 'def x = []',
+                                    'for (i in 0..10) {\n  x << i\n  x << i * 2\n}',
+                                    'int i = 0',
+                                    'while (i < 4) {\n  for (j in 0..i) {\n    x << [i, j]\n  }\n  println x\n}' ]
+
+        blocks[ 1 ].statements == [ 'def y = x.collect { item ->\n' +
+                                            '  (0..item).filter { i ->\n' +
+                                            '    if (i > 4) {\n' +
+                                            '      true\n' +
+                                            '    } else false\n' +
+                                            '  }\n' +
+                                            '}' ]
+
+        blocks[ 2 ].statements == [ 'x.collect { i ->\n' +
+                                            '  i as String\n' +
+                                            "} == [ '1', '2' ]" ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'given'
+        blocks[ 0 ].text == 'the given block'
+        blocks[ 1 ].label == 'when'
+        blocks[ 1 ].text == 'an action is taken'
+        blocks[ 2 ].label == 'then'
+        blocks[ 2 ].text == 'the result is right'
     }
 
 }

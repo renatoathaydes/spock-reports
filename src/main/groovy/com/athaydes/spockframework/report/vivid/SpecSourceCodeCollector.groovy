@@ -5,7 +5,6 @@ import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.ModuleNode
 import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.SourceUnit
@@ -47,11 +46,11 @@ class SpecSourceCodeCollector {
         specSourceCodeByClassName.remove( className )
     }
 
-    void add( Statement st ) {
+    void add( Statement statement ) {
         assert className && method
 
-        def code = sourceLookup.lookup( st )
-        def label = st.statementLabel
+        def label = statement.statementLabel
+        def code = sourceLookup.lookup( statement )
         def specCode = specSourceCodeByClassName[ className ]
 
         if ( !specCode ) {
@@ -61,21 +60,29 @@ class SpecSourceCodeCollector {
 
         println "LABEL: $label -> $code"
         if ( label ) {
-            specCode.startBlock( method )
+            def labelText = stringConstant( statement )
+            specCode.startBlock( method, label, labelText )
 
-            if ( st instanceof ExpressionStatement ) {
-                def expr = ( st as ExpressionStatement ).expression
-                if ( isStringConstant( expr ) ) {
-                    return
-                }
+            if ( labelText ) {
+                return // don't add the text to the code
             }
         }
 
-        specCode.addStatement( method, code )
+        if ( label != 'where' ) { // the where statement must not be added to the code in the report
+            specCode.addStatement( method, code )
+        }
     }
 
-    private static boolean isStringConstant( Expression expression ) {
-        expression instanceof ConstantExpression && expression.type.name == 'java.lang.String'
+    @Nullable
+    private static String stringConstant( Statement statement ) {
+        if ( statement instanceof ExpressionStatement ) {
+            def expr = ( statement as ExpressionStatement ).expression
+            if ( expr instanceof ConstantExpression && expr.type.name == 'java.lang.String' ) {
+                return ( expr as ConstantExpression ).value as String
+            }
+        }
+
+        null
     }
 
 }

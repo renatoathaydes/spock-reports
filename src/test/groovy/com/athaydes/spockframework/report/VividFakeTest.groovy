@@ -6,30 +6,30 @@ import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@Narrative("""
+@Narrative( """
 As a user
 I want foo
-So that bar""")
+So that bar""" )
 class VividFakeTest extends Specification {
 
     def "A first test with Then code block"() {
         given:
-            "we have x and y"
+        "we have x and y"
 
         and:
-            "some more things"
+        "some more things"
 
         when:
-            "I do crazy things"
+        "I do crazy things"
 
         then:
-            x == y
+        x == y
 
         where:
-            "The examples below are used"
-            x | y
-            'a' | 'a'
-            'b' | 'c'
+        "The examples below are used"
+        x   | y
+        'a' | 'a'
+        'b' | 'c'
     }
 
     def "Another feature without code"() {
@@ -41,10 +41,10 @@ class VividFakeTest extends Specification {
 
     def "Another feature with method call"() {
         expect:
-        add(1, 2) == 3
+        add( 1, 2 ) == 3
     }
 
-    private static int add(int a, int b) {
+    private static int add( int a, int b ) {
         return a + b
     }
 
@@ -96,7 +96,10 @@ class VividFakeTest extends Specification {
         x == 0
         and:
         "An error if y is 5"
-        if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+        if ( y == 5 ) {
+            throw new RuntimeException( 'y is 5' )
+        }
+
         where:
         x | y
         0 | 1

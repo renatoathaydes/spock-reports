@@ -123,7 +123,6 @@ class VividAstInspector {
 class VividASTVisitor extends ClassCodeVisitorSupport {
 
     private final SpecSourceCodeCollector codeCollector
-    private int blockIndex = 0
     private boolean visitStatements = false
 
     @Nullable
@@ -146,7 +145,6 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
         println "Visiting method ${node.name}, is test? $visitStatements, previous: $previousIsTestMethod"
 
         if ( visitStatements ) {
-            blockIndex = 0
             currentLabel = null
             codeCollector.method = node
         }
@@ -163,11 +161,18 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     void visitStatement( Statement node ) {
         if ( visitStatements && node instanceof BlockStatement ) {
             def stmts = ( node as BlockStatement ).statements
+            def waitForNextBlock = false
             if ( stmts ) for ( statement in stmts ) {
-                if ( statement.statementLabel == 'where' ) {
-                    break
+                if ( waitForNextBlock && !statement.statementLabel ) {
+                    continue // skip statements in this block
                 } else {
-                    codeCollector.add( statement )
+                    waitForNextBlock = false
+                }
+
+                codeCollector.add( statement )
+
+                if ( statement.statementLabel == 'where' ) {
+                    waitForNextBlock = true
                 }
             }
             visitStatements = false

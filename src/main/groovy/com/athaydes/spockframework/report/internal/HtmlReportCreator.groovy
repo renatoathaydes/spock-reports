@@ -259,7 +259,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                 }
                 writeBlockRow( builder, trCssClassArg,
-                        ( index == 0 ? block.kind : 'AND' ), blockText )
+                        ( index == 0 ? block.kind : 'and' ), blockText )
             }
         else if ( !hideEmptyBlocks )
             writeBlockRow( builder, trCssClassArg, block.kind, '----' )
@@ -283,7 +283,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     private void writeRun( MarkupBuilder builder, FeatureRun run ) {
         if ( !run.feature.parameterized ) return
         builder.tr {
-            writeBlockKindTd( builder, 'EXAMPLES' )
+            writeBlockKindTd( builder, 'examples' )
             td {
                 div( 'class': 'spec-examples' ) {
                     table( 'class': 'ex-table' ) {

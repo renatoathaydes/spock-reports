@@ -19,13 +19,20 @@ class Utils {
 
     public static final Map block2String = [
             ( BlockKind.SETUP )  : 'Given:',
+            'given'              : 'Given:',
+            'setup'              : 'Given:',
             ( BlockKind.CLEANUP ): 'Cleanup:',
+            'cleanup'            : 'Cleanup:',
             ( BlockKind.THEN )   : 'Then:',
+            'then'               : 'Then:',
             ( BlockKind.EXPECT ) : 'Expect:',
+            'expect'             : 'Expect:',
             ( BlockKind.WHEN )   : 'When:',
+            'when'               : 'When:',
             ( BlockKind.WHERE )  : 'Where:',
-            'AND'                : 'And:',
-            'EXAMPLES'           : 'Examples:'
+            'where'              : 'Where:',
+            'and'                : 'And:',
+            'examples'           : 'Examples:'
     ]
 
     private static final Pattern urlPattern

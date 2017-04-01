@@ -6,12 +6,16 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.vivid.BlockCode
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+
+import static java.util.Collections.emptyList
+import static java.util.Collections.emptyMap
 
 /**
  * IReportCreator which uses a user-provided template to generate spock-reports.
@@ -153,10 +157,13 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
-        int blockIndex = 0
+        if ( showCodeBlocks ) {
+            return processedBlocksFromCode( feature, iteration )
+        }
+
+        // as we don't have the AST, we need to use the old way to get the block text from Spock's API
         feature.blocks.collect { BlockInfo block ->
             List<String> blockTexts = block.texts
-            List<String> code = getSourceCode( feature, blockIndex++ )
 
             if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
@@ -164,22 +171,35 @@ class TemplateReportCreator implements IReportCreator {
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
-                    [ kind      : Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ],
+                    [ kind      : Utils.block2String[ ( index++ ) == 0 ? block.kind : 'and' ],
                       text      : blockText,
-                      sourceCode: code ]
+                      sourceCode: emptyList() ]
                 }
-            } else if ( code || !hideEmptyBlocks ) {
+            } else if ( !hideEmptyBlocks ) {
                 [ [ kind      : Utils.block2String[ block.kind ],
-                    text      : code ? '' : '----',
-                    sourceCode: code ] ]
+                    text      : '----',
+                    sourceCode: emptyList() ] ]
             } else {
                 [ [ : ] ]
             }
         }.flatten().findAll { Map item -> !item.isEmpty() }
     }
 
-    private List<String> getSourceCode( FeatureInfo feature, int blockIndex ) {
-        codeReader.getLines( feature, blockIndex )
+    private List processedBlocksFromCode( FeatureInfo feature, IterationInfo iteration ) {
+        def blocks = codeReader.getBlocks( feature )
+
+        blocks.collect { BlockCode block ->
+            def blockText = iteration && block.text ?
+                    stringProcessor.process( block.text, feature.dataVariables, iteration ) :
+                    ( block.text ?: '' )
+            def blockKind = Utils.block2String[ block.label ] ?: 'Block:' // use an emergency label if something goes wrong
+
+            if ( blockText || block.statements || !hideEmptyBlocks ) {
+                [ kind: blockKind, text: blockText, sourceCode: block.statements ]
+            } else {
+                emptyMap()
+            }
+        }.findAll { Map map -> !map.isEmpty() }
     }
 
 }

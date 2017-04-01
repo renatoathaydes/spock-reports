@@ -71,7 +71,7 @@ Result: **PASS**
 * Expect: 
 
 ```
-add(1, 2) == 3
+add( 1, 2 ) == 3
 ```
 
 ### A test with an error
@@ -84,6 +84,10 @@ add(1, 2) == 3
 Result: **ERROR**
 
 * When: An Exception is thrown
+
+```
+throw new RuntimeException( 'As expected' )
+```
 
 * Then: Will never succeed
 
@@ -144,7 +148,7 @@ int d = b + c
 int e = a + b + c + d
 ```
 
-* Then:
+* Then: 
 
 ```
 e == 6
@@ -173,10 +177,12 @@ x == 0
 * And: An error if y is 5
 
 ```
-if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
 ```
 
-* Where: ----
+* Where: 
 
  | x | y |
  |---|---|
@@ -197,10 +203,12 @@ x == 0
 * And: An error if y is 5
 
 ```
-if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
 ```
 
-* Where: ----
+* Where: 
 
  | x | y |
  |---|---|
@@ -233,10 +241,12 @@ x == 0
 * And: An error if y is 5
 
 ```
-if ( y == 5 ) throw new RuntimeException( 'y is 5' )
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
 ```
 
-* Where: ----
+* Where: 
 
  | x | y |
  |---|---|
