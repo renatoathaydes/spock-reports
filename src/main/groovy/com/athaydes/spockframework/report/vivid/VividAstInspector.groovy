@@ -76,11 +76,11 @@ class VividAstInspector {
     private void indexAstNodes() {
         visitor.visitBlockStatement( module.statementBlock )
 
-        for ( MethodNode method : module.methods ) {
+        for ( MethodNode method in module.methods ) {
             visitor.visitMethod( method )
         }
 
-        for ( ClassNode clazz : module.classes ) {
+        for ( ClassNode clazz in module.classes ) {
             visitor.visitClass( clazz )
         }
     }
@@ -153,7 +153,12 @@ class VividAstInspector {
             if ( isTestMethod && node instanceof BlockStatement ) {
                 def stmts = ( node as BlockStatement ).statements
                 if ( stmts ) for ( st in stmts ) {
-                    visitCallback.codeCollector.add( methodNode, st )
+                    if ( st.statementLabel == 'where' ) {
+                        isTestMethod = false // stop visiting statements in this method
+                        break
+                    } else {
+                        visitCallback.codeCollector.add( methodNode, st )
+                    }
                 }
             }
 
