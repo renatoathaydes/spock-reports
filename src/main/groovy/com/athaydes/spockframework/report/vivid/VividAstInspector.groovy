@@ -113,7 +113,7 @@ class VividAstInspector {
     class VividASTVisitor extends ClassCodeVisitorSupport {
 
         private int blockIndex = 0
-        private boolean isTestMethod = false
+        private boolean visitStatements = false
 
         @Nullable
         private String currentLabel = null
@@ -127,11 +127,11 @@ class VividAstInspector {
 
         @Override
         void visitMethod( MethodNode node ) {
-            def previousIsTestMethod = isTestMethod
-            isTestMethod = node.isPublic() && node.parameters.size() == 0
-            println "Visiting method ${node.name}, is test? $isTestMethod, previous: $previousIsTestMethod"
+            def previousIsTestMethod = visitStatements
+            visitStatements = node.isPublic() && node.parameters.size() == 0
+            println "Visiting method ${node.name}, is test? $visitStatements, previous: $previousIsTestMethod"
 
-            if ( isTestMethod ) {
+            if ( visitStatements ) {
                 blockIndex = 0
                 currentLabel = null
                 visitCallback.onMethodEntry( node )
@@ -140,26 +140,26 @@ class VividAstInspector {
 
             super.visitMethod( node )
 
-            if ( isTestMethod ) {
+            if ( visitStatements ) {
                 visitCallback.onMethodExit()
             }
 
             println "done visiting method ${node.name}, setting isTestMethod to ${previousIsTestMethod}"
-            isTestMethod = previousIsTestMethod
+            visitStatements = previousIsTestMethod
         }
 
         @Override
         void visitStatement( Statement node ) {
-            if ( isTestMethod && node instanceof BlockStatement ) {
+            if ( visitStatements && node instanceof BlockStatement ) {
                 def stmts = ( node as BlockStatement ).statements
                 if ( stmts ) for ( st in stmts ) {
                     if ( st.statementLabel == 'where' ) {
-                        isTestMethod = false // stop visiting statements in this method
                         break
                     } else {
                         visitCallback.codeCollector.add( methodNode, st )
                     }
                 }
+                visitStatements = false
             }
 
             super.visitStatement( node )

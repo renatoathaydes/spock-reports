@@ -105,16 +105,16 @@ class VividAstInspectorSpec extends Specification {
 
         then: 'The inspector should be able to provide the source code for each block'
         def when = result.getLines( 'my feature', 0 )
-        when == [ 'def x = 10 +\n      20 +\n      30' ]
+        when == [ 'def x = 10 +\n20 +\n30' ]
 
         def when2 = result.getLines( 'my feature', 1 )
         when2 == [ 'def y = """\n' +
-                           '      hello\n' +
-                           '      world\n' +
-                           '    """' ]
+                           '  hello\n' +
+                           '  world\n' +
+                           '"""' ]
 
         def then = result.getLines( 'my feature', 2 )
-        then == [ 'x ==\n    60' ]
+        then == [ 'x ==\n60' ]
 
         def then2 = result.getLines( 'my feature', 3 )
         then2 == [ "y == 'hello world'" ]
@@ -155,6 +155,69 @@ class VividAstInspectorSpec extends Specification {
         and: 'The cleanup block is not captured'
         def cleanup = result.getLines( 'examples feature', 2 )
         cleanup.isEmpty()
+    }
+
+    def "Vivid AST Inspector captures all nested statements from Groovy Specification files"() {
+        given: 'A Groovy source file'
+        def groovySource = '''|
+        |class Abc extends Specification {
+        |  def "my feature"() {
+        |    given: 'the given block'
+        |    def x = []
+        |    for (i in 0..10) {
+        |      x << i
+        |      x << i * 2
+        |    }
+        |    int i = 0
+        |    while (i < 4) {
+        |      for (j in 0..i) {
+        |        x << [i, j]
+        |      }
+        |      println x
+        |    }
+        |
+        |    when: 'an action is taken'
+        |    def y = x.collect { item ->
+        |      (0..item).filter { i ->
+        |        if (i > 4) {
+        |          true
+        |        } else false
+        |      }
+        |    }
+        |
+        |    then: 'the result is right'
+        |    x.collect { i ->
+        |      i as String
+        |    } == [ '1', '2' ]
+        |  }
+        |}'''.stripMargin()
+
+        def groovyFile = File.createTempFile( 'spock-reports', 'groovy' )
+        groovyFile << groovySource
+
+        when: 'The Groovy file is loaded by the inspector'
+        def result = inspector.load( groovyFile, 'Abc' )
+
+        then: 'The inspector should be able to provide the source code for each block'
+        def given = result.getLines( 'my feature', 0 )
+        given == [ 'def x = []',
+                   'for (i in 0..10) {\n  x << i\n  x << i * 2\n}',
+                   'int i = 0',
+                   'while (i < 4) {\n  for (j in 0..i) {\n    x << [i, j]\n  }\n  println x\n}' ]
+
+        def when = result.getLines( 'my feature', 1 )
+        when == [ 'def y = x.collect { item ->\n' +
+                          '  (0..item).filter { i ->\n' +
+                          '    if (i > 4) {\n' +
+                          '      true\n' +
+                          '    } else false\n' +
+                          '  }\n' +
+                          '}' ]
+
+        def then = result.getLines( 'my feature', 2 )
+        then == [ 'x.collect { i ->\n' +
+                          '  i as String\n' +
+                          "} == [ '1', '2' ]" ]
     }
 
 }
