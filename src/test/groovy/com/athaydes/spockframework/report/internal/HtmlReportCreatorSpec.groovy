@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
+import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.UnrolledSpec
 import com.athaydes.spockframework.report.VividFakeTest
@@ -26,21 +27,21 @@ class HtmlReportCreatorSpec extends ReportSpec {
     static final String UNKNOWN = 'Unknown'
     static final char DS = StringFormatHelper.ds
 
-    def "A correct HTML report is generated for a #fakeTest.simpleName including different types of features"() {
+    def "A correct HTML report is generated for a #specification.simpleName including different types of features"() {
         given:
         "The project build folder location is known"
         def buildDir = System.getProperty( 'project.buildDir', 'build' )
 
         and:
         "A known location where the report file will be saved that does not exist"
-        def reportFile = Paths.get( buildDir, 'spock-reports', fakeTest.name + '.html' ).toFile()
+        def reportFile = Paths.get( buildDir, 'spock-reports', specification.name + '.html' ).toFile()
         if ( reportFile.exists() ) {
             assert reportFile.delete()
         }
 
         and:
         "The expected HTML report (not counting time fields and errors)"
-        String expectedHtml = expectedHtmlReport(fakeTest)
+        String expectedHtml = expectedHtmlReport( specification )
 
         and:
         "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
@@ -61,8 +62,8 @@ class HtmlReportCreatorSpec extends ReportSpec {
         when:
         "A Specification containing different types of features is run by Spock"
         PredictableStringHashCode.code = 0
-        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( fakeTest ).run( new RunNotifier() )
+        use( configShowCodeBlocks, ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+            new Sputnik( specification ).run( new RunNotifier() )
         }
 
         then:
@@ -74,7 +75,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
         minify( reportFile.text ) == minify( expectedHtml )
 
         where:
-        fakeTest << [ FakeTest, VividFakeTest ]
+        specification | configShowCodeBlocks
+        FakeTest      | ShowCodeBlocksDisabled
+        VividFakeTest | ShowCodeBlocksEnabled
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
@@ -198,18 +201,18 @@ class HtmlReportCreatorSpec extends ReportSpec {
         new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
     }
 
-    private String expectedHtmlReport(Class fakeTest) {
-        def rawHtml = HtmlReportCreator.getResource( "${fakeTest.simpleName}Report.html" ).text
-        def binding = fakeTestBinding(fakeTest)
-        if( fakeTest == VividFakeTest ){
+    private String expectedHtmlReport( Class specification ) {
+        def rawHtml = HtmlReportCreator.getResource( "${specification.simpleName}Report.html" ).text
+        def binding = fakeTestBinding( specification )
+        if( specification == VividFakeTest ){
             binding += vividFakeTestBinding()
         }
         replacePlaceholdersInRawHtml( rawHtml, binding )
     }
 
-    private Map<String, Object> fakeTestBinding( Class fakeTest ) {
+    private Map<String, Object> fakeTestBinding( Class specification ) {
         [
-                classOnTest     : fakeTest.name,
+                classOnTest     : specification.name,
                 title           : 'This is just a Fake test to test spock-reports',
                 narrative       : '\nAs a user\nI want foo\nSo that bar',
                 style           : defaultStyle(),
@@ -293,6 +296,20 @@ class HtmlReportCreatorSpec extends ReportSpec {
         int hashCode() {
             code++
         }
+    }
+
+    @Category( SpockReportExtension )
+    class ShowCodeBlocksEnabled {
+        static final htmlReportCreator = new HtmlReportCreator()
+        SpecInfoListener createListener() {
+            setShowCodeBlocks( true )
+            configReportCreator htmlReportCreator
+            new SpecInfoListener( htmlReportCreator )
+        }
+    }
+
+    @Category( SpockReportExtension )
+    class ShowCodeBlocksDisabled {
     }
 
 }

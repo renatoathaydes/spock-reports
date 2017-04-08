@@ -77,7 +77,7 @@
 		<div class='block-kind'>Then:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<pre class='block-text'>x == y</pre>
 	</td>
 </tr>
 <tr>
@@ -170,7 +170,7 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<pre class='block-text'>add( 1, 2 ) == 3</pre>
 	</td>
 </tr>
 <tr>
@@ -194,6 +194,12 @@
 	</td>
 	<td>
 		<div class='block-text'>An Exception is thrown</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<pre class='block-text'>throw new RuntimeException( 'As expected' )</pre>
 	</td>
 </tr>
 <tr>
@@ -248,6 +254,12 @@
 	</td>
 </tr>
 <tr>
+	<td></td>
+	<td>
+		<pre class='block-text'>assert 3 == 2</pre>
+	</td>
+</tr>
+<tr>
 	<td colspan='10'>
 		<div class='problem-description'>
 			<div class='problem-header'>The following problems occurred:</div>
@@ -274,7 +286,17 @@
 		<div class='block-kind'>Given:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<pre class='block-text'>int a = 0</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+<pre class='block-text'>int b = 1
+int c = 2
+int d = b + c</pre>
 	</td>
 </tr>
 <tr>
@@ -282,7 +304,7 @@
 		<div class='block-kind'>When:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<pre class='block-text'>int e = a + b + c + d</pre>
 	</td>
 </tr>
 <tr>
@@ -290,8 +312,17 @@
 		<div class='block-kind'>Then:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+<pre class='block-text'>e == 6
+a == 0
+c == 2 * b</pre>
 	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<pre class='block-text'>c &gt; 0</pre>	</td>
 </tr>
 <tr>
 	<td colspan='10'>
@@ -312,16 +343,23 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>An error if y is 5</div>
+		<pre class='block-text'>x == 0</pre>
 	</td>
 </tr>
 <tr>
 	<td>
-		<div class='block-kind'>Where:</div>
+		<div class='block-kind'>And:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<div class='block-text'>An error if y is 5</div>
 	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<pre class='block-text'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre></td>
 </tr>
 <tr>
 	<td colspan='10'>
@@ -342,15 +380,23 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>An error if y is 5</div>
+		<pre class='block-text'>x == 0</pre>
 	</td>
 </tr>
 <tr>
 	<td>
-		<div class='block-kind'>Where:</div>
+		<div class='block-kind'>And:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+<pre class='block-text'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre>
 	</td>
 </tr>
 <tr>
@@ -386,15 +432,23 @@
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<div class='block-text'>An error if y is 5</div>
+		<pre class='block-text'>x == 0</pre>
 	</td>
 </tr>
 <tr>
 	<td>
-		<div class='block-kind'>Where:</div>
+		<div class='block-kind'>And:</div>
 	</td>
 	<td>
-		<div class='block-text'>----</div>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+<pre class='block-text'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre>
 	</td>
 </tr>
 <tr>
