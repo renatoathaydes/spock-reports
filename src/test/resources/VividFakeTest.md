@@ -3,7 +3,7 @@
 ##Summary
 
 * Total Runs: 9
-* Success Rate: 44.44%
+* Success Rate: 44${ds}44%
 * Failures: 3
 * Errors:   2
 * Skipped:  0

@@ -4,41 +4,43 @@ import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.UnrolledSpec
+import com.athaydes.spockframework.report.VividFakeTest
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import org.spockframework.runtime.model.SpecInfo
+import spock.lang.Unroll
 
 import java.nio.file.Paths
 
-import static com.athaydes.spockframework.report.internal.StringFormatHelper.getDs
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
  *
  * User: Renato
  */
+@Unroll
 class HtmlReportCreatorSpec extends ReportSpec {
 
     static final String UNKNOWN = 'Unknown'
+    static final char DS = StringFormatHelper.ds
 
-    def "A correct HTML report is generated for a spec including different types of features"() {
+    def "A correct HTML report is generated for a #fakeTest.simpleName including different types of features"() {
         given:
         "The project build folder location is known"
         def buildDir = System.getProperty( 'project.buildDir', 'build' )
 
         and:
         "A known location where the report file will be saved that does not exist"
-        def reportFile = Paths.get( buildDir, 'spock-reports',
-                FakeTest.class.name + '.html' ).toFile()
+        def reportFile = Paths.get( buildDir, 'spock-reports', fakeTest.name + '.html' ).toFile()
         if ( reportFile.exists() ) {
             assert reportFile.delete()
         }
 
         and:
         "The expected HTML report (not counting time fields and errors)"
-        String expectedHtml = expectedHtmlReport()
+        String expectedHtml = expectedHtmlReport(fakeTest)
 
         and:
         "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
@@ -60,7 +62,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         "A Specification containing different types of features is run by Spock"
         PredictableStringHashCode.code = 0
         use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( FakeTest ).run( new RunNotifier() )
+            new Sputnik( fakeTest ).run( new RunNotifier() )
         }
 
         then:
@@ -70,6 +72,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
         and:
         "The contents are functionally the same as expected"
         minify( reportFile.text ) == minify( expectedHtml )
+
+        where:
+        fakeTest << [ FakeTest, VividFakeTest ]
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
@@ -193,10 +198,18 @@ class HtmlReportCreatorSpec extends ReportSpec {
         new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
     }
 
-    private String expectedHtmlReport() {
-        def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
-        def binding = [
-                classOnTest     : FakeTest.class.name,
+    private String expectedHtmlReport(Class fakeTest) {
+        def rawHtml = HtmlReportCreator.getResource( "${fakeTest.simpleName}Report.html" ).text
+        def binding = fakeTestBinding(fakeTest)
+        if( fakeTest == VividFakeTest ){
+            binding += vividFakeTestBinding()
+        }
+        replacePlaceholdersInRawHtml( rawHtml, binding )
+    }
+
+    private Map<String, Object> fakeTestBinding( Class fakeTest ) {
+        [
+                classOnTest     : fakeTest.name,
                 title           : 'This is just a Fake test to test spock-reports',
                 narrative       : '\nAs a user\nI want foo\nSo that bar',
                 style           : defaultStyle(),
@@ -206,11 +219,20 @@ class HtmlReportCreatorSpec extends ReportSpec {
                 failures        : 3,
                 errors          : 2,
                 skipped         : 1,
-                successRate     : "50${ds}0%",
+                successRate     : "50${DS}0%",
                 time            : UNKNOWN,
                 projectUrl      : SpockReportExtension.PROJECT_URL
         ]
-        replacePlaceholdersInRawHtml( rawHtml, binding )
+    }
+
+    private Map<String, Object> vividFakeTestBinding() {
+        [
+                executedFeatures: 9,
+                failures        : 3,
+                errors          : 2,
+                skipped         : 0,
+                successRate     : "44${DS}44%"
+        ]
     }
 
 
@@ -225,7 +247,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
                 failures        : 0,
                 errors          : 0,
                 skipped         : 0,
-                successRate     : "100${ds}0%",
+                successRate     : "100${DS}0%",
                 time            : UNKNOWN,
                 projectUrl      : SpockReportExtension.PROJECT_URL
         ]

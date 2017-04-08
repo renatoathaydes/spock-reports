@@ -58,7 +58,7 @@ class SpecSourceCodeCollector {
             return
         }
 
-        println "LABEL: $label -> $code"
+        log.debug( "LABEL: $label -> $code" )
         if ( label ) {
             def labelText = stringConstant( statement )
             specCode.startBlock( method, label, labelText )
