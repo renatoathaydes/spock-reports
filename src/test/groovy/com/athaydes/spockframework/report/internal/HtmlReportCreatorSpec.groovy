@@ -27,6 +27,24 @@ class HtmlReportCreatorSpec extends ReportSpec {
     static final String UNKNOWN = 'Unknown'
     static final char DS = StringFormatHelper.ds
 
+    static final Map fakeTestBinding = [
+            title           : 'This is just a Fake test to test spock-reports',
+            narrative       : '\nAs a user\nI want foo\nSo that bar',
+            executedFeatures: 10,
+            failures        : 3,
+            errors          : 2,
+            skipped         : 1,
+            successRate     : "50${DS}0%"
+    ]
+    static final Map vividFakeTestBinding = [
+            narrative       : '\nAs a developer\nI want to see my code',
+            executedFeatures: 9,
+            failures        : 3,
+            errors          : 2,
+            skipped         : 0,
+            successRate     : "44${DS}44%"
+    ]
+
     def "A correct HTML report is generated for a #specification.simpleName including different types of features"() {
         given:
         "The project build folder location is known"
@@ -41,7 +59,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The expected HTML report (not counting time fields and errors)"
-        String expectedHtml = expectedHtmlReport( specification )
+        String expectedHtml = expectedHtmlReport( specification, reportBinding )
 
         and:
         "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
@@ -75,9 +93,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
         minify( reportFile.text ) == minify( expectedHtml )
 
         where:
-        specification | configShowCodeBlocks
-        FakeTest      | ShowCodeBlocksDisabled
-        VividFakeTest | ShowCodeBlocksEnabled
+        specification | configShowCodeBlocks   | reportBinding
+        FakeTest      | ShowCodeBlocksDisabled | fakeTestBinding
+        VividFakeTest | ShowCodeBlocksEnabled  | vividFakeTestBinding
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
@@ -163,7 +181,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The expected HTML report (not counting time fields and errors)"
-        String expectedHtml = expectedUnrolledSpecHtmlReport()
+        String expectedHtml = expectedHtmlReport( UnrolledSpec, reportBinding )
 
         and:
         "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
@@ -195,66 +213,36 @@ class HtmlReportCreatorSpec extends ReportSpec {
         and:
         "The contents are functionally the same as expected"
         minify( reportFile.text ) == minify( expectedHtml )
+
+        where:
+        reportBinding = [
+                executedFeatures: 5,
+                failures        : 0,
+                errors          : 0,
+                skipped         : 0,
+                successRate     : "100${DS}0%"
+        ]
     }
 
     private String textOf( String cssPath ) {
         new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
     }
 
-    private String expectedHtmlReport( Class specification ) {
+    private String expectedHtmlReport( Class specification, Map reportBinding ) {
         def rawHtml = HtmlReportCreator.getResource( "${specification.simpleName}Report.html" ).text
-        def binding = fakeTestBinding( specification )
-        if( specification == VividFakeTest ){
-            binding += vividFakeTestBinding()
-        }
+        def binding = defaultBinding( specification ) + reportBinding
         replacePlaceholdersInRawHtml( rawHtml, binding )
     }
 
-    private Map<String, Object> fakeTestBinding( Class specification ) {
+    private Map<String, Object> defaultBinding( Class specification ) {
         [
                 classOnTest     : specification.name,
-                title           : 'This is just a Fake test to test spock-reports',
-                narrative       : '\nAs a user\nI want foo\nSo that bar',
                 style           : defaultStyle(),
                 dateTestRan     : DATE_TEST_RAN,
                 username        : TEST_USER_NAME,
-                executedFeatures: 10,
-                failures        : 3,
-                errors          : 2,
-                skipped         : 1,
-                successRate     : "50${DS}0%",
                 time            : UNKNOWN,
                 projectUrl      : SpockReportExtension.PROJECT_URL
         ]
-    }
-
-    private Map<String, Object> vividFakeTestBinding() {
-        [
-                executedFeatures: 9,
-                failures        : 3,
-                errors          : 2,
-                skipped         : 0,
-                successRate     : "44${DS}44%"
-        ]
-    }
-
-
-    private String expectedUnrolledSpecHtmlReport() {
-        def rawHtml = HtmlReportCreator.getResource( 'UnrolledSpecReport.html' ).text
-        def binding = [
-                classOnTest     : UnrolledSpec.class.name,
-                style           : defaultStyle(),
-                dateTestRan     : DATE_TEST_RAN,
-                username        : TEST_USER_NAME,
-                executedFeatures: 5,
-                failures        : 0,
-                errors          : 0,
-                skipped         : 0,
-                successRate     : "100${DS}0%",
-                time            : UNKNOWN,
-                projectUrl      : SpockReportExtension.PROJECT_URL
-        ]
-        replacePlaceholdersInRawHtml( rawHtml, binding )
     }
 
     private String defaultStyle() {

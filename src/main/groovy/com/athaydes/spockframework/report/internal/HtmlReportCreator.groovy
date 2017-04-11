@@ -287,11 +287,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     stringProcessor.process( block.text, feature.dataVariables, iteration ) :
                     ( block.text ?: '' )
             def blockKind = block.label ?: 'Block:'
-            if ( text ) {
-                writeBlockRowFromCodeAndText( builder, trCssClass( feature ), blockKind, block.statements, text )
-            } else  {
-                writeBlockRowFromCodeOnly( builder, trCssClass( feature ), blockKind, block.statements )
-            }
+            writeBlockRowsFromCode( builder, trCssClass( feature ), blockKind, block.statements, text )
         }
     }
 
@@ -306,16 +302,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private writeBlockRowFromCodeAndText( MarkupBuilder builder, cssClass, blockKind, List statements, text ) {
-        writeBlockRow ( builder, cssClass, blockKind, text )
-        if ( statements ) builder.tr {
-            td {}
-            writeCodeTd( builder, statements )
-        }
-    }
-
-    private writeBlockRowFromCodeOnly( MarkupBuilder builder, cssClass, blockKind, List statements ) {
-        if ( statements ) builder.tr( cssClass ) {
+    private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind, List statements, text ) {
+        if ( text ) {
+            writeBlockRow ( builder, cssClass, blockKind, text )
+            if ( statements ) builder.tr {
+                td()
+                writeCodeTd( builder, statements )
+            }
+        } else if ( statements ) builder.tr( cssClass ) {
             writeBlockKindTd( builder, blockKind )
             writeCodeTd( builder, statements )
         }
@@ -335,7 +329,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private writeCodeTd( MarkupBuilder builder, List statements ) {
         builder.td {
-            pre( 'class': 'block-text', statements.join('\n') )
+            pre( 'class': 'block-source', statements.join('\n') )
         }
     }
 

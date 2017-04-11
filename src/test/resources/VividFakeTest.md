@@ -10,9 +10,8 @@
 * Total time: Unknown
 
 <pre>
-As a user
-I want foo
-So that bar
+As a developer
+I want to see my code
 </pre>
 
 ## Features

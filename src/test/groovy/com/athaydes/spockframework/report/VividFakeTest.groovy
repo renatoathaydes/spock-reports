@@ -7,9 +7,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @Narrative( """
-As a user
-I want foo
-So that bar""" )
+As a developer
+I want to see my code""" )
 class VividFakeTest extends Specification {
 
     def "A first test with Then code block"() {
