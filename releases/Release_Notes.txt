@@ -1,3 +1,13 @@
+1.2.14 - 2017 March 19
+
+* #90 @Unrolled class should cause all features to unroll.
+* #91 better dependency declaration on Groovy (only required modules).
+* #92 new flag to allow disabling the generation of reports.
+* #88 improved the display of @Title and @Narrative in HTML reports.
+* Modernized the looks of the reports.
+* #78 show project name and version in reports.
+* #96 show source code for blocks that do not have a description (vivid report).
+
 1.2.13 - 2016 October 02
 
 * #70 template report showed wrong index for unrolled features.

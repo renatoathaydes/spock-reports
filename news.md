@@ -2,6 +2,15 @@
 
 > Most recent first
 
+* `18th of April 2017`
+
+Lots of improvements in this major release (version 1.3.0), including a long overdue overhaul of the 
+HTML report's CSS declarations that makes the HTML reports just a little bit more modern.
+
+It also has a great new feature called vivid reports. It lets you show the test's source code in the report when you
+omit the description of a block. It is initially not turned on by default, see instructions in the README page for how
+to turn that one if you would like to add code to your reports (and why not!?). 
+
 * `02nd of October 2016`
 
 Version 1.2.13 has been released!
