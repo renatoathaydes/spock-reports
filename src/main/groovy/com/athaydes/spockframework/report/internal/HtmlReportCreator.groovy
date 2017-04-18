@@ -2,6 +2,8 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
 import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.vivid.BlockCode
+import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
@@ -29,17 +31,23 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     def stringFormatter = new StringFormatHelper()
     def problemWriter = new ProblemBlockWriter( stringFormatter: stringFormatter )
     def stringProcessor = new StringTemplateProcessor()
+    private final SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
+    boolean showCodeBlocks = false
     boolean enabled = true
 
     HtmlReportCreator() {
         reportAggregator = defaultAggregator
-        if ( showCodeBlocks ) {
-            log.warn( '"showCodeBlocks" is not implemented in HtmlReportCreator. Use TemplateReportCreator.' )
-        }
     }
 
     HtmlReportCreator( HtmlReportAggregator reportAggregator ) {
         this.reportAggregator = reportAggregator
+    }
+
+    @Override
+    void setTestSourceRoots( String roots ) {
+        if ( roots ) {
+            codeReader.testSourceRoots = roots
+        }
     }
 
     void setFeatureReportCss( String css ) {
@@ -103,6 +111,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         def reportsDir = outputDirectory ? Utils.createDir( outputDirectory ) : null
         if ( reportsDir?.isDirectory() ) {
             try {
+                if ( showCodeBlocks ) {
+                    codeReader.read( data )
+                }
                 new File( reportsDir, specClassName + '.html' )
                         .write( reportFor( data ) )
             } catch ( e ) {
@@ -246,37 +257,79 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
-        for ( BlockInfo block in feature.blocks ) {
-            writeBlock( builder, block, feature, iteration )
+        if ( showCodeBlocks ){
+            writeBlocksFromCode( builder, feature, iteration )
+        } else {
+            writeBlocks( builder, feature, iteration )
         }
     }
 
-    private void writeBlock( MarkupBuilder builder, BlockInfo block, FeatureInfo feature, IterationInfo iteration ) {
-        def trCssClassArg = ( feature.skipped ? [ 'class': 'ignored' ] : null )
-        if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
-            block.texts.eachWithIndex { blockText, index ->
-                if ( iteration ) {
-                    blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
+    private void writeBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration ) {
+        for ( BlockInfo block in feature.blocks ) {
+            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) )
+                block.texts.eachWithIndex { blockText, index ->
+                    if ( iteration ) {
+                        blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
+                    }
+                    writeBlockRow( builder, trCssClass( feature ),
+                            ( index == 0 ? block.kind : 'and' ), blockText )
                 }
-                writeBlockRow( builder, trCssClassArg,
-                        ( index == 0 ? block.kind : 'and' ), blockText )
+            else if ( !hideEmptyBlocks ) {
+                writeBlockRow( builder, trCssClass( feature ), block.kind, '----' )
             }
-        else if ( !hideEmptyBlocks )
-            writeBlockRow( builder, trCssClassArg, block.kind, '----' )
+        }
+    }
+
+    private void writeBlocksFromCode( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration ) {
+        def blocks = codeReader.getBlocks( feature )
+        for ( BlockCode block in blocks ) {
+            def text = iteration && block.text ?
+                    stringProcessor.process( block.text, feature.dataVariables, iteration ) :
+                    ( block.text ?: '' )
+            def blockKind = block.label ?: 'Block:'
+            writeBlockRowsFromCode( builder, trCssClass( feature ), blockKind, block.statements, text )
+        }
+    }
+
+    private trCssClass( FeatureInfo feature ) {
+        feature.skipped ? [ 'class': 'ignored' ] : null
     }
 
     private writeBlockRow( MarkupBuilder builder, cssClass, blockKind, text ) {
         builder.tr( cssClass ) {
             writeBlockKindTd( builder, blockKind )
-            td {
-                div( 'class': 'block-text', text )
-            }
+            writeBlockTextTd( builder, text )
         }
     }
 
-    private void writeBlockKindTd( MarkupBuilder builder, blockKindKey ) {
+    private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind, List statements, text ) {
+        if ( text ) {
+            writeBlockRow ( builder, cssClass, blockKind, text )
+            if ( statements ) builder.tr {
+                td()
+                writeCodeTd( builder, statements )
+            }
+        } else if ( statements ) builder.tr( cssClass ) {
+            writeBlockKindTd( builder, blockKind )
+            writeCodeTd( builder, statements )
+        }
+    }
+
+    private void writeBlockKindTd( MarkupBuilder builder, blockKind ) {
         builder.td {
-            div( 'class': 'block-kind', Utils.block2String[ blockKindKey ] )
+            div( 'class': 'block-kind', Utils.block2String[ blockKind ] )
+        }
+    }
+
+    private void writeBlockTextTd( MarkupBuilder builder, text ) {
+        builder.td {
+            div( 'class': 'block-text', text )
+        }
+    }
+
+    private writeCodeTd( MarkupBuilder builder, List statements ) {
+        builder.td {
+            pre( 'class': 'block-source', statements.join('\n') )
         }
     }
 

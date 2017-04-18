@@ -3,16 +3,15 @@
 ##Summary
 
 * Total Runs: 9
-* Success Rate: 44.44%
+* Success Rate: 44${ds}44%
 * Failures: 3
 * Errors:   2
 * Skipped:  0
 * Total time: Unknown
 
 <pre>
-As a user
-I want foo
-So that bar
+As a developer
+I want to see my code
 </pre>
 
 ## Features

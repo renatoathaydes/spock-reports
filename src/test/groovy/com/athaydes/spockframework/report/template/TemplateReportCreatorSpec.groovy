@@ -5,6 +5,7 @@ import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.VividFakeTest
 import com.athaydes.spockframework.report.internal.HtmlReportCreatorSpec
+import com.athaydes.spockframework.report.internal.StringFormatHelper
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
@@ -47,6 +48,7 @@ class TemplateReportCreatorSpec extends Specification {
         this.class.getResource("/${specName}.md")
                 .text
                 .replace('${projectUrl}', SpockReportExtension.PROJECT_URL)
+                .replace('${ds}', StringFormatHelper.ds as String)
                 .replaceAll("\r", '')
     }
 

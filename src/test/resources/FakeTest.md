@@ -3,7 +3,7 @@
 ##Summary
 
 * Total Runs: 10
-* Success Rate: 50.0%
+* Success Rate: 50${ds}0%
 * Failures: 3
 * Errors:   2
 * Skipped:  1

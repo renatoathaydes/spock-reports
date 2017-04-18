@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'></meta>
+	<style>
+		${style}
+	</style>
+</head>
+<body>
+<h2>Report for ${classOnTest}</h2>
+<hr></hr>
+<div class='summary-report'>
+	<h3>Summary:</h3>
+	<div class='date-test-ran'>Created on ${dateTestRan} by ${username}</div>
+	<table class='summary-table'>
+		<thead>
+		<th>Executed features</th>
+		<th>Failures</th>
+		<th>Errors</th>
+		<th>Skipped</th>
+		<th>Success rate</th>
+		<th>Time</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>${executedFeatures}</td>
+			<td>${failures}</td>
+			<td>${errors}</td>
+			<td>${skipped}</td>
+			<td>${successRate}</td>
+			<td>${time}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+<pre class='narrative'>${narrative}</pre>
+<h3>Features:</h3>
+<table class='features-table'>
+<colgroup>
+	<col class='block-kind-col'></col>
+	<col class='block-text-col'></col>
+</colgroup>
+<tbody>
+<div>TOC</div>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description failure' id='0'><span>A first test with Then code block</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>we have x and y</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>some more things</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>I do crazy things</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<pre class='block-source'>x == y</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Where:</div>
+	</td>
+	<td>
+		<div class='block-text'>The examples below are used</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Examples:</div>
+	</td>
+	<td>
+		<div class='spec-examples'>
+			<table class='ex-table'>
+				<thead>
+				<th class='ex-header'>x</th>
+				<th class='ex-header'>y</th>
+				</thead>
+				<tbody>
+				<tr class='ex-pass'>
+					<td class='ex-value'>a</td>
+					<td class='ex-value'>a</td>
+					<td class='ex-result'>OK</td>
+				</tr>
+				<tr class='ex-fail'>
+					<td class='ex-value'>b</td>
+					<td class='ex-value'>c</td>
+					<td class='ex-result'>FAIL</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</td>
+	<td>
+		<div class='spec-status'>1/2 passed</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<div>[b, c]</div>
+						<ul>
+							<li>
+								<pre>Condition not satisfied:<br/><br/>x == y<br/>| |  |<br/>b |  c<br/>  false<br/>  1 difference (0% similarity)<br/>  (b)<br/>  (c)<br/></pre>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description' id='1'><span>Another feature without code</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>Setup block here</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<div class='block-text'>Expecting something ??</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description' id='2'><span>Another feature with method call</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<pre class='block-source'>add( 1, 2 ) == 3</pre>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description error' id='3'>
+			<span>A test with an error</span>
+			<span style='float: right; font-size: 60%;'><a href='#toc'>Return</a></span>
+			<div class='issues'>
+				<div>Issues:</div>
+				<ul>
+					<li><a href='http://myhost.com/issues/995'>http://myhost.com/issues/995</a></li>
+					<li><a href='http://myhost.com/issues/973'>http://myhost.com/issues/973</a></li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>An Exception is thrown</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<pre class='block-source'>throw new RuntimeException( 'As expected' )</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>Will never succeed</div>
+	</td>
+</tr>
+<tr>
+<td colspan='10'>
+	<div class='problem-description'>
+		<div class='problem-header'>The following problems occurred:</div>
+		<div class='problem-list'>
+			<ul>
+				<li>
+					<pre>java.lang.RuntimeException: As expected</pre>
+				</li>
+			</ul>
+		</div>
+	</div>
+</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description failure' id='4'><span>A test with a failure</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span>
+			<div class='issues'>
+				<div>See:</div>
+				<ul>
+					<li><a href='http://myhost.com/features/feature-234'>http://myhost.com/features/feature-234</a></li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<div class='block-text'>Do nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+		<div class='block-text'>Test fails</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<pre class='block-source'>assert 3 == 2</pre>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>Condition not satisfied:<br/><br/>3 == 2<br/>  |<br/>  false<br/></pre>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description' id='5'>
+			<span>A Spec without block Strings</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<pre class='block-source'>int a = 0</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+<pre class='block-source'>int b = 1
+int c = 2
+int d = b + c</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>When:</div>
+	</td>
+	<td>
+		<pre class='block-source'>int e = a + b + c + d</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Then:</div>
+	</td>
+	<td>
+<pre class='block-source'>e == 6
+a == 0
+c == 2 * b</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<pre class='block-source'>c &gt; 0</pre>	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description' id='6'><span>An @Unrolled spec with x=0 and y=1</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<pre class='block-source'>x == 0</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<pre class='block-source'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre></td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description failure' id='7'><span>An @Unrolled spec with x=2 and y=3</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<pre class='block-source'>x == 0</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+<pre class='block-source'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>Condition not satisfied:<br/><br/>x == 0<br/>| |<br/>2 false<br/></pre>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='feature-description error' id='8'><span>An @Unrolled spec with x=0 and y=5</span><span style='float: right; font-size: 60%;'>
+            <a href='#toc'>Return</a></span></div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Given:</div>
+	</td>
+	<td>
+		<div class='block-text'>nothing</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Expect:</div>
+	</td>
+	<td>
+		<pre class='block-source'>x == 0</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>And:</div>
+	</td>
+	<td>
+		<div class='block-text'>An error if y is 5</div>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+<pre class='block-source'>if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}</pre>
+	</td>
+</tr>
+<tr>
+	<td colspan='10'>
+		<div class='problem-description'>
+			<div class='problem-header'>The following problems occurred:</div>
+			<div class='problem-list'>
+				<ul>
+					<li>
+						<pre>java.lang.RuntimeException: y is 5</pre>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</td>
+</tr>
+</tbody>
+</table>
+<hr></hr>
+<div class='footer'>Generated by <a href='${projectUrl}'>Athaydes Spock Reports</a></div>
+</body>
+</html>
