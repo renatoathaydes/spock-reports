@@ -257,7 +257,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
-        if ( showCodeBlocks ){
+        if ( showCodeBlocks ) {
             writeBlocksFromCode( builder, feature, iteration )
         } else {
             writeBlocks( builder, feature, iteration )
@@ -304,7 +304,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind, List statements, text ) {
         if ( text ) {
-            writeBlockRow ( builder, cssClass, blockKind, text )
+            writeBlockRow( builder, cssClass, blockKind, text )
             if ( statements ) builder.tr {
                 td()
                 writeCodeTd( builder, statements )
@@ -329,7 +329,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private writeCodeTd( MarkupBuilder builder, List statements ) {
         builder.td {
-            pre( 'class': 'block-source', statements.join('\n') )
+            pre( 'class': 'block-source', statements.join( '\n' ) )
         }
     }
 
