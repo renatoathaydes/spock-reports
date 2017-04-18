@@ -142,7 +142,6 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     void visitMethod( MethodNode node ) {
         def previousIsTestMethod = visitStatements
         visitStatements = node.isPublic() && node.parameters.size() == 0
-        println "Visiting method ${node.name}, is test? $visitStatements, previous: $previousIsTestMethod"
 
         if ( visitStatements ) {
             currentLabel = null
@@ -153,7 +152,6 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
 
         codeCollector.method = null
 
-        println "done visiting method ${node.name}, setting isTestMethod to ${previousIsTestMethod}"
         visitStatements = previousIsTestMethod
     }
 

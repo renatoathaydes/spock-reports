@@ -65,7 +65,6 @@ class FeatureSourceCode {
 
     void addStatement( String statement ) {
         blocks.last().statements.add( statement )
-        println "ALL BLOCKS: $blocks"
     }
 
     List<BlockCode> getBlocks() {
