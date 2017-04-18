@@ -177,6 +177,11 @@ div.block-text {
 
 }
 
+pre.block-source {
+  background-color: whitesmoke;
+  padding: 10px;
+}
+
 div.footer {
   text-align: center;
   font-size: small;
