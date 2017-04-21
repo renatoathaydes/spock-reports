@@ -16,6 +16,9 @@ If you prefer to have your own template to generate reports from, you can use th
 to generate reports in any text format.
 See the **"Using template reports"** section below.
 
+> **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification 
+block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
+
 ## Where to find demo reports
 
 I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://codepen.io/renatoathaydes/full/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://codepen.io/renatoathaydes/full/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
