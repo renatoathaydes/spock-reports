@@ -16,6 +16,9 @@ If you prefer to have your own template to generate reports from, you can use th
 to generate reports in any text format.
 See the **"Using template reports"** section below.
 
+> **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification 
+block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
+
 ## Where to find demo reports
 
 I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://codepen.io/renatoathaydes/full/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://codepen.io/renatoathaydes/full/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
@@ -36,7 +39,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.2.13</version>
+  <version>1.3.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -71,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.2.13' ) {
+    testCompile( 'com.athaydes:spock-reports:1.3.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -82,8 +85,9 @@ dependencies {
 
 If you prefer, you can just download the jar directly from [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/).
 
-The only dependencies of this project are on Groovy (version 2.0+) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have both!
-
+The only dependencies of this project are on Groovy version 2.0+ (only the 
+`groovy`, `groovy-templates`, `groovy-xml` and `groovy-json`
+modules are required) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have it all!
 
 ## Customizing spock-reports logging
 
@@ -144,6 +148,7 @@ com.athaydes.spockframework.report.internal.HtmlReportCreator.featureReportCss=s
 com.athaydes.spockframework.report.internal.HtmlReportCreator.summaryReportCss=spock-summary-report.css
 com.athaydes.spockframework.report.internal.HtmlReportCreator.printThrowableStackTrace=false
 com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss=true
+com.athaydes.spockframework.report.internal.HtmlReportCreator.enabled=true
 
 # exclude Specs Table of Contents
 com.athaydes.spockframework.report.internal.HtmlReportCreator.excludeToc=false
@@ -154,11 +159,21 @@ com.athaydes.spockframework.report.outputDir=build/spock-reports
 # If set to true, hides blocks which do not have any description
 com.athaydes.spockframework.report.hideEmptyBlocks=false
 
+# Set the name of the project under test so it can be displayed in the report
+com.athaydes.spockframework.report.projectName=
+
+# Set the version of the project under test so it can be displayed in the report
+com.athaydes.spockframework.report.projectVersion=Unknown
+
+# Show the source code for each block
+com.athaydes.spockframework.report.showCodeBlocks=false
+
 # Set properties specific to the TemplateReportCreator
 com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
+com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
 ```
 
 The `outputDir` property is relative to the working directory.
@@ -199,6 +214,7 @@ The following configuration options can also be overridden by system properties.
 `com.athaydes.spockframework.report.IReportCreator`: Set the report creator class to use.
 `com.athaydes.spockframework.report.outputDir`: Set the output directory of the generated reports; relative paths are relative to the working directory.
 `com.athaydes.spockframework.report.hideEmptyBlocks`: true|false; should blocks with empty text be printed out in report?
+`com.athaydes.spockframework.report.showCodeBlocks`: true|false; show the source code for each block?
 
 Default values are inherited from those described above.
 
@@ -329,8 +345,8 @@ For example, after running two Specifications called `test.FirstSpec` and `test.
 the `data` Map could look like this:
 
 ```groovy
-[ test.FirstSpec: [ failures: 1, errors: 0, skipped: 0, totalRuns: 1, successRate: 0.0, time: 159],
-  test.SecondSpec: [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
+[ 'test.FirstSpec': [ failures: 1, errors: 0, skipped: 0, totalRuns: 1, successRate: 0.0, time: 159],
+  'test.SecondSpec': [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
 ```
 
 You can then iterate over each Spec data as follows:

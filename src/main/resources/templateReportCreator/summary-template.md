@@ -1,5 +1,10 @@
 <% def stats = utils.aggregateStats( data )
- %># Specification run results
+ %># Specification run results<% if (projectName && projectVersion) {
+ %>
+
+## Project: ${projectName}, Version: ${projectVersion} <%
+  }
+ %>
 
 ## Specifications summary
 

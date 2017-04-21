@@ -5,12 +5,14 @@ import spock.lang.Issue
 import spock.lang.Narrative
 import spock.lang.See
 import spock.lang.Specification
+import spock.lang.Title
 import spock.lang.Unroll
 
 /**
  *
  * User: Renato
  */
+@Title('This is just a Fake test to test spock-reports')
 @Narrative("""
 As a user
 I want foo

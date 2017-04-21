@@ -17,7 +17,6 @@ abstract class AbstractHtmlCreator<T> {
     boolean hideEmptyBlocks = false
     KnowsWhenAndWhoRanTest whenAndWho = new KnowsWhenAndWhoRanTest()
     String excludeToc = "false"
-
     private String resolvedCss
 
     abstract String cssDefaultName()

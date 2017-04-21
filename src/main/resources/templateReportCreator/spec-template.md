@@ -12,13 +12,15 @@
 * Total time: ${fmt.toTimeDuration(stats.time)}
 
 <%
-    if ( data.info.narrative ) {
-        data.info.narrative.split('\n').each { out << '###' << it << '\n' }
-    }
     def specTitle = utils.specAnnotation( data, spock.lang.Title )?.value()
     if ( specTitle ) {
-        specTitle.split('\n').each { out << '###' << it << '\n' }
+        specTitle.split('\n').each { out << '##' << it << '\n' }
     }
+    if ( data.info.narrative ) {
+        if ( specTitle ) { out << '\n' }
+        out << '<pre>\n' << data.info.narrative << '\n</pre>'
+    }
+    
     def writeIssuesOrSees = { issues, description ->
         if ( issues?.value() ) {
             out << '\n#### ' << description << ':\n\n'
@@ -46,6 +48,13 @@ Result: **$result**
  %>
 * ${block.kind} ${block.text}
 <%
+          if ( block.sourceCode ) {
+              out << "\n```\n"
+              block.sourceCode.each { codeLine ->
+                  out << codeLine << '\n'
+              }
+              out << "```\n"
+          }
         }
         def executedIterations = iterations.findAll { it.dataValues || it.errors }
         if ( params && executedIterations ) {

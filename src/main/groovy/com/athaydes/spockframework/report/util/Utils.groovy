@@ -8,22 +8,31 @@ import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
+import org.spockframework.util.Nullable
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
+import java.nio.file.Paths
 import java.util.regex.Pattern
 
 class Utils {
 
     public static final Map block2String = [
             ( BlockKind.SETUP )  : 'Given:',
+            'given'              : 'Given:',
+            'setup'              : 'Given:',
             ( BlockKind.CLEANUP ): 'Cleanup:',
+            'cleanup'            : 'Cleanup:',
             ( BlockKind.THEN )   : 'Then:',
+            'then'               : 'Then:',
             ( BlockKind.EXPECT ) : 'Expect:',
+            'expect'             : 'Expect:',
             ( BlockKind.WHEN )   : 'When:',
+            'when'               : 'When:',
             ( BlockKind.WHERE )  : 'Where:',
-            'AND'                : 'And:',
-            'EXAMPLES'           : 'Examples:'
+            'where'              : 'Where:',
+            'and'                : 'And:',
+            'examples'           : 'Examples:'
     ]
 
     private static final Pattern urlPattern
@@ -76,7 +85,8 @@ class Utils {
     }
 
     static boolean isUnrolled( FeatureInfo feature ) {
-        feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
+        feature.spec?.isAnnotationPresent( Unroll ) ||
+                feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
     }
 
     static boolean isFailure( SpecProblem problem ) {
@@ -159,6 +169,43 @@ class Utils {
         def lastDotInFileName = fileName.lastIndexOf( '.' )
         def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
 
-        return specInfo.package + name
+        return specInfo.package + '.' + name
+    }
+
+    @Nullable
+    static File getSpecFile( String testSourceRoots, SpecData data ) {
+        def existingRoots = testSourceRoots.split( File.pathSeparator ).collect { testRoot ->
+            if ( testRoot ) {
+                def dir = new File( testRoot )
+                if ( dir.isDirectory() ) {
+                    return dir
+                }
+            }
+            null
+        }.findAll { it != null }
+
+        def className = getSpecClassName( data )
+
+        for ( File root in existingRoots ) {
+            // bug in Spock: if the package name and class name are the same, the package is just the default package
+            def packageName = ''
+            if ( data.info.package && data.info.package != className ) {
+                packageName = data.info.package
+            }
+
+            List<String> pathParts = [ ]
+            if ( packageName ) {
+                pathParts += packageName.split( /\./ ).toList()
+            }
+            pathParts << data.info.filename
+
+            def specFile = Paths.get( root.absolutePath, *pathParts ).toFile()
+
+            if ( specFile.isFile() ) {
+                return specFile
+            }
+        }
+
+        return null
     }
 }

@@ -1,25 +1,22 @@
-# Report for com.athaydes.spockframework.report.FakeTest
+# Report for com.athaydes.spockframework.report.VividFakeTest
 
 ##Summary
 
-* Total Runs: 10
-* Success Rate: 50${ds}0%
+* Total Runs: 9
+* Success Rate: 44${ds}44%
 * Failures: 3
 * Errors:   2
-* Skipped:  1
+* Skipped:  0
 * Total time: Unknown
 
-##This is just a Fake test to test spock-reports
-
 <pre>
-As a user
-I want foo
-So that bar
+As a developer
+I want to see my code
 </pre>
 
 ## Features
 
-### A first test
+### A first test with Then code block
 
 Result: **FAIL**
 
@@ -29,7 +26,11 @@ Result: **FAIL**
 
 * When: I do crazy things
 
-* Then: I get one iteration pass and another fail
+* Then: 
+
+```
+x == y
+```
 
 * Where: The examples below are used
 
@@ -54,7 +55,7 @@ b |  c
 
 ```
 
-### Another feature!!!!
+### Another feature without code
 
 Result: **PASS**
 
@@ -62,23 +63,15 @@ Result: **PASS**
 
 * Expect: Expecting something ??
 
-### A when then spec
+### Another feature with method call
 
 Result: **PASS**
 
-* When: This is the when
+* Expect: 
 
-* Then: This is the then
-
-### Please ignore me
-
-Result: **IGNORED**
-
-* Given: Nothing
-
-* When: Do nothing
-
-* Then: Nothing happens
+```
+add( 1, 2 ) == 3
+```
 
 ### A test with an error
 
@@ -90,6 +83,10 @@ Result: **IGNORED**
 Result: **ERROR**
 
 * When: An Exception is thrown
+
+```
+throw new RuntimeException( 'As expected' )
+```
 
 * Then: Will never succeed
 
@@ -111,6 +108,10 @@ Result: **FAIL**
 
 * Then: Test fails
 
+```
+assert 3 == 2
+```
+
 The following problems occurred:
 
 ```
@@ -122,25 +123,43 @@ Condition not satisfied:
 
 ```
 
-### An incredibly long feature description that unfortunately will popup in some cases where business
-	analysts write these too detailed overviews of what the test should be all about when what they really
-	should do is to let the details go in the body of the test using the Gherkin language which underlies BDD
-	and is proven to make it easier for all involved to understand what the test is doing, what the inputs are
-	and what the expected outcomes are in such a way that the best possible common understanding is reached
+### A Spec without block Strings
 
 Result: **PASS**
 
-* Expect: The long description above to look good in the report
+* Given: 
 
-### A Spec with empty block Strings
+```
+int a = 0
+```
 
-Result: **PASS**
+* And: 
 
-* Given: ----
+```
+int b = 1
+int c = 2
+int d = b + c
+```
 
-* When: ----
+* When: 
 
-* Then: ----
+```
+int e = a + b + c + d
+```
+
+* Then: 
+
+```
+e == 6
+a == 0
+c == 2 * b
+```
+
+* And: 
+
+```
+c > 0
+```
 
 ### An @Unrolled spec with x=0 and y=1
 
@@ -148,11 +167,21 @@ Result: **PASS**
 
 * Given: nothing
 
-* Expect: 0 to be 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
 
-* Where: ----
+```
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
+```
+
+* Where: 
 
  | x | y |
  |---|---|
@@ -164,11 +193,21 @@ Result: **FAILURE**
 
 * Given: nothing
 
-* Expect: 2 to be 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
 
-* Where: ----
+```
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
+```
+
+* Where: 
 
  | x | y |
  |---|---|
@@ -192,11 +231,21 @@ Result: **ERROR**
 
 * Given: nothing
 
-* Expect: 0 to be 0
+* Expect: 
+
+```
+x == 0
+```
 
 * And: An error if y is 5
 
-* Where: ----
+```
+if ( y == 5 ) {
+    throw new RuntimeException( 'y is 5' )
+}
+```
+
+* Where: 
 
  | x | y |
  |---|---|

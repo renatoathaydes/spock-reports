@@ -2,42 +2,64 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
+import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
+import com.athaydes.spockframework.report.UnrolledSpec
+import com.athaydes.spockframework.report.VividFakeTest
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.spockframework.runtime.Sputnik
 import org.spockframework.runtime.model.SpecInfo
+import spock.lang.Unroll
 
 import java.nio.file.Paths
 
-import static com.athaydes.spockframework.report.internal.StringFormatHelper.getDs
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
  *
  * User: Renato
  */
+@Unroll
 class HtmlReportCreatorSpec extends ReportSpec {
 
     static final String UNKNOWN = 'Unknown'
+    static final char DS = StringFormatHelper.ds
 
-    def "A correct HTML report is generated for a spec including different types of features"() {
+    static final Map fakeTestBinding = [
+            title           : 'This is just a Fake test to test spock-reports',
+            narrative       : '\nAs a user\nI want foo\nSo that bar',
+            executedFeatures: 10,
+            failures        : 3,
+            errors          : 2,
+            skipped         : 1,
+            successRate     : "50${DS}0%"
+    ]
+    static final Map vividFakeTestBinding = [
+            narrative       : '\nAs a developer\nI want to see my code',
+            executedFeatures: 9,
+            failures        : 3,
+            errors          : 2,
+            skipped         : 0,
+            successRate     : "44${DS}44%"
+    ]
+
+    def "A correct HTML report is generated for a #specification.simpleName including different types of features"() {
         given:
         "The project build folder location is known"
         def buildDir = System.getProperty( 'project.buildDir', 'build' )
 
         and:
         "A known location where the report file will be saved that does not exist"
-        def reportFile = Paths.get( buildDir, 'spock-reports',
-                FakeTest.class.name + '.html' ).toFile()
+        def reportFile = Paths.get( buildDir, 'spock-reports', specification.name + '.html' ).toFile()
         if ( reportFile.exists() ) {
             assert reportFile.delete()
         }
 
         and:
         "The expected HTML report (not counting time fields and errors)"
-        String expectedHtml = expectedHtmlReport()
+        String expectedHtml = expectedHtmlReport( specification, reportBinding )
 
         and:
         "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
@@ -57,8 +79,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         when:
         "A Specification containing different types of features is run by Spock"
-        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( FakeTest ).run( new RunNotifier() )
+        PredictableStringHashCode.code = 0
+        use( configShowCodeBlocks, ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+            new Sputnik( specification ).run( new RunNotifier() )
         }
 
         then:
@@ -68,6 +91,11 @@ class HtmlReportCreatorSpec extends ReportSpec {
         and:
         "The contents are functionally the same as expected"
         minify( reportFile.text ) == minify( expectedHtml )
+
+        where:
+        specification | configShowCodeBlocks   | reportBinding
+        FakeTest      | ShowCodeBlocksDisabled | fakeTestBinding
+        VividFakeTest | ShowCodeBlocksEnabled  | vividFakeTestBinding
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
@@ -138,27 +166,83 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     }
 
+    def "A correct HTML report is generated for a spec where @Unrolled is added to the Specification itself"() {
+        given:
+        "The project build folder location is known"
+        def buildDir = System.getProperty( 'project.buildDir', 'build' )
+
+        and:
+        "A known location where the report file will be saved that does not exist"
+        def reportFile = Paths.get( buildDir, 'spock-reports',
+                UnrolledSpec.class.name + '.html' ).toFile()
+        if ( reportFile.exists() ) {
+            assert reportFile.delete()
+        }
+
+        and:
+        "The expected HTML report (not counting time fields and errors)"
+        String expectedHtml = expectedHtmlReport( UnrolledSpec, reportBinding )
+
+        and:
+        "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
+        // using PredictableTimeResponse category to mock that
+
+        and:
+        "ProblemBlockWriter is mocked out to fill error blocks with known contents"
+        // using PredictableProblems category to mock that
+
+        and:
+        "ToC Writer if mocked out to write something predictable"
+        // using NoTocGenerated
+
+        and:
+        "String hashCodes produce predictable values"
+        // using PredictableStringHashCode
+
+        when:
+        "A Specification containing different types of features is run by Spock"
+        PredictableStringHashCode.code = 0
+        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+            new Sputnik( UnrolledSpec ).run( new RunNotifier() )
+        }
+
+        then:
+        "A nice HTML report to have been generated under the build directory"
+        reportFile.exists()
+
+        and:
+        "The contents are functionally the same as expected"
+        minify( reportFile.text ) == minify( expectedHtml )
+
+        where:
+        reportBinding = [
+                executedFeatures: 5,
+                failures        : 0,
+                errors          : 0,
+                skipped         : 0,
+                successRate     : "100${DS}0%"
+        ]
+    }
+
     private String textOf( String cssPath ) {
         new File( this.class.classLoader.getResource( cssPath ).toURI() ).text
     }
 
-    private String expectedHtmlReport() {
-        def rawHtml = HtmlReportCreator.getResource( 'FakeTestReport.html' ).text
-        def binding = [
-                classOnTest     : FakeTest.class.name,
-                narrative       : '\nAs a user\nI want foo\nSo that bar',
+    private String expectedHtmlReport( Class specification, Map reportBinding ) {
+        def rawHtml = HtmlReportCreator.getResource( "${specification.simpleName}Report.html" ).text
+        def binding = defaultBinding( specification ) + reportBinding
+        replacePlaceholdersInRawHtml( rawHtml, binding )
+    }
+
+    private Map<String, Object> defaultBinding( Class specification ) {
+        [
+                classOnTest     : specification.name,
                 style           : defaultStyle(),
                 dateTestRan     : DATE_TEST_RAN,
                 username        : TEST_USER_NAME,
-                executedFeatures: 10,
-                failures        : 3,
-                errors          : 2,
-                skipped         : 1,
-                successRate     : "50${ds}0%",
                 time            : UNKNOWN,
                 projectUrl      : SpockReportExtension.PROJECT_URL
         ]
-        replacePlaceholdersInRawHtml( rawHtml, binding )
     }
 
     private String defaultStyle() {
@@ -200,6 +284,20 @@ class HtmlReportCreatorSpec extends ReportSpec {
         int hashCode() {
             code++
         }
+    }
+
+    @Category( SpockReportExtension )
+    class ShowCodeBlocksEnabled {
+        static final htmlReportCreator = new HtmlReportCreator()
+        SpecInfoListener createListener() {
+            setShowCodeBlocks( true )
+            configReportCreator htmlReportCreator
+            new SpecInfoListener( htmlReportCreator )
+        }
+    }
+
+    @Category( SpockReportExtension )
+    class ShowCodeBlocksDisabled {
     }
 
 }

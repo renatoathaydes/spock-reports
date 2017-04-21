@@ -64,6 +64,66 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         minify( reportFile.text ) == minify( singleTestSummaryExpectedHtml() )
     }
 
+    def """When a single spec data is provided to the HtmlReportAggregator it
+           should create a report with data from the single spec including project name and version"""() {
+        given:
+        "A single spec stats"
+        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.25, time: 0 ]
+
+        and:
+        "A clean output directory"
+        def outputDir = "build/${this.class.simpleName}"
+        def outputDirFile = new File( outputDir )
+        if ( outputDirFile.directory ) {
+            assert outputDirFile.deleteDir()
+        }
+
+        and:
+        "A HtmlReportAggregator with mocked out dependencies and writeFooter() method"
+        def aggregator = new HtmlReportAggregator( outputDirectory: outputDir )
+        aggregator.whenAndWho = mockKnowsWhenAndWhoRanTest()
+
+        def mockStringFormatter = Stub( StringFormatHelper )
+        mockStringFormatter.toPercentage( _ ) >>> [ '25.0%', '25%' ]
+        mockStringFormatter.toTimeDuration( _ ) >>> [ '1.0 second', '1 sec' ]
+
+        aggregator.stringFormatter = mockStringFormatter
+
+        aggregator.metaClass.writeFooter = { MarkupBuilder builder ->
+            builder.div( 'class': 'footer', 'The footer' )
+        }
+
+        and:
+        "The HtmlReportAggregator receives a project name and version"
+        aggregator.projectName = 'Super Project'
+        aggregator.projectVersion = '1.8u112'
+
+        when:
+        "The spec data is provided to the HtmlReportAggregator"
+        def specDataStub = Stub( SpecData ) {
+            getInfo() >> Stub( SpecInfo ) {
+                getDescription() >> Description.createTestDescription( 'Spec1', 'Spec1' )
+            }
+        }
+        aggregator.aggregateReport( specDataStub, stats )
+        aggregator.writeOut()
+        def reportFile = new File( outputDir, 'index.html' )
+
+        then:
+        "An aggregated report called index.html should be created in the outputDir"
+        reportFile.exists()
+
+        and:
+        "The contents are functionally the same as expected"
+        def expectedProjectHeader = """
+        <div class='project-header'>
+          <span class='project-name'>Project: ${aggregator.projectName}</span>
+          <span class='project-version'>Version: ${aggregator.projectVersion}</span>
+        </div>"""
+
+        minify( reportFile.text ) == minify( singleTestSummaryExpectedHtml( expectedProjectHeader ) )
+    }
+
     def """When several specs data are provided to the HtmlReportAggregator it
            should create a report aggregating all of the individual spec reports"""() {
         given:
@@ -189,10 +249,11 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         this.class.getResource( '/spock-feature-report.css' ).text
     }
 
-    private String singleTestSummaryExpectedHtml() {
+    private String singleTestSummaryExpectedHtml( projectHeader = '' ) {
         def rawHtml = this.class.getResource( 'SingleTestSummaryReport.html' ).text
-        def binding = [ dateTestRan: DATE_TEST_RAN,
-                        username   : TEST_USER_NAME, ]
+        def binding = [ dateTestRan  : DATE_TEST_RAN,
+                        username     : TEST_USER_NAME,
+                        projectHeader: projectHeader ]
         replacePlaceholdersInRawHtml( rawHtml, binding )
     }
 

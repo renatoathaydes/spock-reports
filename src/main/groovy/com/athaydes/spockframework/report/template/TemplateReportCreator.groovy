@@ -6,11 +6,16 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.internal.StringTemplateProcessor
 import com.athaydes.spockframework.report.util.Utils
+import com.athaydes.spockframework.report.vivid.BlockCode
+import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+
+import static java.util.Collections.emptyList
+import static java.util.Collections.emptyMap
 
 /**
  * IReportCreator which uses a user-provided template to generate spock-reports.
@@ -25,14 +30,47 @@ class TemplateReportCreator implements IReportCreator {
     // IReportCreator shared properties
     String outputDir
     boolean hideEmptyBlocks
+    boolean showCodeBlocks
 
     // TemplateReportCreator properties
     String specTemplateFile
     String reportFileExtension
     String summaryTemplateFile
     String summaryFileName
+    boolean enabled = true
+
+    private final SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
+
+    @Override
+    void setTestSourceRoots( String roots ) {
+        if ( roots ) {
+            codeReader.testSourceRoots = roots
+        }
+    }
+
+    void setEnabled( String enabled ) {
+        try {
+            this.@enabled = Boolean.parseBoolean( enabled )
+        } catch ( e ) {
+            log.warn( "Problem parsing 'enabled' property, invalid value: $enabled", e )
+        }
+    }
+
+    @Override
+    void setProjectName( String projectName ) {
+        reportAggregator.projectName = projectName
+    }
+
+    @Override
+    void setProjectVersion( String projectVersion ) {
+        reportAggregator.projectVersion = projectVersion
+    }
 
     void done() {
+        if ( !enabled ) {
+            return
+        }
+
         def reportsDir = Utils.createDir( outputDir )
 
         reportAggregator.writeOut(
@@ -42,6 +80,10 @@ class TemplateReportCreator implements IReportCreator {
 
     @Override
     void createReportFor( SpecData data ) {
+        if ( !enabled ) {
+            return
+        }
+
         def specClassName = Utils.getSpecClassName( data )
         def reportsDir = Utils.createDir( outputDir )
         def reportFile = new File( reportsDir, specClassName + '.' + reportFileExtension )
@@ -67,6 +109,10 @@ class TemplateReportCreator implements IReportCreator {
         def engine = new GStringTemplateEngine()
 
         def featuresCallback = createFeaturesCallback data
+
+        if ( showCodeBlocks ) {
+            codeReader.read( data )
+        }
 
         engine.createTemplate( templateFileUrl )
                 .make( [ reportCreator: this,
@@ -101,7 +147,7 @@ class TemplateReportCreator implements IReportCreator {
 
     protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
         run.failuresByIteration.eachWithIndex { iteration, problems, index ->
-            final name = Utils.featureNameFrom(feature, iteration, index)
+            final name = Utils.featureNameFrom( feature, iteration, index )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAILURE' :
                             feature.skipped ? 'IGNORED' : 'PASS'
@@ -111,20 +157,49 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
+        if ( showCodeBlocks ) {
+            return processedBlocksFromCode( feature, iteration )
+        }
+
+        // as we don't have the AST, we need to use the old way to get the block text from Spock's API
         feature.blocks.collect { BlockInfo block ->
-            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( block.texts ) ) {
+            List<String> blockTexts = block.texts
+
+            if ( !Utils.isEmptyOrContainsOnlyEmptyStrings( blockTexts ) ) {
                 int index = 0
-                block.texts.collect { blockText ->
+                blockTexts.collect { blockText ->
                     if ( iteration ) {
                         blockText = stringProcessor.process( blockText, feature.dataVariables, iteration )
                     }
-                    [ kind: Utils.block2String[ ( index++ ) == 0 ? block.kind : 'AND' ], text: blockText ]
+                    [ kind      : Utils.block2String[ ( index++ ) == 0 ? block.kind : 'and' ],
+                      text      : blockText,
+                      sourceCode: emptyList() ]
                 }
-            } else if ( !hideEmptyBlocks )
-                [ kind: Utils.block2String[ block.kind ], text: '----' ]
-            else
-                [ : ]
-        }.findAll { !it.empty }.flatten()
+            } else if ( !hideEmptyBlocks ) {
+                [ [ kind      : Utils.block2String[ block.kind ],
+                    text      : '----',
+                    sourceCode: emptyList() ] ]
+            } else {
+                [ [ : ] ]
+            }
+        }.flatten().findAll { Map item -> !item.isEmpty() }
+    }
+
+    private List processedBlocksFromCode( FeatureInfo feature, IterationInfo iteration ) {
+        def blocks = codeReader.getBlocks( feature )
+
+        blocks.collect { BlockCode block ->
+            def blockText = iteration && block.text ?
+                    stringProcessor.process( block.text, feature.dataVariables, iteration ) :
+                    ( block.text ?: '' )
+            def blockKind = Utils.block2String[ block.label ] ?: 'Block:' // use an emergency label if something goes wrong
+
+            if ( blockText || block.statements || !hideEmptyBlocks ) {
+                [ kind: blockKind, text: blockText, sourceCode: block.statements ]
+            } else {
+                emptyMap()
+            }
+        }.findAll { Map map -> !map.isEmpty() }
     }
 
 }

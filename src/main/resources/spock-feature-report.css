@@ -1,5 +1,14 @@
 body {
-  font-family: Helvetica;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+h2 {
+  font-weight: 400;
+}
+
+h3 {
+  font-weight: 200;
 }
 
 table {
@@ -32,34 +41,43 @@ table.summary-table td {
   padding: 6px;
 }
 
+pre.title {
+  font-family: inherit;
+  font-size: 24px;
+  line-height: 28px;
+  letter-spacing: -1px;
+  color: #333;
+}
+
 pre.narrative {
   font-family: inherit;
   font-size: 18px;
+  font-style: italic;
   line-height: 23px;
   letter-spacing: -1px;
-  color: #444;
+  color: #333;
 }
 
 .feature-description {
   font-size: large;
   background: lightblue;
-  padding: 4px;
+  padding: 12px;
 }
 
 .feature-toc-error {
-	color: #F89A4F;
+  color: #F89A4F;
 }
 
 .feature-toc-failure {
-	color: #FF8080;
+  color: #FF8080;
 }
 
 .feature-toc-ignored {
-	color: lightgray;
+  color: lightgray;
 }
 
 .feature-toc-pass {
-	color: green;
+  color: green;
 }
 
 .feature-description.error {
@@ -82,8 +100,9 @@ pre.narrative {
 
 div.issues {
   color: black;
-  font-weight: bold;
+  font-weight: 500;
   font-size: small;
+  padding-top: 10px;
 }
 
 div.problem-description {
@@ -98,7 +117,7 @@ div.problem-header {
 }
 
 div.problem-list {
-  
+
 }
 
 table.ex-table th {
@@ -156,6 +175,11 @@ div.block-kind {
 
 div.block-text {
 
+}
+
+pre.block-source {
+  background-color: whitesmoke;
+  padding: 10px;
 }
 
 div.footer {

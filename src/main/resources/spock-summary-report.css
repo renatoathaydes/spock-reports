@@ -1,9 +1,31 @@
 body {
-  font-family: Helvetica;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+h2 {
+  font-weight: 400;
+}
+
+h3 {
+  font-weight: 200;
 }
 
 table {
   margin: 5px;
+}
+
+div.project-header {
+  margin-bottom: 10px;
+  font-size: large;
+}
+
+div.project-header > span.project-name {
+
+}
+
+div.project-header > span.project-version {
+  padding-left: 20px;
 }
 
 div.date-test-ran {
@@ -14,7 +36,7 @@ div.date-test-ran {
 table.summary-table {
   width: 800px;
   text-align: left;
-  font-weight: bold;
+  font-weight: 500;
   font-size: small;
 }
 
