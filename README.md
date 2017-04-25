@@ -257,7 +257,7 @@ You can see an example report created with the default spec template file [here]
 
 ### How templates work
 
-The template report creator uses Groovy's [GStringTemplateEngine](http://groovy.codehaus.org/Groovy+Templates#GroovyTemplates-GStringTemplateEngine)
+The template report creator uses Groovy's [GStringTemplateEngine](http://docs.groovy-lang.org/next/html/documentation/template-engines.html#_gstringtemplateengine)
 to create reports based on a template file.
 
 This template mechanism is very simple to use, but also very powerful, as you can write any code you want in the template file.
