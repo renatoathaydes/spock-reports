@@ -26,6 +26,6 @@ class SpecSourceCodeReader {
     }
 
     List<BlockCode> getBlocks( FeatureInfo feature ) {
-        return specSourceCode.getBlocks( feature.name )
+        return specSourceCode?.getBlocks( feature.name ) ?: []
     }
 }
