@@ -46,6 +46,8 @@ class VividAstInspector {
 
         if ( sourceFile == null ) {
             log.warn( "Cannot find source code for spec $className" )
+            log.info( "Perhaps you need to set the 'com.athaydes.spockframework.report.testSourceRoots' property? " +
+                    "(the default is src/test/groovy)" )
             return null
         }
 
