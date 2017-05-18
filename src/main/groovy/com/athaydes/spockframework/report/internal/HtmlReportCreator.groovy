@@ -258,7 +258,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
         if ( showCodeBlocks ) {
-            writeBlocksFromCode( builder, feature, iteration )
+            boolean ok = writeBlocksFromCode( builder, feature, iteration )
+            if ( !ok ) {
+                log.debug( "Could not find block source code, falling back on original text information" )
+                writeBlocks( builder, feature, iteration )
+            }
         } else {
             writeBlocks( builder, feature, iteration )
         }
@@ -280,8 +284,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private void writeBlocksFromCode( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration ) {
+    private boolean writeBlocksFromCode( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration ) {
         def blocks = codeReader.getBlocks( feature )
+
+        if ( blocks.empty ) {
+            return false // unable to find sources
+        }
+
         for ( BlockCode block in blocks ) {
             def text = iteration && block.text ?
                     stringProcessor.process( block.text, feature.dataVariables, iteration ) :
@@ -289,6 +298,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             def blockKind = block.label ?: 'Block:'
             writeBlockRowsFromCode( builder, trCssClass( feature ), blockKind, block.statements, text )
         }
+
+        true // found sources
     }
 
     private trCssClass( FeatureInfo feature ) {

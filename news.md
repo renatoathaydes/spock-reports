@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `18th of May 2017`
+
+Minor release fixing a bug in the new, optional vivid reports feature.
+
 * `21st of April 2017`
 
 Lots of improvements in this major release (version 1.3.0), including a long overdue overhaul of the 
