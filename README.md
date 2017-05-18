@@ -168,6 +168,9 @@ com.athaydes.spockframework.report.projectVersion=Unknown
 # Show the source code for each block
 com.athaydes.spockframework.report.showCodeBlocks=false
 
+# Set the root location of the Spock test source code (only used if showCodeBlocks is 'true')
+com.athaydes.spockframework.report.testSourceRoots=src/test/groovy
+
 # Set properties specific to the TemplateReportCreator
 com.athaydes.spockframework.report.template.TemplateReportCreator.specTemplateFile=/templateReportCreator/spec-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExtension=md
