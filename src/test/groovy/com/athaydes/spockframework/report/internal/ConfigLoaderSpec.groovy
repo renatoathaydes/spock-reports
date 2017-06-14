@@ -11,6 +11,8 @@ class ConfigLoaderSpec extends Specification {
 
     private static final String FEATURE_REPORT_CSS = HtmlReportCreator.class.name + '.featureReportCss'
 
+    static final String PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
+
     def "The ConfigLoader should load the default configurations"() {
         given:
         "A ConfigLoader without any custom configuration"
@@ -18,7 +20,7 @@ class ConfigLoaderSpec extends Specification {
 
         and:
         "The configLocation exists"
-        ( configLoader.CUSTOM_CONFIG as File ).exists()
+        ( ConfigLoader.CUSTOM_CONFIG as File ).exists()
 
         when:
         "I ask the ConfigLoader to load the configuration"
@@ -68,12 +70,12 @@ class ConfigLoaderSpec extends Specification {
 
         and:
         "The configLocation exists"
-        ( configLoader.CUSTOM_CONFIG as File ).exists()
+        ( ConfigLoader.CUSTOM_CONFIG as File ).exists()
 
         and:
         "I have specified a system property override"
-        def origPropVal = System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ]
-        System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ] = expected
+        def origPropVal = System.properties[ PROP_HIDE_EMPTY_BLOCKS ]
+        System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = expected
 
         when:
         "I ask the ConfigLoader to load the configuration"
@@ -81,13 +83,13 @@ class ConfigLoaderSpec extends Specification {
 
         then:
         "The ConfigLoader must use the value from the system property override"
-        result.getProperty( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ) == expected
+        result.getProperty( PROP_HIDE_EMPTY_BLOCKS ) == expected
 
         cleanup:
         if ( origPropVal )
-            System.properties[ ConfigLoader.PROP_HIDE_EMPTY_BLOCKS ] = origPropVal
+            System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = origPropVal
         else
-            System.properties.remove ConfigLoader.PROP_HIDE_EMPTY_BLOCKS
+            System.properties.remove PROP_HIDE_EMPTY_BLOCKS
 
         where:
         expected = 'custom_value'
