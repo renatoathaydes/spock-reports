@@ -27,9 +27,8 @@ class SpockReportExtension implements IGlobalExtension {
 
     static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 
-
     private final AtomicBoolean initialized = new AtomicBoolean( false )
-    private final ConfigLoader configLoader = new ConfigLoader()
+    protected ConfigLoader configLoader = new ConfigLoader()
 
     IReportCreator reportCreator
 
@@ -58,7 +57,7 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void visitSpec( SpecInfo specInfo ) {
         if ( reportCreator != null ) {
-            specInfo.addListener new SpecInfoListener( reportCreator )
+            specInfo.addListener createListener()
         } else {
             log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
         }
@@ -69,6 +68,11 @@ class SpockReportExtension implements IGlobalExtension {
         reportCreatorClass
                 .asSubclass( IReportCreator )
                 .newInstance()
+    }
+
+    // this method is patched by the UseTemplateReportCreator category and others
+    SpecInfoListener createListener() {
+        new SpecInfoListener( reportCreator )
     }
 
 }

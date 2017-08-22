@@ -35,18 +35,29 @@ class ConfigLoader {
     }
 
     void apply( IReportCreator reportCreator, Properties config ) {
+
         config.each { String key, value ->
             int lastDotIndex = key.lastIndexOf( '.' )
 
             if ( lastDotIndex > 0 && lastDotIndex + 1 < key.size() ) {
-                final property = key[ ( lastDotIndex + 1 )..-1 ]
+                final prefix = key[ 0..<lastDotIndex ]
+                final propertyName = key[ ( lastDotIndex + 1 )..-1 ]
 
-                if ( reportCreator.hasProperty( property ) ) {
-                    try {
-                        reportCreator."$property" = value
-                    } catch ( e ) {
-                        log.warn( "Invalid property value for property '{}': {}", property, e )
+                if ( prefix == IReportCreator.package.name || prefix == reportCreator.class.name ) {
+                    if ( reportCreator.hasProperty( propertyName ) ) {
+                        try {
+                            reportCreator."$propertyName" = value
+                            log.debug( "Property $propertyName set to $value" )
+                        } catch ( ignore ) {
+                            log.warn( "Invalid property value for property '{}'", propertyName )
+                        }
+                    } else {
+                        log.warn( "Property [{}] not acceptable by IReportCreator of type {}",
+                                propertyName, reportCreator.class.name )
                     }
+                } else {
+                    log.debug( "Ignoring property '{}' for IReportCreator of type {}",
+                            propertyName, reportCreator.class.name )
                 }
             }
         }

@@ -31,11 +31,11 @@ class TemplateReportCreatorSpec extends Specification {
         "A nice template report to have been generated under the build directory"
         def reportFile = Paths.get( buildDir, 'spock-reports',
                 specification.name + '.md' ).toFile()
-        reportFile.exists()
+        reportFile.parentFile.listFiles() && reportFile.exists()
 
         and:
         "The contents are functionally the same as expected"
-        reportFile.text == expectedText(specName)
+        reportFile.text == expectedText( specName )
 
         where:
         specification | reportCreator
@@ -44,21 +44,27 @@ class TemplateReportCreatorSpec extends Specification {
         specName = specification.getSimpleName()
     }
 
-    String expectedText(String specName) {
-        this.class.getResource("/${specName}.md")
+    String expectedText( String specName ) {
+        this.class.getResource( "/${specName}.md" )
                 .text
-                .replace('${projectUrl}', SpockReportExtension.PROJECT_URL)
-                .replace('${ds}', StringFormatHelper.ds as String)
-                .replaceAll("\r", '')
+                .replace( '${projectUrl}', SpockReportExtension.PROJECT_URL )
+                .replace( '${ds}', StringFormatHelper.ds as String )
+                .replaceAll( "\r", '' )
     }
 
 }
 
 @Category( SpockReportExtension )
 class UseTemplateReportCreator {
-    static final templateReportCreator = new TemplateReportCreator()
+    static final templateReportCreator = new TemplateReportCreator(
+            outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
+            specTemplateFile: '/templateReportCreator/spec-template.md',
+            reportFileExtension: 'md',
+            summaryTemplateFile: '/templateReportCreator/summary-template.md',
+            summaryFileName: 'summary.md'
+    )
+
     SpecInfoListener createListener() {
-        configReportCreator templateReportCreator
         new SpecInfoListener( templateReportCreator )
     }
 
@@ -66,10 +72,16 @@ class UseTemplateReportCreator {
 
 @Category( SpockReportExtension )
 class UseTemplateShowCodeBlocksReportCreator {
-    static final templateReportCreator = new TemplateReportCreator()
+    static final templateReportCreator = new TemplateReportCreator(
+            outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
+            specTemplateFile: '/templateReportCreator/spec-template.md',
+            reportFileExtension: 'md',
+            summaryTemplateFile: '/templateReportCreator/summary-template.md',
+            summaryFileName: 'summary.md',
+            showCodeBlocks: true )
+
     SpecInfoListener createListener() {
-        setShowCodeBlocks(true)
-        configReportCreator templateReportCreator
         new SpecInfoListener( templateReportCreator )
     }
+
 }

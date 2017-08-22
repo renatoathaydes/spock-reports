@@ -90,6 +90,7 @@ class TemplateReportCreator implements IReportCreator {
         reportFile.delete()
         try {
             if ( reportsDir.isDirectory() ) {
+                log.debug( "Writing report to file: {}", reportFile )
                 reportFile.write( reportFor( data ) )
                 reportAggregator.addData( data )
             } else {
