@@ -180,14 +180,17 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 getAllFeaturesInExecutionOrder() >> [
                         Stub( FeatureInfo ) {
                             isSkipped() >> false
+                            getDescription() >> Description.createTestDescription( 'myClass', 'myClass' )
                             getName() >> 'cFeature'
                         },
                         Stub( FeatureInfo ) {
                             isSkipped() >> true
+                            getDescription() >> Description.createTestDescription( 'myClass', 'myClass' )
                             getName() >> 'aFeature'
                         },
                         Stub( FeatureInfo ) {
                             isSkipped() >> false
+                            getDescription() >> Description.createTestDescription( 'myClass', 'myClass' )
                             getName() >> 'bFeature'
                         }
                 ]

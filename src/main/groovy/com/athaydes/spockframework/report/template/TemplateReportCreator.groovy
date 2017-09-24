@@ -141,7 +141,8 @@ class TemplateReportCreator implements IReportCreator {
     protected void handleRegularFeature( FeatureRun run, Closure callback, FeatureInfo feature ) {
         final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
         final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
-        final result = errors ? 'ERROR' : failures ? 'FAIL' : !run ? 'IGNORED' : 'PASS'
+        final isSkipped = !run || Utils.isSkipped( feature )
+        final result = errors ? 'ERROR' : failures ? 'FAIL' : isSkipped ? 'IGNORED' : 'PASS'
         final problemsByIteration = run ? Utils.problemsByIteration( run.failuresByIteration ) : [ : ]
         callback.call( feature.name, result, processedBlocks( feature ), problemsByIteration, feature.parameterNames )
     }
