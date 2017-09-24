@@ -19,6 +19,9 @@ See the **"Using template reports"** section below.
 > **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification 
 block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
 
+> Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the 
+  [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock rerports.
+
 ## Where to find demo reports
 
 I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://codepen.io/renatoathaydes/full/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://codepen.io/renatoathaydes/full/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.

@@ -2,6 +2,13 @@
 
 > Most recent first
 
+* `24th of September 2017`
+
+@tilmanginzel published an extension of spock-reports that works with [Geb](http://gebish.org/) to add support for
+screenshots in web test reports!
+
+Check out [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) if you use Spock and Geb! 
+
 * `18th of May 2017`
 
 Minor release fixing a bug in the new, optional vivid reports feature.
