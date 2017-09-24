@@ -19,11 +19,11 @@ class SpecSourceCode {
         features.get( feature.name, new FeatureSourceCode() ).startBlock( label, text )
     }
 
-    void addStatement( MethodNode feature, String statement ) {
+    void addStatement( MethodNode feature, String statement, int lineNumber ) {
         def currentFeature = features[ feature.name ]
         if ( currentFeature ) {
             statement = removeIndent( statement )
-            currentFeature.addStatement( statement )
+            currentFeature.addStatement( statement, lineNumber )
         } else {
             log.debug( "Skipping statement on method {}, not a test method?", feature?.name )
         }
@@ -60,11 +60,15 @@ class FeatureSourceCode {
     private final List<BlockCode> blocks = [ ]
 
     void startBlock( String label, @Nullable String text ) {
-        blocks << new BlockCode( label, text, [ ] )
+        blocks << new BlockCode( label, text, [ ], [ ] )
     }
 
-    void addStatement( String statement ) {
-        blocks.last().statements.add( statement )
+    void addStatement( String statement, int lineNumber ) {
+        def block = blocks.last()
+        statement.split( '\n' ).eachWithIndex { String line, int index ->
+            block.statements.add( line )
+            block.lineNumbers.add( lineNumber + index )
+        }
     }
 
     List<BlockCode> getBlocks() {
@@ -78,4 +82,5 @@ class BlockCode {
     @Nullable
     final String text
     final List<String> statements
+    final List<Integer> lineNumbers
 }

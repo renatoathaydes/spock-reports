@@ -195,6 +195,21 @@ pre.block-source {
   padding: 10px;
 }
 
+pre.block-source.error {
+  background-color: pink;
+  color: red;
+  font-weight: bold;
+}
+
+pre.block-source.before-error {
+  margin-bottom: -14px;
+}
+
+pre.block-source.after-error {
+  color: gray;
+  margin-top: -14px;
+}
+
 div.footer {
   text-align: center;
   font-size: small;
