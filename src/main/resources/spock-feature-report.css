@@ -99,10 +99,13 @@ pre.narrative {
 }
 
 div.issues {
+  margin-top: 6px;
+  padding: 10px 5px 5px 5px;
+  background-color: lemonchiffon;
   color: black;
   font-weight: 500;
   font-size: small;
-  padding-top: 10px;
+  max-width: 50%;
 }
 
 div.pending-feature {
