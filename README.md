@@ -20,7 +20,7 @@ See the **"Using template reports"** section below.
 block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
 
 > Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the 
-  [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock rerports.
+  [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock reports.
 
 ## Where to find demo reports
 
