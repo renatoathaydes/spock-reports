@@ -86,7 +86,9 @@ class SpockReportExtensionSpec extends Specification {
         and:
         "The ReportCreator was configured with the valid properties"
         1 * mockReportCreator.setOutputDir( "the-output-dir" )
-        1 * mockReportCreator.setCustomProp( "customValue" )
+
+        // this property does not exist in the report type, hence cannot be set
+        0 * mockReportCreator.setCustomProp( "customValue" )
 
         and:
         "The ReportCreator is done"
