@@ -21,7 +21,7 @@ class TemplateReportAggregator {
         log.debug( "Adding data to report {}", specName )
 
         def stats = Utils.stats( data )
-        def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> feature.skipped }
+        def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> Utils.isSkipped( feature ) }
 
         aggregatedData[ specName ] = Utils.createAggregatedData(
                 allFeatures[ false ], allFeatures[ true ], stats )

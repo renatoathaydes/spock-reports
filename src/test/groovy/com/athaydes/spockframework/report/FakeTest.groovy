@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report
 import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Narrative
+import spock.lang.PendingFeature
 import spock.lang.See
 import spock.lang.Specification
 import spock.lang.Title
@@ -12,11 +13,11 @@ import spock.lang.Unroll
  *
  * User: Renato
  */
-@Title('This is just a Fake test to test spock-reports')
-@Narrative("""
+@Title( 'This is just a Fake test to test spock-reports' )
+@Narrative( """
 As a user
 I want foo
-So that bar""")
+So that bar""" )
 class FakeTest extends Specification {
 
     def "A first test"() {
@@ -35,7 +36,7 @@ class FakeTest extends Specification {
 
         where:
         "The examples below are used"
-        x | y
+        x   | y
         'a' | 'a'
         'b' | 'c'
 
@@ -127,6 +128,15 @@ class FakeTest extends Specification {
         0 | 1
         2 | 3
         0 | 5
+    }
+
+    @PendingFeature
+    def "Future feature"() {
+        when:
+        'the feature is ready'
+        then:
+        'the annotation will be removed'
+        throw new RuntimeException( 'Not ready' )
     }
 
 }

@@ -105,6 +105,16 @@ div.issues {
   padding-top: 10px;
 }
 
+div.pending-feature {
+  background-color: dodgerblue;
+  color: white;
+  margin-top: 6px;
+  padding: 5px;
+  text-align: center;
+  font-size: small;
+  max-width: 120px;
+}
+
 div.problem-description {
   padding: 10px;
   background: pink;

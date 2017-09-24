@@ -33,7 +33,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
             executedFeatures: 10,
             failures        : 3,
             errors          : 2,
-            skipped         : 1,
+            skipped         : 2,
             successRate     : "50${DS}0%"
     ]
     static final Map vividFakeTestBinding = [

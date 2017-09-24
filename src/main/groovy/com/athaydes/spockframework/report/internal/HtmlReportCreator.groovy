@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.lang.See
 import spock.lang.Title
 
@@ -172,6 +173,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( issues ) {
             writeIssuesOrSees( builder, issues, 'Issues:' )
         }
+        def pendingFeature = Utils.specAnnotation( data, PendingFeature )
+        if ( pendingFeature ) {
+            writePendingFeature( builder, pendingFeature )
+        }
         def sees = Utils.specAnnotation( data, See )
         if ( sees ) {
             writeIssuesOrSees( builder, sees, 'See:' )
@@ -197,7 +202,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         final String name = Utils.featureNameFrom( feature, iteration, index )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
-                                        feature.skipped ? 'ignored' : 'pass'
+                                        Utils.isSkipped( feature ) ? 'ignored' : 'pass'
                         li {
                             a( href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name )
                         }
@@ -230,22 +235,26 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
-                                    feature.skipped ? 'ignored' : ''
+                                    Utils.isSkipped( feature ) ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
                             feature.description.getAnnotation( Ignore ),
                             feature.description.getAnnotation( Issue ),
-                            feature.description.getAnnotation( See ) )
+                            feature.description.getAnnotation( See ),
+                            feature.description.getAnnotation( PendingFeature ) )
                     writeFeatureBlocks( builder, feature, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
             } else {
                 final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
                 final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
-                final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
+                final cssClass = errors ? 'error' :
+                        failures ? 'failure' :
+                                ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
                         feature.description.getAnnotation( Issue ),
-                        feature.description.getAnnotation( See ) )
+                        feature.description.getAnnotation( See ),
+                        feature.description.getAnnotation( PendingFeature ) )
                 writeFeatureBlocks( builder, feature )
                 if ( run ) {
                     writeRun( builder, run )
@@ -303,7 +312,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private trCssClass( FeatureInfo feature ) {
-        feature.skipped ? [ 'class': 'ignored' ] : null
+        Utils.isSkipped( feature ) ? [ 'class': 'ignored' ] : null
     }
 
     private writeBlockRow( MarkupBuilder builder, cssClass, blockKind, text ) {
@@ -392,7 +401,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                           String cssClass,
                                           Ignore ignoreAnnotation,
                                           Issue issueAnnotation,
-                                          See seeAnnotation ) {
+                                          See seeAnnotation,
+                                          PendingFeature pendingFeature ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -410,6 +420,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         span( 'class': 'reason', ignoreReason )
                     }
                     writeIssuesOrSees builder, issueAnnotation, 'Issues:'
+                    writePendingFeature( builder, pendingFeature )
                     writeIssuesOrSees builder, seeAnnotation, 'See:'
                 }
             }
@@ -434,6 +445,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     }
                 }
             }
+        }
+    }
+
+    private void writePendingFeature( MarkupBuilder builder,
+                                      PendingFeature annotation ) {
+        if ( annotation ) {
+            builder.div( 'class': 'pending-feature', 'Pending Feature' )
         }
     }
 

@@ -151,7 +151,7 @@ class TemplateReportCreator implements IReportCreator {
             final name = Utils.featureNameFrom( feature, iteration, index )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAILURE' :
-                            feature.skipped ? 'IGNORED' : 'PASS'
+                            Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'
             final problemsByIteration = Utils.problemsByIteration( [ ( iteration ): problems ] )
             callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration, feature.parameterNames )
         }
