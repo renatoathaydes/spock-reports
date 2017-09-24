@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.util
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class UtilsSpec extends Specification {
 
@@ -108,6 +109,45 @@ class UtilsSpec extends Specification {
         '192.168.16.1:8080'            | true
         '192.168.16.1:8080/p1/p2'      | true
         '192.168.16.1:8080/p1/p2/'     | true
+    }
+
+    @Unroll
+    def "Can convert properties to all primitive Java types"() {
+        when: 'A value is converted to some primitive Java type'
+        def result = Utils.convertProperty( value, targetType )
+
+        then: 'The conversion succeeds'
+        result == expectedResult
+
+        where:
+        value         | targetType || expectedResult
+        0             | int         | 0
+        1             | Integer     | 1
+        "33"          | int         | 33
+        2.1           | float       | 2.1f
+        3.14          | Float       | 3.14f
+        "2.6"         | Float       | 2.6f
+        2.1           | double      | 2.1D
+        3.14          | double      | 3.14D
+        "2.6"         | Double      | 2.6D
+        2             | byte        | ( byte ) 2
+        3             | Byte        | ( Byte ) 3
+        "4"           | Byte        | ( Byte ) 4
+        true          | boolean     | true
+        false         | boolean     | false
+        false         | Boolean     | Boolean.FALSE
+        Boolean.TRUE  | boolean     | true
+        Boolean.FALSE | boolean     | false
+        Boolean.TRUE  | Boolean     | Boolean.TRUE
+        'true'        | boolean     | true
+        'false'       | boolean     | false
+        1             | String      | '1'
+        2.3           | String      | '2.3'
+        'hello'       | String      | 'hello'
+        'c' as char   | String      | 'c'
+        'c'           | char        | 'c' as char
+        'd' as char   | char        | 'd' as char
+        'e' as char   | Character   | 'e' as Character
     }
 
 }

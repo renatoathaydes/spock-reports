@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
 
@@ -44,9 +45,12 @@ class ConfigLoader {
                 final propertyName = key[ ( lastDotIndex + 1 )..-1 ]
 
                 if ( prefix == IReportCreator.package.name || prefix == reportCreator.class.name ) {
-                    if ( reportCreator.hasProperty( propertyName ) ) {
+                    def metaProperty = reportCreator.metaClass.getMetaProperty( propertyName )
+
+                    if ( metaProperty ) {
+                        def propertyType = metaProperty.type
                         try {
-                            reportCreator."$propertyName" = value
+                            reportCreator."$propertyName" = Utils.convertProperty( value, propertyType )
                             log.debug( "Property $propertyName set to $value" )
                         } catch ( ignore ) {
                             log.warn( "Invalid property value for property '{}'", propertyName )
@@ -56,7 +60,7 @@ class ConfigLoader {
                                 propertyName, reportCreator.class.name )
                     }
                 } else {
-                    log.debug( "Ignoring property '{}' for IReportCreator of type {}",
+                    log.debug( "Ignoring property '{}' for IReportCreator of incompatible type {}",
                             propertyName, reportCreator.class.name )
                 }
             }

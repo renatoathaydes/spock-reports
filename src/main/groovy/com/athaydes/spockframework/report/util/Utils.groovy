@@ -208,4 +208,67 @@ class Utils {
 
         return null
     }
+
+    /**
+     * Converts a value of any type to the given type.
+     *
+     * This only works for a few known Java primitive types!
+     *
+     * @param value
+     * @param type
+     * @return converted property value
+     */
+    @SuppressWarnings( "GroovyAssignabilityCheck" )
+    static <T> T convertProperty( value, Class<T> type ) {
+        if ( value == null ) {
+            return null
+        }
+
+        switch ( type ) {
+            case String:
+                return value.toString()
+            case Integer:
+                return Integer.valueOf( Integer.parseInt( value as String ) )
+            case int:
+                return Integer.parseInt( value as String )
+            case Float:
+                return Float.valueOf( Float.parseFloat( value as String ) )
+            case float:
+                return Float.parseFloat( value as String )
+            case Long:
+                return Long.valueOf( Long.parseLong( value as String ) )
+            case long:
+                return Long.parseLong( value as String )
+            case Double:
+                return Double.valueOf( Double.parseDouble( value as String ) )
+            case double:
+                return Double.parseDouble( value as String )
+            case Byte:
+                return Byte.valueOf( Byte.parseByte( value as String ) )
+            case byte:
+                return Byte.parseByte( value as String )
+            case Boolean:
+                return Boolean.valueOf( Boolean.parseBoolean( value as String ) )
+            case boolean:
+                return Boolean.parseBoolean( value as String )
+            case Character:
+            case char:
+                char convertedValue
+                if ( value instanceof Character ) {
+                    convertedValue = ( char ) value
+                } else if ( value instanceof CharSequence && value.size() == 1 ) {
+                    convertedValue = value as char
+                } else {
+                    throw new IllegalArgumentException( "Cannot convert to char: " + value )
+                }
+                if ( type == char ) {
+                    return convertedValue
+                } else {
+                    return Character.valueOf( convertedValue )
+                }
+            default:
+                throw new IllegalArgumentException( "Cannot convert to type: " + type )
+        }
+    }
+
 }
