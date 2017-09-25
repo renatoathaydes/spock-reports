@@ -77,7 +77,7 @@
 		<div class='block-kind'>Then:</div>
 	</td>
 	<td>
-		<pre class='block-source'>x == y</pre>
+		<pre class='block-source error'>x == y // line 25</pre>
 	</td>
 </tr>
 <tr>
@@ -199,7 +199,7 @@
 <tr>
 	<td></td>
 	<td>
-		<pre class='block-source'>throw new RuntimeException( 'As expected' )</pre>
+		<pre class='block-source error'>throw new RuntimeException( 'As expected' ) // line 54</pre>
 	</td>
 </tr>
 <tr>
@@ -256,7 +256,7 @@
 <tr>
 	<td></td>
 	<td>
-		<pre class='block-source'>assert 3 == 2</pre>
+		<pre class='block-source error'>assert 3 == 2 // line 66</pre>
 	</td>
 </tr>
 <tr>
@@ -380,7 +380,7 @@ c == 2 * b</pre>
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<pre class='block-source'>x == 0</pre>
+		<pre class='block-source error'>x == 0 // line 95</pre>
 	</td>
 </tr>
 <tr>
@@ -394,7 +394,7 @@ c == 2 * b</pre>
 <tr>
 	<td></td>
 	<td>
-<pre class='block-source'>if ( y == 5 ) {
+<pre class='block-source post-error'>if ( y == 5 ) {
     throw new RuntimeException( 'y is 5' )
 }</pre>
 	</td>
@@ -432,7 +432,7 @@ c == 2 * b</pre>
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<pre class='block-source'>x == 0</pre>
+		<pre class='block-source pre-error'>x == 0</pre>
 	</td>
 </tr>
 <tr>
@@ -446,9 +446,9 @@ c == 2 * b</pre>
 <tr>
 	<td></td>
 	<td>
-<pre class='block-source'>if ( y == 5 ) {
-    throw new RuntimeException( 'y is 5' )
-}</pre>
+<pre class='block-source before-error'>if ( y == 5 ) {</pre>
+<pre class='block-source error'>    throw new RuntimeException( 'y is 5' ) // line 99</pre>
+<pre class='block-source after-error'>}</pre>
 	</td>
 </tr>
 <tr>

@@ -376,9 +376,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                          List<String> statements,
                          List<Integer> lineNumbers,
                          int failureLineNumber ) {
-        if ( failureLineNumber < 0 ) {
+        def isPostError = failureLineNumber > 0 && failureLineNumber < lineNumbers.min()
+        def isPreError = failureLineNumber > 0 && failureLineNumber > lineNumbers.max()
+
+        if ( failureLineNumber < 0 || isPreError || isPostError ) {
+            def cssClasses = [ 'block-source' ]
+            if ( isPreError ) {
+                cssClasses << 'pre-error'
+            } else if ( isPostError ) {
+                cssClasses << 'post-error'
+            }
             builder.td {
-                pre( 'class': 'block-source', statements.join( '\n' ) )
+                pre( 'class': cssClasses.join( ' ' ), statements.join( '\n' ) )
             }
         } else {
             List<Map> sourceLines = [ ]

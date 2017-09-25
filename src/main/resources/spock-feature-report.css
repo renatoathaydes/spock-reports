@@ -201,6 +201,10 @@ pre.block-source.error {
   font-weight: bold;
 }
 
+pre.block-source.pre-error {
+
+}
+
 pre.block-source.before-error {
   margin-bottom: -14px;
 }
@@ -208,6 +212,10 @@ pre.block-source.before-error {
 pre.block-source.after-error {
   color: gray;
   margin-top: -14px;
+}
+
+pre.block-source.post-error {
+  color: gray;
 }
 
 div.footer {
