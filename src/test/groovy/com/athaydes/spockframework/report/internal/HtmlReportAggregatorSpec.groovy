@@ -7,6 +7,7 @@ import org.junit.runner.Description
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.SpecInfo
 
+import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
@@ -61,7 +62,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( singleTestSummaryExpectedHtml() )
+        assertVerySimilar( minify( reportFile.text ), minify( singleTestSummaryExpectedHtml() ) )
     }
 
     def """When a single spec data is provided to the HtmlReportAggregator it
@@ -121,7 +122,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
           <span class='project-version'>Version: ${aggregator.projectVersion}</span>
         </div>"""
 
-        minify( reportFile.text ) == minify( singleTestSummaryExpectedHtml( expectedProjectHeader ) )
+        assertVerySimilar( minify( reportFile.text ), minify( singleTestSummaryExpectedHtml( expectedProjectHeader ) ) )
     }
 
     def """When several specs data are provided to the HtmlReportAggregator it
@@ -166,7 +167,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( testSummaryExpectedHtml() )
+        assertVerySimilar( minify( reportFile.text ), minify( testSummaryExpectedHtml() ) )
     }
 
     def "Can aggregate reports data into a Map for persistence"() {

@@ -15,6 +15,7 @@ import spock.lang.Unroll
 
 import java.nio.file.Paths
 
+import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
@@ -90,7 +91,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( expectedHtml )
+        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
 
         where:
         specification | configShowCodeBlocks   | reportBinding
@@ -214,7 +215,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( expectedHtml )
+        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
 
         where:
         reportBinding = [
