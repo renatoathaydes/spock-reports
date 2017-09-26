@@ -15,6 +15,7 @@ import spock.lang.Unroll
 
 import java.nio.file.Paths
 
+import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
 /**
@@ -33,7 +34,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
             executedFeatures: 10,
             failures        : 3,
             errors          : 2,
-            skipped         : 1,
+            skipped         : 2,
             successRate     : "50${DS}0%"
     ]
     static final Map vividFakeTestBinding = [
@@ -90,7 +91,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( expectedHtml )
+        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
 
         where:
         specification | configShowCodeBlocks   | reportBinding
@@ -202,7 +203,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
         when:
         "A Specification containing different types of features is run by Spock"
         PredictableStringHashCode.code = 0
-        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+        use( ConfigOutputDir, PredictableTimeResponse,
+                FakeKnowsWhenAndWhoRanTest, NoTocGenerated,
+                PredictableStringHashCode, ShowCodeBlocksDisabled ) {
             new Sputnik( UnrolledSpec ).run( new RunNotifier() )
         }
 
@@ -212,7 +215,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        minify( reportFile.text ) == minify( expectedHtml )
+        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
 
         where:
         reportBinding = [
@@ -236,12 +239,12 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     private Map<String, Object> defaultBinding( Class specification ) {
         [
-                classOnTest     : specification.name,
-                style           : defaultStyle(),
-                dateTestRan     : DATE_TEST_RAN,
-                username        : TEST_USER_NAME,
-                time            : UNKNOWN,
-                projectUrl      : SpockReportExtension.PROJECT_URL
+                classOnTest: specification.name,
+                style      : defaultStyle(),
+                dateTestRan: DATE_TEST_RAN,
+                username   : TEST_USER_NAME,
+                time       : UNKNOWN,
+                projectUrl : SpockReportExtension.PROJECT_URL
         ]
     }
 
@@ -288,16 +291,28 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
     @Category( SpockReportExtension )
     class ShowCodeBlocksEnabled {
-        static final htmlReportCreator = new HtmlReportCreator()
+        static final htmlReportCreator = new HtmlReportCreator(
+                outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
+                featureReportCss: 'spock-feature-report.css',
+                summaryReportCss: 'spock-summary-report.css',
+                showCodeBlocks: true )
+
         SpecInfoListener createListener() {
-            setShowCodeBlocks( true )
-            configReportCreator htmlReportCreator
             new SpecInfoListener( htmlReportCreator )
         }
     }
 
     @Category( SpockReportExtension )
     class ShowCodeBlocksDisabled {
+        static final htmlReportCreator = new HtmlReportCreator(
+                outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
+                featureReportCss: 'spock-feature-report.css',
+                summaryReportCss: 'spock-summary-report.css',
+                showCodeBlocks: false )
+
+        SpecInfoListener createListener() {
+            new SpecInfoListener( htmlReportCreator )
+        }
     }
 
 }

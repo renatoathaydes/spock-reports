@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
 
@@ -10,14 +11,10 @@ import org.spockframework.runtime.RunContext
  */
 @Slf4j
 class ConfigLoader {
-    static final PROP_OUTPUT_DIR = 'com.athaydes.spockframework.report.outputDir'
-    static final PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
-    static final PROP_SHOW_CODE_BLOCKS = 'com.athaydes.spockframework.report.showCodeBlocks'
-    static final PROP_TEST_SOURCE_ROOTS = 'com.athaydes.spockframework.report.testSourceRoots'
-    static final PROP_PROJECT_NAME = 'com.athaydes.spockframework.report.projectName'
-    static final PROP_PROJECT_VERSION = 'com.athaydes.spockframework.report.projectVersion'
 
-    final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
+    static final String SYS_PROPERTY_PREFIX = 'com.athaydes.spockframework.report.'
+
+    static final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
 
     Properties loadConfig() {
         def props = loadSystemProperties(
@@ -38,15 +35,64 @@ class ConfigLoader {
         }
     }
 
-    private Properties loadSystemProperties( Properties props ) {
-        [ IReportCreator.name, PROP_OUTPUT_DIR, PROP_HIDE_EMPTY_BLOCKS, PROP_SHOW_CODE_BLOCKS,
-          PROP_TEST_SOURCE_ROOTS, PROP_PROJECT_NAME, PROP_PROJECT_VERSION ].each {
-            def sysVal = System.properties[ it ]
-            if ( sysVal ) {
-                log.debug( "Overriding property [$it] with System property's value: $sysVal" )
-                props[ it ] = sysVal
+    void apply( IReportCreator reportCreator, Properties config ) {
+
+        config.each { String key, value ->
+            int lastDotIndex = key.lastIndexOf( '.' )
+
+            if ( lastDotIndex > 0 && lastDotIndex + 1 < key.size() ) {
+                final prefix = key[ 0..<lastDotIndex ]
+                final propertyName = key[ ( lastDotIndex + 1 )..-1 ]
+
+                if ( prefix == IReportCreator.package.name || prefix == reportCreator.class.name ) {
+                    def metaProperty = reportCreator.metaClass.getMetaProperty( propertyName )
+
+                    if ( metaProperty ) {
+                        def propertyType = metaProperty.type
+                        try {
+                            reportCreator."$propertyName" = Utils.convertProperty( value, propertyType )
+                            log.debug( "Property $propertyName set to $value" )
+                        } catch ( ignore ) {
+                            log.warn( "Invalid property value for property '{}'", propertyName )
+                        }
+                    } else {
+                        log.warn( "Property [{}] not acceptable by IReportCreator of type {}",
+                                propertyName, reportCreator.class.name )
+                    }
+                } else {
+                    log.debug( "Ignoring property '{}' for IReportCreator of incompatible type {}",
+                            propertyName, reportCreator.class.name )
+                }
             }
         }
+    }
+
+    private Properties loadSystemProperties( Properties props ) {
+        def filteredProps = System.properties.findAll { entry ->
+            def key = entry.key
+            key instanceof String && key.startsWith( SYS_PROPERTY_PREFIX )
+        }
+
+        def reportClassName = props[ IReportCreator.name ]
+
+        // add also the properties starting with the report's class name
+        if ( reportClassName instanceof String ) {
+            def reportClassPrefix = reportClassName + '.'
+            System.properties.findAll { entry ->
+                def key = entry.key
+                key instanceof String && key.startsWith( reportClassPrefix )
+            }.each { String key, value ->
+                filteredProps[ key ] = value
+            }
+        }
+
+        filteredProps.each { key, value ->
+            if ( props.containsKey( key ) ) {
+                log.debug( "Overriding property [$key] with System property's value: $value" )
+            }
+            props[ key ] = value
+        }
+
         props
     }
 

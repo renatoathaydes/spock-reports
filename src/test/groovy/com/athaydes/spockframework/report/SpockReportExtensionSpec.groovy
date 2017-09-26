@@ -14,7 +14,11 @@ class SpockReportExtensionSpec extends Specification {
     def "The settings found in the config.properties file are read only once"() {
         given:
         "An instance of SpockReportExtension with a mocked out config loader"
-        def extension = new SpockReportExtension()
+        def mockReportCreator = Mock IReportCreator
+        def extension = new SpockReportExtension() {
+            @Override
+            IReportCreator instantiateReportCreator( String reportCreatorClassName ) { mockReportCreator }
+        }
         extension.configLoader = Mock ConfigLoader
 
         when:
@@ -32,17 +36,30 @@ class SpockReportExtensionSpec extends Specification {
 
     def "The settings found in the config.properties file are used to configure the report framework"() {
         given:
-        "A mock ReportCreator"
-        def mockReportCreator = GroovyMock( IReportCreator )
+        "A set of valid and invalid properties emulating the properties file"
         def className = 'MockReportCreator'
-        mockReportCreator.getClass() >> [ name: className ]
+
+        def props = new Properties()
+        props.setProperty( IReportCreator.class.name, className )
+        props.setProperty( className + '.customProp', 'customValue' )
+        props.setProperty( "com.athaydes.spockframework.report.outputDir", "the-output-dir" )
+        props.setProperty( "some.invalid.property", "invalid-value" )
+        props.setProperty( IReportCreator.name, HtmlReportCreator.name )
 
         and:
-        "A mock ConfigLoader"
-        def mockConfigLoader = Mock( ConfigLoader )
-        def props = new Properties()
-        props.setProperty( IReportCreator.name, HtmlReportCreator.name )
-        mockConfigLoader.loadConfig() >> props
+        "A real ConfigLoader that uses the properties file"
+        def configLoader = new ConfigLoader() {
+            @Override
+            Properties loadConfig() { props }
+        }
+
+        and:
+        "A mock ReportCreator"
+        def mockReportCreator = GroovyMock( IReportCreator )
+        mockReportCreator.getClass() >> [ name: className ]
+        mockReportCreator.hasProperty( _ as String ) >> { String name ->
+            name in [ 'customProp', 'outputDir' ]
+        }
 
         and:
         "A mock Spec"
@@ -52,16 +69,9 @@ class SpockReportExtensionSpec extends Specification {
         "An instance of SpockReportExtension with mocked out config loader and reportCreator"
         def extension = new SpockReportExtension() {
             @Override
-            def instantiateReportCreator() { mockReportCreator }
+            IReportCreator instantiateReportCreator( String reportCreatorClassName ) { mockReportCreator }
         }
-        extension.configLoader = mockConfigLoader
-
-        and:
-        "A set of valid and invalid properties emulating the properties file"
-        props.setProperty( IReportCreator.class.name, className )
-        props.setProperty( className + '.customProp', 'customValue' )
-        props.setProperty( "com.athaydes.spockframework.report.outputDir", "the-output-dir" )
-        props.setProperty( "some.invalid.property", "invalid-value" )
+        extension.configLoader = configLoader
 
         when:
         "This extension framework is initiated by Spock visiting the mock spec"
@@ -70,17 +80,19 @@ class SpockReportExtensionSpec extends Specification {
         extension.stop()
 
         then:
-        "The class of the implementation of ReportCreator was correctly set"
-        extension.reportCreatorClassName == "MockReportCreator"
-
-        and:
         "This extension added a SpecInfoListener to Spock's SpecInfo"
-        1 * mockSpecInfo.addListener( _ )
+        1 * mockSpecInfo.addListener( _ as SpecInfoListener )
 
         and:
         "The ReportCreator was configured with the valid properties"
         1 * mockReportCreator.setOutputDir( "the-output-dir" )
-        1 * mockReportCreator.setCustomProp( "customValue" )
+
+        // this property does not exist in the report type, hence cannot be set
+        0 * mockReportCreator.setCustomProp( "customValue" )
+
+        and:
+        "The ReportCreator is done"
+        1 * mockReportCreator.done()
     }
 
 }

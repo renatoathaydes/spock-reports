@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.lang.See
 import spock.lang.Title
 
@@ -172,6 +173,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( issues ) {
             writeIssuesOrSees( builder, issues, 'Issues:' )
         }
+        def pendingFeature = Utils.specAnnotation( data, PendingFeature )
+        if ( pendingFeature ) {
+            writePendingFeature( builder, pendingFeature )
+        }
         def sees = Utils.specAnnotation( data, See )
         if ( sees ) {
             writeIssuesOrSees( builder, sees, 'See:' )
@@ -197,7 +202,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         final String name = Utils.featureNameFrom( feature, iteration, index )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
-                                        feature.skipped ? 'ignored' : 'pass'
+                                        Utils.isSkipped( feature ) ? 'ignored' : 'pass'
                         li {
                             a( href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name )
                         }
@@ -230,23 +235,28 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
-                                    feature.skipped ? 'ignored' : ''
+                                    Utils.isSkipped( feature ) ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
                             feature.description.getAnnotation( Ignore ),
                             feature.description.getAnnotation( Issue ),
-                            feature.description.getAnnotation( See ) )
-                    writeFeatureBlocks( builder, feature, iteration )
+                            feature.description.getAnnotation( See ),
+                            feature.description.getAnnotation( PendingFeature ) )
+                    writeFeatureBlocks( builder, feature, problems, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
             } else {
                 final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
                 final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
-                final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : ''
+                final cssClass = errors ? 'error' :
+                        failures ? 'failure' :
+                                ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
                         feature.description.getAnnotation( Issue ),
-                        feature.description.getAnnotation( See ) )
-                writeFeatureBlocks( builder, feature )
+                        feature.description.getAnnotation( See ),
+                        feature.description.getAnnotation( PendingFeature ) )
+                def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
+                writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
                     writeRun( builder, run )
                     problemWriter.writeProblemBlockForAllIterations( builder, run, errors > 0, failures > 0 )
@@ -256,9 +266,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
 
-    private void writeFeatureBlocks( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration = null ) {
+    private void writeFeatureBlocks( MarkupBuilder builder,
+                                     FeatureInfo feature,
+                                     List<SpecProblem> problems,
+                                     IterationInfo iteration = null ) {
         if ( showCodeBlocks ) {
-            boolean ok = writeBlocksFromCode( builder, feature, iteration )
+            boolean ok = writeBlocksFromCode( builder, feature, iteration, problems )
             if ( !ok ) {
                 log.debug( "Could not find block source code, falling back on original text information" )
                 writeBlocks( builder, feature, iteration )
@@ -284,11 +297,28 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private boolean writeBlocksFromCode( MarkupBuilder builder, FeatureInfo feature, IterationInfo iteration ) {
+    private boolean writeBlocksFromCode( MarkupBuilder builder,
+                                         FeatureInfo feature,
+                                         IterationInfo iteration,
+                                         List<SpecProblem> problems ) {
         def blocks = codeReader.getBlocks( feature )
 
         if ( blocks.empty ) {
             return false // unable to find sources
+        }
+
+        def failureLineNumber = -1
+
+        if ( problems ) {
+            def cause = problems.first().failure.exception
+            while ( cause.cause ) {
+                cause = cause.cause
+            }
+
+            def stackTraceItem = cause.stackTrace.find { it.className.contains( feature.spec.name ) }
+            if ( stackTraceItem ) {
+                failureLineNumber = stackTraceItem.lineNumber
+            }
         }
 
         for ( BlockCode block in blocks ) {
@@ -296,14 +326,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     stringProcessor.process( block.text, feature.dataVariables, iteration ) :
                     ( block.text ?: '' )
             def blockKind = block.label ?: 'Block:'
-            writeBlockRowsFromCode( builder, trCssClass( feature ), blockKind, block.statements, text )
+            writeBlockRowsFromCode( builder, trCssClass( feature ), blockKind, block, text, failureLineNumber )
         }
 
         true // found sources
     }
 
     private trCssClass( FeatureInfo feature ) {
-        feature.skipped ? [ 'class': 'ignored' ] : null
+        Utils.isSkipped( feature ) ? [ 'class': 'ignored' ] : null
     }
 
     private writeBlockRow( MarkupBuilder builder, cssClass, blockKind, text ) {
@@ -313,16 +343,20 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind, List statements, text ) {
+    private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind,
+                                    BlockCode code, text, int failureLineNumber ) {
+        def statements = code.statements
+        def lineNumbers = code.lineNumbers
+
         if ( text ) {
             writeBlockRow( builder, cssClass, blockKind, text )
             if ( statements ) builder.tr {
                 td()
-                writeCodeTd( builder, statements )
+                writeCodeTd( builder, statements, lineNumbers, failureLineNumber )
             }
         } else if ( statements ) builder.tr( cssClass ) {
             writeBlockKindTd( builder, blockKind )
-            writeCodeTd( builder, statements )
+            writeCodeTd( builder, statements, lineNumbers, failureLineNumber )
         }
     }
 
@@ -338,9 +372,63 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private writeCodeTd( MarkupBuilder builder, List statements ) {
-        builder.td {
-            pre( 'class': 'block-source', statements.join( '\n' ) )
+    private writeCodeTd( MarkupBuilder builder,
+                         List<String> statements,
+                         List<Integer> lineNumbers,
+                         int failureLineNumber ) {
+        def isPostError = failureLineNumber > 0 && failureLineNumber < lineNumbers.min()
+        def isPreError = failureLineNumber > 0 && failureLineNumber > lineNumbers.max()
+
+        if ( failureLineNumber < 0 || isPreError || isPostError ) {
+            def cssClasses = [ 'block-source' ]
+            if ( isPreError ) {
+                cssClasses << 'pre-error'
+            } else if ( isPostError ) {
+                cssClasses << 'post-error'
+            }
+            builder.td {
+                pre( 'class': cssClasses.join( ' ' ), statements.join( '\n' ) )
+            }
+        } else {
+            List<Map> sourceLines = [ ]
+            boolean foundFailure = false
+
+            def numberedStatements = [ statements, lineNumbers ].transpose()
+            numberedStatements.eachWithIndex { entry, int index ->
+                def ( String statement, Integer lineNumber ) = entry
+                if ( !foundFailure ) {
+                    def nextLineNumber = ( index < lineNumbers.size() - 1 ) ? lineNumbers[ index + 1 ] : -1
+                    def failedLine = ( lineNumber == failureLineNumber || nextLineNumber > failureLineNumber )
+                    sourceLines << [ line: statement, failure: failedLine ]
+                    foundFailure = failedLine
+                } else {
+                    sourceLines << [ line: statement, failure: false ]
+                }
+            }
+
+            builder.td {
+                def cssClasses = [ 'block-source' ]
+                if ( foundFailure ) {
+                    cssClasses << 'error'
+                    def failureIndex = sourceLines.findIndexOf { it.failure }
+                    def beforeFailure = failureIndex == 0 ?
+                            [ ] :
+                            sourceLines[ 0..<failureIndex ].collect { it.line }
+                    def failure = sourceLines[ failureIndex ].line
+                    def afterFailure = failureIndex < sourceLines.size() - 1 ?
+                            sourceLines[ ( failureIndex + 1 )..<sourceLines.size() ].collect { it.line } :
+                            [ ]
+                    if ( beforeFailure ) {
+                        pre( 'class': 'block-source before-error', beforeFailure.join( '\n' ) )
+                    }
+                    pre( 'class': 'block-source error', failure + ' // line ' + failureLineNumber )
+                    if ( afterFailure ) {
+                        pre( 'class': 'block-source after-error', afterFailure.join( '\n' ) )
+                    }
+                } else {
+                    pre( 'class': 'block-source', statements.join( '\n' ) )
+                }
+            }
         }
     }
 
@@ -392,7 +480,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                           String cssClass,
                                           Ignore ignoreAnnotation,
                                           Issue issueAnnotation,
-                                          See seeAnnotation ) {
+                                          See seeAnnotation,
+                                          PendingFeature pendingFeature ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -410,6 +499,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         span( 'class': 'reason', ignoreReason )
                     }
                     writeIssuesOrSees builder, issueAnnotation, 'Issues:'
+                    writePendingFeature( builder, pendingFeature )
                     writeIssuesOrSees builder, seeAnnotation, 'See:'
                 }
             }
@@ -434,6 +524,13 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     }
                 }
             }
+        }
+    }
+
+    private void writePendingFeature( MarkupBuilder builder,
+                                      PendingFeature annotation ) {
+        if ( annotation ) {
+            builder.div( 'class': 'pending-feature', 'Pending Feature' )
         }
     }
 

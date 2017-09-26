@@ -229,12 +229,12 @@ class VividAstInspectorSpec extends Specification {
         blocks.size() == 4
 
         and: 'The inspector should be able to provide the source code for each block'
-        blocks[ 0 ].statements == [ 'def x = 10 +\n20 +\n30' ]
-        blocks[ 1 ].statements == [ 'def y = """\n' +
-                                            '  hello\n' +
-                                            '  world\n' +
-                                            '"""' ]
-        blocks[ 2 ].statements == [ 'x ==\n60' ]
+        blocks[ 0 ].statements == [ 'def x = 10 +', '20 +', '30' ]
+        blocks[ 1 ].statements == [ 'def y = """',
+                                    '  hello',
+                                    '  world',
+                                    '"""' ]
+        blocks[ 2 ].statements == [ 'x ==', '60' ]
         blocks[ 3 ].statements == [ "y == 'hello world'" ]
 
         and: 'The blocks should have the expected label and text'
@@ -346,21 +346,29 @@ class VividAstInspectorSpec extends Specification {
 
         and: 'The inspector should be able to provide the source code for each block'
         blocks[ 0 ].statements == [ 'def x = []',
-                                    'for (i in 0..10) {\n  x << i\n  x << i * 2\n}',
+                                    'for (i in 0..10) {',
+                                    '  x << i',
+                                    '  x << i * 2',
+                                    '}',
                                     'int i = 0',
-                                    'while (i < 4) {\n  for (j in 0..i) {\n    x << [i, j]\n  }\n  println x\n}' ]
+                                    'while (i < 4) {',
+                                    '  for (j in 0..i) {',
+                                    '    x << [i, j]',
+                                    '  }',
+                                    '  println x',
+                                    '}' ]
 
-        blocks[ 1 ].statements == [ 'def y = x.collect { item ->\n' +
-                                            '  (0..item).filter { i ->\n' +
-                                            '    if (i > 4) {\n' +
-                                            '      true\n' +
-                                            '    } else false\n' +
-                                            '  }\n' +
-                                            '}' ]
+        blocks[ 1 ].statements == [ 'def y = x.collect { item ->',
+                                    '  (0..item).filter { i ->',
+                                    '    if (i > 4) {',
+                                    '      true',
+                                    '    } else false',
+                                    '  }',
+                                    '}' ]
 
-        blocks[ 2 ].statements == [ 'x.collect { i ->\n' +
-                                            '  i as String\n' +
-                                            "} == [ '1', '2' ]" ]
+        blocks[ 2 ].statements == [ 'x.collect { i ->',
+                                    '  i as String',
+                                    "} == [ '1', '2' ]" ]
 
         and: 'The blocks should have the expected label and text'
         blocks[ 0 ].label == 'given'

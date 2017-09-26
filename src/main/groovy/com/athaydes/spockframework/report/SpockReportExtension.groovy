@@ -16,6 +16,8 @@ import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 import org.spockframework.util.Nullable
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 /**
  *
  * User: Renato
@@ -25,30 +27,26 @@ class SpockReportExtension implements IGlobalExtension {
 
     static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 
-    def configLoader = new ConfigLoader()
-    Properties config
-    String reportCreatorClassName
-    String outputDir
-    boolean hideEmptyBlocks = false
-    boolean showCodeBlocks = false
-    String testSourceRoots
-    String projectName
-    String projectVersion
+    private final AtomicBoolean initialized = new AtomicBoolean( false )
+    protected ConfigLoader configLoader = new ConfigLoader()
 
     IReportCreator reportCreator
 
     @Override
     void start() {
-        if ( config == null ) {
-            config()
-        }
-        if ( reportCreatorClassName && !reportCreator )
+        if ( !initialized.getAndSet( true ) ) {
+            log.debug "Configuring ${this.class.name}"
+            def config = configLoader.loadConfig()
+
+            String reportCreatorClassName = config.remove( IReportCreator.name )
+
             try {
-                reportCreator = instantiateReportCreator()
-                configReportCreator( reportCreator )
+                reportCreator = instantiateReportCreator( reportCreatorClassName )
+                configLoader.apply( reportCreator, config )
             } catch ( e ) {
                 log.warn( "Failed to create instance of $reportCreatorClassName", e )
             }
+        }
     }
 
     @Override
@@ -65,58 +63,16 @@ class SpockReportExtension implements IGlobalExtension {
         }
     }
 
-    SpecInfoListener createListener() {
-        new SpecInfoListener( reportCreator )
-    }
-
-    void config() {
-        log.debug "Configuring ${this.class.name}"
-        config = configLoader.loadConfig()
-        reportCreatorClassName = config.getProperty( IReportCreator.name )
-        outputDir = config.getProperty( ConfigLoader.PROP_OUTPUT_DIR )
-
-        hideEmptyBlocks = configLoader.getBoolean( ConfigLoader.PROP_HIDE_EMPTY_BLOCKS, config )
-        showCodeBlocks = configLoader.getBoolean( ConfigLoader.PROP_SHOW_CODE_BLOCKS, config )
-        testSourceRoots = config.getProperty( ConfigLoader.PROP_TEST_SOURCE_ROOTS )
-
-        projectName = config.getProperty( ConfigLoader.PROP_PROJECT_NAME )
-        projectVersion = config.getProperty( ConfigLoader.PROP_PROJECT_VERSION )
-    }
-
-    def instantiateReportCreator() {
+    IReportCreator instantiateReportCreator( String reportCreatorClassName ) {
         def reportCreatorClass = Class.forName( reportCreatorClassName )
         reportCreatorClass
                 .asSubclass( IReportCreator )
                 .newInstance()
     }
 
-    private static loadSettingsFor( String prefix, Properties config ) {
-        log.debug "Loading settings for reportCreator of type $prefix"
-        Collections.list( config.propertyNames() ).grep { String key ->
-            key.startsWith prefix + '.'
-        }.collect { String key ->
-            [ ( key - ( prefix + '.' ) ): config.getProperty( key ) ]
-        }.collectEntries()
-    }
-
-    private void configReportCreator( IReportCreator reportCreator ) {
-        reportCreator.outputDir = outputDir
-        reportCreator.hideEmptyBlocks = hideEmptyBlocks
-        reportCreator.showCodeBlocks = showCodeBlocks
-        reportCreator.testSourceRoots = testSourceRoots
-        reportCreator.projectName = projectName
-        reportCreator.projectVersion = projectVersion
-
-        def reportCreatorSettings = [ : ]
-        try {
-            reportCreatorSettings << loadSettingsFor( reportCreator.class.name, config )
-        } catch ( e ) {
-            log.warn( "Error configuring ${reportCreator.class.name}!", e )
-        }
-
-        reportCreatorSettings.each { field, value ->
-            reportCreator."$field" = value
-        }
+    // this method is patched by the UseTemplateReportCreator category and others
+    SpecInfoListener createListener() {
+        new SpecInfoListener( reportCreator )
     }
 
 }

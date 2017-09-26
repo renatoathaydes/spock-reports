@@ -29,6 +29,11 @@
             }
         }
     }
+    def writePendingFeature = { pendingFeature ->
+        if ( pendingFeature ) {
+            out << '\n> Pending Feature\n'
+        }
+    }
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
 %>
@@ -39,6 +44,7 @@
 %>
 ### $name
 <% 
+ writePendingFeature( description.getAnnotation( spock.lang.PendingFeature ) )
  writeIssuesOrSees( description.getAnnotation( spock.lang.Issue ), 'Issues' )
  writeIssuesOrSees( description.getAnnotation( spock.lang.See ), 'See' )
 %>

@@ -9,6 +9,7 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 import org.spockframework.util.Nullable
+import spock.lang.PendingFeature
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
@@ -57,7 +58,7 @@ class Utils {
     static Map stats( SpecData data ) {
         def failures = countProblems( data.featureRuns, this.&isFailure )
         def errors = countProblems( data.featureRuns, this.&isError )
-        def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> f.skipped }
+        def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
         def total = countFeatures( data.featureRuns )
         def successRate = successRate( total, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: total,
@@ -97,9 +98,15 @@ class Utils {
         problem.kind == FailureKind.ERROR
     }
 
+    static boolean isSkipped( FeatureInfo featureInfo ) {
+        // pending features are not marked as skipped but they are always skipped or fail
+        featureInfo.skipped || featureInfo.description.getAnnotation( PendingFeature )
+    }
+
     static int countFeatures( List<FeatureRun> runs, Closure featureFilter = { true } ) {
         runs.findAll( featureFilter ).inject( 0 ) { int count, FeatureRun fr ->
-            count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
+            if ( isSkipped( fr.feature ) ) count
+            else count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
         } as int
     }
 
@@ -208,4 +215,67 @@ class Utils {
 
         return null
     }
+
+    /**
+     * Converts a value of any type to the given type.
+     *
+     * This only works for a few known Java primitive types!
+     *
+     * @param value
+     * @param type
+     * @return converted property value
+     */
+    @SuppressWarnings( "GroovyAssignabilityCheck" )
+    static <T> T convertProperty( value, Class<T> type ) {
+        if ( value == null ) {
+            return null
+        }
+
+        switch ( type ) {
+            case String:
+                return value.toString()
+            case Integer:
+                return Integer.valueOf( Integer.parseInt( value as String ) )
+            case int:
+                return Integer.parseInt( value as String )
+            case Float:
+                return Float.valueOf( Float.parseFloat( value as String ) )
+            case float:
+                return Float.parseFloat( value as String )
+            case Long:
+                return Long.valueOf( Long.parseLong( value as String ) )
+            case long:
+                return Long.parseLong( value as String )
+            case Double:
+                return Double.valueOf( Double.parseDouble( value as String ) )
+            case double:
+                return Double.parseDouble( value as String )
+            case Byte:
+                return Byte.valueOf( Byte.parseByte( value as String ) )
+            case byte:
+                return Byte.parseByte( value as String )
+            case Boolean:
+                return Boolean.valueOf( Boolean.parseBoolean( value as String ) )
+            case boolean:
+                return Boolean.parseBoolean( value as String )
+            case Character:
+            case char:
+                char convertedValue
+                if ( value instanceof Character ) {
+                    convertedValue = ( char ) value
+                } else if ( value instanceof CharSequence && value.size() == 1 ) {
+                    convertedValue = value as char
+                } else {
+                    throw new IllegalArgumentException( "Cannot convert to char: " + value )
+                }
+                if ( type == char ) {
+                    return convertedValue
+                } else {
+                    return Character.valueOf( convertedValue )
+                }
+            default:
+                throw new IllegalArgumentException( "Cannot convert to type: " + type )
+        }
+    }
+
 }

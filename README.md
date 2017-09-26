@@ -19,6 +19,9 @@ See the **"Using template reports"** section below.
 > **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification 
 block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
 
+> Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the 
+  [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock reports.
+
 ## Where to find demo reports
 
 I am using [CodePen](http://codepen.io) to design the HTML [feature report](http://codepen.io/renatoathaydes/full/ihGgt), which contains detailed information about each Specification run by Spock, including the examples given (*Where* block) and their results, if any, and the [summary report](http://codepen.io/renatoathaydes/full/mKckz), which summarizes the results of all Specification runs. Click on the links to see the reports used for testing.
@@ -31,6 +34,8 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 
 Spock-reports is available on Maven Central and on JCenter!
 
+> Since version 1.3.2, Spock version 1.1+ is required
+
 ### If you are using Maven
 
 Add ``spock-reports`` to your ``<dependencies>``:
@@ -39,7 +44,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.3.1</version>
+  <version>1.3.2</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -74,7 +79,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.3.1' ) {
+    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -121,7 +126,11 @@ The base `spock-reports`'s logger name is `com.athaydes.spockframework.report`.
 
 ## Customizing the reports
 
-You can provide custom configuration in a properties file located at the following location (relative to the classpath):
+Spock-reports can be configured via a configuration file or system properties.
+
+All properties listed in the configuration file below are supported either way.
+
+If you prefer to use a file, the properties file should be located at the following location (relative to the classpath):
 
 `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
@@ -226,8 +235,8 @@ Default values are inherited from those described above.
 If you don't like the looks of the HTML report or want your reports in a different text format, you can use the
 TemplateReportCreator to do that.
 
-All you need to do to get started is provide a config file, as explained above, setting the `IReportCreator` to
-`com.athaydes.spockframework.report.template.TemplateReportCreator`:
+All you need to do to get started is provide a config file (or system properties), as explained above, 
+setting the `IReportCreator` to `com.athaydes.spockframework.report.template.TemplateReportCreator`:
 
 ```properties
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.template.TemplateReportCreator
