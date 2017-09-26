@@ -2,6 +2,18 @@
 
 > Most recent first
 
+* `26th of September 2017`
+
+Version 1.3.2 of spock-reports released.
+
+This release brings two big improvements:
+
+- system properties can now be used to override any property supported in configuration files.
+- vivid reports now highlight which line of code caused a test to fail.
+
+These improvements are so great that I decided to write a [blog post](https://sites.google.com/a/athaydes.com/renato-athaydes/posts/spock-reports-greattestreportsthatyouactuallywanttoread)
+about them! 
+
 * `24th of September 2017`
 
 @tilmanginzel published an extension of spock-reports that works with [Geb](http://gebish.org/) to add support for
