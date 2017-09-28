@@ -9,11 +9,7 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
-import spock.lang.Ignore
-import spock.lang.Issue
-import spock.lang.PendingFeature
-import spock.lang.See
-import spock.lang.Title
+import spock.lang.*
 
 import java.lang.annotation.Annotation
 
@@ -458,8 +454,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     }
                 }
             }
-            td {
-                div( 'class': 'spec-status', Utils.iterationsResult( run ) )
+            if (!iterationInfo) {
+                td {
+                    div('class': 'spec-status', Utils.iterationsResult(run))
+                }
             }
         }
 
