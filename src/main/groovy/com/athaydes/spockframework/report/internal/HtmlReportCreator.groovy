@@ -9,7 +9,11 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
-import spock.lang.*
+import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.PendingFeature
+import spock.lang.See
+import spock.lang.Title
 
 import java.lang.annotation.Annotation
 
@@ -444,7 +448,6 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         tbody {
                             if (iterationInfo) {
                                 writeIteration(builder, iterationInfo, run.failuresByIteration.get(iterationInfo))
-
                             } else {
                                 run.failuresByIteration.each { iteration, errors ->
                                     writeIteration(builder, iteration, errors)
