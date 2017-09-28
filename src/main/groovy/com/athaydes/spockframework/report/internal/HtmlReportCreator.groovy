@@ -9,11 +9,7 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
-import spock.lang.Ignore
-import spock.lang.Issue
-import spock.lang.PendingFeature
-import spock.lang.See
-import spock.lang.Title
+import spock.lang.*
 
 import java.lang.annotation.Annotation
 
@@ -242,6 +238,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             feature.description.getAnnotation( See ),
                             feature.description.getAnnotation( PendingFeature ) )
                     writeFeatureBlocks( builder, feature, problems, iteration )
+                    writeRun(builder, run, iteration)
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
             } else {
@@ -432,7 +429,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private void writeRun( MarkupBuilder builder, FeatureRun run ) {
+    private void writeRun(MarkupBuilder builder, FeatureRun run, IterationInfo iterationInfo = null) {
         if ( !run.feature.parameterized ) return
         builder.tr {
             writeBlockKindTd( builder, 'examples' )
@@ -445,15 +442,22 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             }
                         }
                         tbody {
-                            run.failuresByIteration.each { iteration, errors ->
-                                writeIteration( builder, iteration, errors )
+                            if (iterationInfo) {
+                                writeIteration(builder, iterationInfo, run.failuresByIteration.get(iterationInfo))
+
+                            } else {
+                                run.failuresByIteration.each { iteration, errors ->
+                                    writeIteration(builder, iteration, errors)
+                                }
                             }
                         }
                     }
                 }
             }
-            td {
-                div( 'class': 'spec-status', Utils.iterationsResult( run ) )
+            if (!iterationInfo) {
+                td {
+                    div('class': 'spec-status', Utils.iterationsResult(run))
+                }
             }
         }
 
