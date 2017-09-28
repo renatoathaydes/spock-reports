@@ -219,17 +219,6 @@ together with the HTML reports, with the following names:
 
 A link to the CSS resources with the above names will be added to the HTML file instead of inlining the CSS.
 
-### System properties overrides
-
-The following configuration options can also be overridden by system properties.  These system properties must be set prior to Spock being initialized (which starts this extension).  So you must ensure to set these properties as either JVM arguments or in your own bootstrapping function that in guaranteed to execute before Spock is initialized.  When set *before Spock is initialied*, these system properties will take precedence over values read from config files.  If Spock is initialized before these properties are set then they will have no effect.
-
-`com.athaydes.spockframework.report.IReportCreator`: Set the report creator class to use.
-`com.athaydes.spockframework.report.outputDir`: Set the output directory of the generated reports; relative paths are relative to the working directory.
-`com.athaydes.spockframework.report.hideEmptyBlocks`: true|false; should blocks with empty text be printed out in report?
-`com.athaydes.spockframework.report.showCodeBlocks`: true|false; show the source code for each block?
-
-Default values are inherited from those described above.
-
 ## Using template reports
 
 If you don't like the looks of the HTML report or want your reports in a different text format, you can use the
