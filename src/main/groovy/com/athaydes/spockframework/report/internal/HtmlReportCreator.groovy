@@ -447,7 +447,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         }
                         tbody {
                             if ( iterationInfo ) {
-                                writeIteration( builder, iterationInfo, run.failuresByIteration.get( iterationInfo ) )
+                                writeIteration( builder, iterationInfo, run.failuresByIteration[ iterationInfo ] )
                             } else {
                                 run.failuresByIteration.each { iteration, errors ->
                                     writeIteration( builder, iteration, errors )
