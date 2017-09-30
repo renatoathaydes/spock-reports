@@ -362,6 +362,28 @@ c == 2 * b</pre>
 }</pre></td>
 </tr>
 <tr>
+	<td>
+		<div class='block-kind'>Examples:</div>
+	</td>
+	<td>
+		<div class='spec-examples'>
+			<table class='ex-table'>
+				<thead>
+				<th class='ex-header'>x</th>
+				<th class='ex-header'>y</th>
+				</thead>
+				<tbody>
+				<tr class='ex-pass'>
+					<td class='ex-value'>0</td>
+					<td class='ex-value'>1</td>
+					<td class='ex-result'>OK</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</td>
+</tr>
+<tr>
 	<td colspan='10'>
 		<div class='feature-description failure' id='7'><span>An @Unrolled spec with x=2 and y=3</span><span style='float: right; font-size: 60%;'>
             <a href='#toc'>Return</a></span></div>
@@ -397,6 +419,28 @@ c == 2 * b</pre>
 <pre class='block-source post-error'>if ( y == 5 ) {
     throw new RuntimeException( 'y is 5' )
 }</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Examples:</div>
+	</td>
+	<td>
+		<div class='spec-examples'>
+			<table class='ex-table'>
+				<thead>
+				<th class='ex-header'>x</th>
+				<th class='ex-header'>y</th>
+				</thead>
+				<tbody>
+				<tr class='ex-fail'>
+					<td class='ex-value'>2</td>
+					<td class='ex-value'>3</td>
+					<td class='ex-result'>FAIL</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
 	</td>
 </tr>
 <tr>
@@ -449,6 +493,28 @@ c == 2 * b</pre>
 <pre class='block-source before-error'>if ( y == 5 ) {</pre>
 <pre class='block-source error'>    throw new RuntimeException( 'y is 5' ) // line 99</pre>
 <pre class='block-source after-error'>}</pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class='block-kind'>Examples:</div>
+	</td>
+	<td>
+		<div class='spec-examples'>
+			<table class='ex-table'>
+				<thead>
+				<th class='ex-header'>x</th>
+				<th class='ex-header'>y</th>
+				</thead>
+				<tbody>
+				<tr class='ex-fail'>
+					<td class='ex-value'>0</td>
+					<td class='ex-value'>5</td>
+					<td class='ex-result'>FAIL</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
 	</td>
 </tr>
 <tr>
