@@ -242,7 +242,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             feature.description.getAnnotation( See ),
                             feature.description.getAnnotation( PendingFeature ) )
                     writeFeatureBlocks( builder, feature, problems, iteration )
-                    writeRun(builder, run, iteration)
+                    writeRun( builder, run, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
             } else {
@@ -433,7 +433,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private void writeRun(MarkupBuilder builder, FeatureRun run, IterationInfo iterationInfo = null) {
+    private void writeRun( MarkupBuilder builder, FeatureRun run, IterationInfo iterationInfo = null ) {
         if ( !run.feature.parameterized ) return
         builder.tr {
             writeBlockKindTd( builder, 'examples' )
@@ -446,20 +446,20 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             }
                         }
                         tbody {
-                            if (iterationInfo) {
-                                writeIteration(builder, iterationInfo, run.failuresByIteration.get(iterationInfo))
+                            if ( iterationInfo ) {
+                                writeIteration( builder, iterationInfo, run.failuresByIteration.get( iterationInfo ) )
                             } else {
                                 run.failuresByIteration.each { iteration, errors ->
-                                    writeIteration(builder, iteration, errors)
+                                    writeIteration( builder, iteration, errors )
                                 }
                             }
                         }
                     }
                 }
             }
-            if (!iterationInfo) {
+            if ( !iterationInfo ) {
                 td {
-                    div('class': 'spec-status', Utils.iterationsResult(run))
+                    div( 'class': 'spec-status', Utils.iterationsResult( run ) )
                 }
             }
         }
