@@ -2,6 +2,8 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
 
+import javax.naming.OperationNotSupportedException
+
 
 /**
  * Container for multiple IReportCreators
@@ -20,32 +22,32 @@ class MultiReportCreator implements IReportCreator {
 
     @Override
     void setOutputDir(String path) {
-        reportCreators.each {it.setOutputDir(path)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
     void setHideEmptyBlocks(boolean hide) {
-        reportCreators.each {it.setHideEmptyBlocks(hide)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
     void setShowCodeBlocks(boolean show) {
-        reportCreators.each {it.setShowCodeBlocks(show)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
     void setTestSourceRoots(String roots) {
-        reportCreators.each {it.setTestSourceRoots(roots)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
     void setProjectName(String projectName) {
-        reportCreators.each {it.setProjectName(projectName)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
     void setProjectVersion(String projectVersion) {
-        reportCreators.each {it.setProjectVersion(projectVersion)}
+        throw new OperationNotSupportedException("No modifications after construction")
     }
 
     @Override
