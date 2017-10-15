@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.EmptyInitializationException
 import com.athaydes.spockframework.report.internal.FeatureRun
+import com.athaydes.spockframework.report.internal.MultiReportCreator
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
@@ -38,14 +39,24 @@ class SpockReportExtension implements IGlobalExtension {
             log.debug "Configuring ${this.class.name}"
             def config = configLoader.loadConfig()
 
-            String reportCreatorClassName = config.remove( IReportCreator.name )
-
-            try {
-                reportCreator = instantiateReportCreator( reportCreatorClassName )
-                configLoader.apply( reportCreator, config )
-            } catch ( e ) {
-                log.warn( "Failed to create instance of $reportCreatorClassName", e )
+            // Read the class report property and exit if its not set
+            String commaListOfReportClasses = config.remove( IReportCreator.name )
+            if (!commaListOfReportClasses) {
+                log.warn("Missing property: ${IReportCreator.name} - no report classes defined")
+                return
             }
+
+            // Create the IReportCreator instance(s) - skipping those that fail
+            def reportCreators = commaListOfReportClasses.tokenize(',')
+                                .collect {it.trim()}
+                                .collect { instantiateReportCreatorAndApplyConfig(it, config) }
+                                .findAll { it != null }
+
+            // If none were successfully created then exit
+            if (reportCreators.isEmpty()) return
+
+            // Assign the IReportCreator(s) - use the multi report creator only if necessary
+            reportCreator = (reportCreators.size() == 1) ? reportCreators[0] : new MultiReportCreator(reportCreators)
         }
     }
 
@@ -68,6 +79,18 @@ class SpockReportExtension implements IGlobalExtension {
         reportCreatorClass
                 .asSubclass( IReportCreator )
                 .newInstance()
+    }
+
+    IReportCreator instantiateReportCreatorAndApplyConfig(String reportCreatorClassName, Properties config) {
+        // Given the IReportCreator class name then create it and apply config properties
+        try {
+            def reportCreator = instantiateReportCreator( reportCreatorClassName )
+            configLoader.apply( reportCreator, config )
+            return reportCreator
+        } catch ( e ) {
+            log.warn( "Failed to create instance of $reportCreatorClassName", e )
+            return null
+        }
     }
 
     // this method is patched by the UseTemplateReportCreator category and others
