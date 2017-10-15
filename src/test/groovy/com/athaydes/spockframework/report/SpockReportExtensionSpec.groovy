@@ -5,6 +5,7 @@ import com.athaydes.spockframework.report.internal.HtmlReportCreator
 import com.athaydes.spockframework.report.template.TemplateReportCreator
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  *
@@ -96,11 +97,12 @@ class SpockReportExtensionSpec extends Specification {
         1 * mockReportCreator.done()
     }
 
+    @Unroll("More than one report creator can be specified in the properties when there are #description")
     def "More than one report creator can be specified in the properties"() {
         given:
         "Properties specifying two report creators in a comma separated property value"
         def props = new Properties()
-        props.setProperty(IReportCreator.name, "${HtmlReportCreator.name},${TemplateReportCreator.name}")
+        props.setProperty(IReportCreator.name, iReportCreatorPropertyValue)
 
         and:
         "A real ConfigLoader that uses the properties file"
@@ -126,7 +128,7 @@ class SpockReportExtensionSpec extends Specification {
                 switch (reportCreatorClassName) {
                     case HtmlReportCreator.class.name: return htmlReportCreator
                     case TemplateReportCreator.class.name: return templateReportCreator
-                    default: throw new IllegalArgumentException("Unexcpected creator requested")
+                    default: throw new IllegalArgumentException("Unexpected creator requested")
                 }
             }
         }
@@ -146,6 +148,17 @@ class SpockReportExtensionSpec extends Specification {
         "The ReportCreators are both called"
         1 * htmlReportCreator.done()
         1 * templateReportCreator.done()
+
+        where:
+        iReportCreatorPropertyValue                                       | description
+        "${HtmlReportCreator.name},${TemplateReportCreator.name}"         | "no spaces"
+        " ${HtmlReportCreator.name},${TemplateReportCreator.name}"        | "a space at the start"
+        "${HtmlReportCreator.name},${TemplateReportCreator.name} "        | "a space at the end"
+        "${HtmlReportCreator.name} ,${TemplateReportCreator.name}"        | "a space in the middle"
+        " ${HtmlReportCreator.name} ,${TemplateReportCreator.name} "      | "some spaces"
+        "    ${HtmlReportCreator.name},${TemplateReportCreator.name}"     | "some tabs"
+        " ${HtmlReportCreator.name} ,   ${TemplateReportCreator.name}   " | "lots of spaces and tabs"
+
     }
 
 }

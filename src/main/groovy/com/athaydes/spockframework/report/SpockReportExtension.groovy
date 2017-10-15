@@ -48,6 +48,7 @@ class SpockReportExtension implements IGlobalExtension {
 
             // Create the IReportCreator instance(s) - skipping those that fail
             def reportCreators = commaListOfReportClasses.tokenize(',')
+                                .collect {it.trim()}
                                 .collect { instantiateReportCreatorAndApplyConfig(it, config) }
                                 .findAll { it != null }
 
