@@ -224,7 +224,7 @@ A link to the CSS resources with the above names will be added to the HTML file 
 If you don't like the looks of the HTML report, or want your reports in a different text format, you can use the
 TemplateReportCreator to do that.
 
-All you need to do to get started is provide a config file, or system properties), as explained above that
+All you need to do to get started is provide a config file, or system properties, as explained above that
 set the `IReportCreator` to `com.athaydes.spockframework.report.template.TemplateReportCreator`:
 
 ```properties
