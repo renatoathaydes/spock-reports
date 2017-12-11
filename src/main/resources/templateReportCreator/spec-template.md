@@ -34,6 +34,13 @@
             out << '\n> Pending Feature\n'
         }
     }
+    def writeExtraInfo = { extraInfo ->
+        if ( extraInfo ) {
+            extraInfo.each { info ->
+                out << '* ' << info << '\n'
+            }
+        }
+    }
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
 %>
@@ -47,6 +54,14 @@
  writePendingFeature( description.getAnnotation( spock.lang.PendingFeature ) )
  writeIssuesOrSees( description.getAnnotation( spock.lang.Issue ), 'Issues' )
  writeIssuesOrSees( description.getAnnotation( spock.lang.See ), 'See' )
+ if ( utils.isUnrolled( delegate ) ) {
+    writeExtraInfo( utils.nextSpecExtraInfo( data ) )
+ } else {
+    // collapse all iterations
+    (1..iterations.size()).each {
+        writeExtraInfo( utils.nextSpecExtraInfo( data ) )
+    }
+ }
 %>
 Result: **$result**
 <%
