@@ -141,6 +141,13 @@ you're using. See the following blog posts by @rdmueller for instructions:
 * [Spock Reports with Grails 2.5](https://rdmueller.github.io/Spock-Reports-with-Grails-2.5/)
 * [Spock Reports with Grails 3.0](https://rdmueller.github.io/Spock-Reports-with-Grails-3.0/)
 
+If you use Gradle and prefer system properties, they should be configured on test task, e.g.:
+```groovy
+task('functionalTest', type: Test) {
+  systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
+}
+```
+
 Here's the default properties file:
 
 ```properties
