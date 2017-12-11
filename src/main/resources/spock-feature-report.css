@@ -98,6 +98,10 @@ pre.narrative {
   font-size: small;
 }
 
+div.extra-info {
+  font-size: small;
+}
+
 div.issues {
   margin-top: 6px;
   padding: 10px 5px 5px 5px;
