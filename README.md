@@ -36,6 +36,12 @@ Spock-reports is available on Maven Central and on JCenter.
 
 > Since version 1.3.2, Spock version 1.1+ is required
 
+If you want to add dynamic information to Spock reports programmatically, since version 1.3.3, you can use the
+`void reportInfo( arg )` extension function that is added to the Spock's `Specification` class.
+Call this function from any Spec feature (the IDE should auto-complete it and even type-check it as it is a
+[Groovy extension](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor))
+and the argument will be shown in the feature's report!
+
 ### If you are using Maven
 
 Add ``spock-reports`` to your ``<dependencies>``:
