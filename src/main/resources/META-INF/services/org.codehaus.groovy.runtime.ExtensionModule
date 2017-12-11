@@ -1,0 +1,3 @@
+moduleName=Spock Reports Extension Module
+moduleVersion=1.0
+extensionClasses=com.athaydes.spockframework.report.extension.SpockReportsSpecificationExtension

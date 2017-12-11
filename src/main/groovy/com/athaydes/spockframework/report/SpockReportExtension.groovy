@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report
 
+import com.athaydes.spockframework.report.extension.InfoContainer
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.EmptyInitializationException
 import com.athaydes.spockframework.report.internal.FeatureRun
@@ -41,22 +42,22 @@ class SpockReportExtension implements IGlobalExtension {
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
-            if (!commaListOfReportClasses) {
-                log.warn("Missing property: ${IReportCreator.name} - no report classes defined")
+            if ( !commaListOfReportClasses ) {
+                log.warn( "Missing property: ${IReportCreator.name} - no report classes defined" )
                 return
             }
 
             // Create the IReportCreator instance(s) - skipping those that fail
-            def reportCreators = commaListOfReportClasses.tokenize(',')
-                                .collect {it.trim()}
-                                .collect { instantiateReportCreatorAndApplyConfig(it, config) }
-                                .findAll { it != null }
+            def reportCreators = commaListOfReportClasses.tokenize( ',' )
+                    .collect { it.trim() }
+                    .collect { instantiateReportCreatorAndApplyConfig( it, config ) }
+                    .findAll { it != null }
 
             // If none were successfully created then exit
-            if (reportCreators.isEmpty()) return
+            if ( reportCreators.isEmpty() ) return
 
             // Assign the IReportCreator(s) - use the multi report creator only if necessary
-            reportCreator = (reportCreators.size() == 1) ? reportCreators[0] : new MultiReportCreator(reportCreators)
+            reportCreator = ( reportCreators.size() == 1 ) ? reportCreators[ 0 ] : new MultiReportCreator( reportCreators )
         }
     }
 
@@ -81,7 +82,7 @@ class SpockReportExtension implements IGlobalExtension {
                 .newInstance()
     }
 
-    IReportCreator instantiateReportCreatorAndApplyConfig(String reportCreatorClassName, Properties config) {
+    IReportCreator instantiateReportCreatorAndApplyConfig( String reportCreatorClassName, Properties config ) {
         // Given the IReportCreator class name then create it and apply config properties
         try {
             def reportCreator = instantiateReportCreator( reportCreatorClassName )
@@ -138,6 +139,7 @@ class SpecInfoListener implements IRunListener {
     void afterIteration( IterationInfo iteration ) {
         log.debug( "After iteration: {}", iteration.name )
         currentIteration = null
+        InfoContainer.addSeparator( Utils.getSpecClassName( specData ) )
     }
 
     @Override

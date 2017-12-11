@@ -37,7 +37,7 @@ dependencies {
 
 test {
     maxParallelForks = 4
-    exclude '**/*FakeTest.class', '**/UnrolledSpec.class'
+    exclude '**/*FakeTest.class', '**/UnrolledSpec.class', '**/SpecIncludingExtraInfo.class'
     systemProperty 'project.buildDir', project.buildDir
     testLogging.showStandardStreams = true
     beforeTest { descriptor ->

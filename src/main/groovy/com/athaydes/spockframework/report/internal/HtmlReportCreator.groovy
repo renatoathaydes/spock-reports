@@ -228,10 +228,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
 
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
+
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
+                    def extraInfo = Utils.nextSpecExtraInfo( data )
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
@@ -240,7 +242,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             feature.description.getAnnotation( Ignore ),
                             feature.description.getAnnotation( Issue ),
                             feature.description.getAnnotation( See ),
-                            feature.description.getAnnotation( PendingFeature ) )
+                            feature.description.getAnnotation( PendingFeature ),
+                            extraInfo )
                     writeFeatureBlocks( builder, feature, problems, iteration )
                     writeRun( builder, run, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
@@ -251,11 +254,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 final cssClass = errors ? 'error' :
                         failures ? 'failure' :
                                 ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
+
+                // collapse the information for all iterations
+                def extraInfo = run ? ( 1..run.failuresByIteration.size() ).collectMany {
+                    Utils.nextSpecExtraInfo( data )
+                } : [ ]
+
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
                         feature.description.getAnnotation( Issue ),
                         feature.description.getAnnotation( See ),
-                        feature.description.getAnnotation( PendingFeature ) )
+                        feature.description.getAnnotation( PendingFeature ),
+                        extraInfo )
                 def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
@@ -488,7 +498,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                           Ignore ignoreAnnotation,
                                           Issue issueAnnotation,
                                           See seeAnnotation,
-                                          PendingFeature pendingFeature ) {
+                                          PendingFeature pendingFeature,
+                                          List extraInfo ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -508,6 +519,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     writeIssuesOrSees builder, issueAnnotation, 'Issues:'
                     writePendingFeature( builder, pendingFeature )
                     writeIssuesOrSees builder, seeAnnotation, 'See:'
+                    writeExtraInfo( builder, extraInfo )
                 }
             }
         }
@@ -527,6 +539,20 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             } else {
                                 span stringFormatter.escapeXml( value )
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeExtraInfo( MarkupBuilder builder, List extraInfo ) {
+        if ( extraInfo ) {
+            builder.div( 'class': 'extra-info' ) {
+                ul {
+                    extraInfo.each { info ->
+                        li {
+                            div stringFormatter.formatToHtml( info?.toString() ?: 'null' )
                         }
                     }
                 }

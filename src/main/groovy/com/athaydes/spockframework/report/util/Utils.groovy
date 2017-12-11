@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.util
 
+import com.athaydes.spockframework.report.extension.InfoContainer
 import com.athaydes.spockframework.report.internal.FailureKind
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
@@ -133,6 +134,10 @@ class Utils {
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
         data.info.description?.testClass?.getAnnotation( annotation )
+    }
+
+    static List nextSpecExtraInfo( SpecData data ) {
+        InfoContainer.getNextInfoFor( getSpecClassName( data ) )
     }
 
     static boolean isUrl( String text ) {

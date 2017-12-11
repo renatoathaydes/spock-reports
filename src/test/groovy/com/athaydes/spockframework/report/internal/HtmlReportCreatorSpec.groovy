@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.ReportSpec
+import com.athaydes.spockframework.report.SpecIncludingExtraInfo
 import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.UnrolledSpec
@@ -225,6 +226,68 @@ class HtmlReportCreatorSpec extends ReportSpec {
                 skipped         : 0,
                 successRate     : "100${DS}0%"
         ]
+    }
+
+    def "A correct HTML report is generated for a Specification including extra information added dynamically"() {
+        given:
+        "The project build folder location is known"
+        def buildDir = System.getProperty( 'project.buildDir', 'build' )
+
+        and:
+        "A Specification containing features that add extra information to the report"
+        def specification = SpecIncludingExtraInfo
+
+        and:
+        "Report binding data"
+        def reportBinding = [
+                executedFeatures: 6,
+                failures        : 0,
+                errors          : 0,
+                skipped         : 0,
+                successRate     : "100${DS}0%"
+        ]
+
+        and:
+        "A known location where the report file will be saved that does not exist"
+        def reportFile = Paths.get( buildDir, 'spock-reports', specification.name + '.html' ).toFile()
+        if ( reportFile.exists() ) {
+            assert reportFile.delete()
+        }
+
+        and:
+        "The expected HTML report (not counting time fields and errors)"
+        String expectedHtml = expectedHtmlReport( specification, reportBinding )
+
+        and:
+        "Method HtmlReportCreator.totalTime( SpecData ) is mocked out to fill time fields with known values"
+        // using PredictableTimeResponse category to mock that
+
+        and:
+        "ProblemBlockWriter is mocked out to fill error blocks with known contents"
+        // using PredictableProblems category to mock that
+
+        and:
+        "ToC Writer if mocked out to write something predictable"
+        // using NoTocGenerated
+
+        and:
+        "String hashCodes produce predictable values"
+        // using PredictableStringHashCode
+
+        when:
+        "A Specification containing different types of features is run by Spock"
+        PredictableStringHashCode.code = 0
+        use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+            new Sputnik( specification ).run( new RunNotifier() )
+        }
+
+        then:
+        "A nice HTML report to have been generated under the build directory"
+        reportFile.exists()
+
+        and:
+        "The contents are functionally the same as expected"
+        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
     }
 
     private String textOf( String cssPath ) {
