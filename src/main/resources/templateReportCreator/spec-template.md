@@ -34,6 +34,13 @@
             out << '\n> Pending Feature\n'
         }
     }
+    def writeHeaders = { headers ->
+        if ( headers ) {
+            headers.each { h ->
+                out << '> ' << h << '\n'
+            }
+        }
+    }
     def writeExtraInfo = { extraInfo ->
         if ( extraInfo ) {
             extraInfo.each { info ->
@@ -43,6 +50,7 @@
     }
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
     writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
+    writeHeaders( utils.specHeaders( data ) )
 %>
 
 ## Features
