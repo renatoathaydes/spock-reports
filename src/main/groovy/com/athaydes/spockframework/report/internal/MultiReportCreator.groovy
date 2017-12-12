@@ -1,9 +1,11 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+import com.athaydes.spockframework.report.extension.InfoContainer
 
 import javax.naming.OperationNotSupportedException
 
+import static com.athaydes.spockframework.report.util.Utils.getSpecClassName
 
 /**
  * Container for multiple IReportCreators
@@ -17,7 +19,16 @@ class MultiReportCreator implements IReportCreator {
 
     @Override
     void createReportFor( SpecData data ) {
-        reportCreators.each { it.createReportFor( data ) }
+        def specName = getSpecClassName( data )
+        def headers = InfoContainer.getHeadersFor( specName ).asImmutable()
+        def extraInfo = InfoContainer.getAllExtraInfoFor( specName ).asImmutable()
+        reportCreators.each {
+            InfoContainer.resetSpecData( specName,
+                    headers.collect(),
+                    extraInfo.collect() )
+
+            it.createReportFor( data )
+        }
     }
 
     @Override

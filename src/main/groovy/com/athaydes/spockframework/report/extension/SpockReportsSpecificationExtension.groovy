@@ -85,4 +85,16 @@ class InfoContainer {
         result
     }
 
+    static List getAllExtraInfoFor( String specName ) {
+        infoBySpecName.remove( specName ) ?: [ ]
+    }
+
+    static void resetSpecData( String specName, List headers, List extraInfo ) {
+        println "Resetting data of spec: $specName"
+        println "  Headers: $headers"
+        println "  extraInfo: $extraInfo"
+        headerBySpecName[ specName ] = headers
+        infoBySpecName[ specName ] = extraInfo
+    }
+
 }
