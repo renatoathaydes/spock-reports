@@ -131,6 +131,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         "Report for ${Utils.getSpecClassName( data )}"
     }
 
+    @Override
     void writeSummary( MarkupBuilder builder, SpecData data ) {
         builder.div( 'class': 'summary-report' ) {
             h3 'Summary:'
@@ -160,6 +161,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
+    @Override
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
         def specTitle = Utils.specAnnotation( data, Title )?.value() ?: ''
         if ( specTitle ) {
@@ -180,6 +182,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         def sees = Utils.specAnnotation( data, See )
         if ( sees ) {
             writeIssuesOrSees( builder, sees, 'See:' )
+        }
+        def headers = Utils.specHeaders( data )
+        if ( headers ) {
+            writeHeaders( builder, headers )
         }
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
@@ -546,13 +552,23 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
+    private void writeHeaders( MarkupBuilder builder, List headers ) {
+        builder.div( 'class': 'spec-headers' ) {
+            headers.each { header ->
+                builder.div( 'class': 'spec-header' ) {
+                    mkp.yieldUnescaped( header?.toString() ?: 'null' )
+                }
+            }
+        }
+    }
+
     private void writeExtraInfo( MarkupBuilder builder, List extraInfo ) {
         if ( extraInfo ) {
             builder.div( 'class': 'extra-info' ) {
                 ul {
                     extraInfo.each { info ->
                         li {
-                            div stringFormatter.formatToHtml( info?.toString() ?: 'null' )
+                            div { mkp.yieldUnescaped( info?.toString() ?: 'null' ) }
                         }
                     }
                 }

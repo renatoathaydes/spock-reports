@@ -140,6 +140,10 @@ class Utils {
         InfoContainer.getNextInfoFor( getSpecClassName( data ) )
     }
 
+    static List specHeaders( SpecData data ) {
+        InfoContainer.getHeadersFor( getSpecClassName( data ) )
+    }
+
     static boolean isUrl( String text ) {
         text ==~ urlPattern
     }

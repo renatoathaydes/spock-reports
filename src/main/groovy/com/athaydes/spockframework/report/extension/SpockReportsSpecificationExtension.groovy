@@ -11,7 +11,7 @@ class SpockReportsSpecificationExtension {
      * Add information to the Spock report.
      * <p/>
      * The provided object's String representation will be included in the feature report,
-     * so it should only be called from a feature.
+     * so this method should only be called from a feature.
      * <p/>
      * This method may be called several times for each feature.
      *
@@ -22,13 +22,32 @@ class SpockReportsSpecificationExtension {
         InfoContainer.add self.class.name, info
     }
 
+    /**
+     * Add header to the Spock report.
+     * <p/>
+     * The provided object's String representation will be included in the Specification's report header,
+     * so this method should normally be called from the {@code setupSpec} method.
+     *
+     * @param self
+     * @param header to include in the Specification report
+     */
+    static void reportHeader( Specification self, header ) {
+        InfoContainer.addHeader self.class.name, header
+    }
+
 }
 
 @CompileStatic
 class InfoContainer {
 
     private static final ITERATION_SEPARATOR = new Object()
+    private static final Map<String, List> headerBySpecName = [ : ].asSynchronized()
     private static final Map<String, List> infoBySpecName = [ : ].asSynchronized()
+
+    @PackageScope
+    static void addHeader( String name, item ) {
+        headerBySpecName.get( name, [ ] ) << item
+    }
 
     @PackageScope
     static void add( String name, item ) {
@@ -37,6 +56,10 @@ class InfoContainer {
 
     static void addSeparator( String name ) {
         add name, ITERATION_SEPARATOR
+    }
+
+    static List getHeadersFor( String specName ) {
+        headerBySpecName.remove( specName ) ?: [ ]
     }
 
     static List getNextInfoFor( String specName ) {

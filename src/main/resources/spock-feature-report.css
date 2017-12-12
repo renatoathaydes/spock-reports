@@ -102,6 +102,14 @@ div.extra-info {
   font-size: small;
 }
 
+div.spec-headers {
+  margin: 4px;
+  font-style: italic;
+}
+
+div.spec-header {
+}
+
 div.issues {
   margin-top: 6px;
   padding: 10px 5px 5px 5px;

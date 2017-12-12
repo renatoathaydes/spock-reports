@@ -5,6 +5,10 @@ import spock.lang.Unroll
 
 class SpecIncludingExtraInfo extends Specification {
 
+    def setupSpec() {
+        reportHeader '<div class="super-header">Report environment: currentOS</div>'
+    }
+
     def "Simple feature adding a list to the report"() {
         when: 'The report adds something to the report'
         reportInfo( [ 1, 2, 3 ] )
