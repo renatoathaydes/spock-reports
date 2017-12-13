@@ -36,13 +36,14 @@ Spock-reports is available on Maven Central and on JCenter.
 
 > Since version 1.3.2, Spock version 1.1+ is required
 
-If you want to add information to your Spock reports programmatically, since version 1.4.0, you can use the
-`void reportHeader( arg )` and `void reportInfo( arg )` extension methods that are added to Spock's
-`Specification` class to dynamically insert data on the top of the feature report or on the feature's section,
-respectively.
+If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
+`Specification` class' extension methods which are added by Spock Reports:
 
-These methods are added as a
-[Groovy extension](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor)),
+* `void reportHeader( arg )` - dynamically insert data into the top of the Specification report.
+* `void reportInfo( arg )` - add data to the feature's section.
+
+These methods are added as
+[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor)),
 so your IDE should be able to show them in auto-completion!
 
 ### If you are using Maven
