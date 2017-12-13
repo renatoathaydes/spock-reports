@@ -16,10 +16,10 @@ If you prefer to have your own template to generate reports from, you can use th
 to generate reports in any text format.
 See the **"Using template reports"** section below.
 
-> **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification 
+> **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification
 block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
 
-> Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the 
+> Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the
   [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock reports.
 
 ## Where to find demo reports
@@ -28,13 +28,22 @@ I am using [CodePen](http://codepen.io) to design the HTML [feature report](http
 
 If you don't like the styles, you can use your own css stylesheets (see the customization section below). I welcome feedback on how to improve the report looks!
 
-## How to use it 
+## How to use it
 
-To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, in other words, add the jar to the classpath.
+To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, just add the jar to the project's classpath.
 
-Spock-reports is available on Maven Central and on JCenter!
+Spock-reports is available on Maven Central and on JCenter.
 
 > Since version 1.3.2, Spock version 1.1+ is required
+
+If you want to add information to your Spock reports programmatically, since version 1.4.0, you can use the
+`void reportHeader( arg )` and `void reportInfo( arg )` extension methods that are added to Spock's
+`Specification` class to dynamically insert data on the top of the feature report or on the feature's section,
+respectively.
+
+These methods are added as a
+[Groovy extension](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor)),
+so your IDE should be able to show them in auto-completion!
 
 ### If you are using Maven
 
@@ -44,7 +53,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.3.2</version>
+  <version>1.4.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -79,7 +88,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
+    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -90,9 +99,9 @@ dependencies {
 
 If you prefer, you can just download the jar directly from [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/).
 
-The only dependencies of this project are on Groovy version 2.0+ (only the 
+The only dependencies this project has are Groovy version 2.0+ (only the
 `groovy`, `groovy-templates`, `groovy-xml` and `groovy-json`
-modules are required) and Spock, but if you're using Spock (version 0.7-groovy-2.0+), you'll already have it all!
+modules are required) and `Spock`, but if you're using Spock (version 0.7-groovy-2.0+) then you already have them all!
 
 ## Customizing spock-reports logging
 
@@ -108,7 +117,7 @@ SLF4J: Defaulting to no-operation (NOP) logger implementation
 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 ```
 
-To get rid of that, add a dependency on a logging framework that logs over the slf4j-api.
+To get rid of the warning, add a dependency on a logging framework that implements the slf4j-api.
 
 For example, to use `slf4j-simple`, add this line to your Gradle dependencies (or the equivalent XML in your Maven pom):
 
@@ -151,7 +160,7 @@ task('functionalTest', type: Test) {
 Here's the default properties file:
 
 ```properties
-# Name of the implementation class of the report creator
+# Name of the implementation class(es) of report creator(s) to enable (separate multiple entries with commas)
 # Currently supported classes are:
 #   1. com.athaydes.spockframework.report.internal.HtmlReportCreator
 #   2. com.athaydes.spockframework.report.template.TemplateReportCreator
@@ -195,9 +204,9 @@ com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileNam
 com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
 ```
 
-The `outputDir` property is relative to the working directory.
+Be aware that the `outputDir` property is relative to the working directory.
 
-For Maven projects which use the defaults, you might want to change it to `target/spock-reports`.
+For Maven projects which use the defaults, you might want to change the `outputDir` to `target/spock-reports`.
 
 ### Customizing the report stylesheets
 
@@ -228,11 +237,11 @@ A link to the CSS resources with the above names will be added to the HTML file 
 
 ## Using template reports
 
-If you don't like the looks of the HTML report or want your reports in a different text format, you can use the
+If you don't like the looks of the HTML report, or want your reports in a different text format, you can use the
 TemplateReportCreator to do that.
 
-All you need to do to get started is provide a config file (or system properties), as explained above, 
-setting the `IReportCreator` to `com.athaydes.spockframework.report.template.TemplateReportCreator`:
+All you need to do to get started is provide a config file, or system properties, as explained above that
+set the `IReportCreator` to `com.athaydes.spockframework.report.template.TemplateReportCreator`:
 
 ```properties
 com.athaydes.spockframework.report.IReportCreator=com.athaydes.spockframework.report.template.TemplateReportCreator
@@ -301,9 +310,7 @@ Result: $result
 > NOTE: before version 1.2.6, `eachFeature` used to be called `forEach`. This had to be changed to avoid conflict
  with Java 8's method of the same name.
 
-You probably noticed that some variables are available to be used in code in the template file.
-
-These variables are the following:
+You probably noticed the use of some predefined variables in the template file code example. The available variables are:
 
 * `data`: an instance of [`SpecData`](src/main/groovy/com/athaydes/spockframework/report/internal/SpecData.groovy)
   containing the result of running a Specification.
@@ -311,11 +318,11 @@ These variables are the following:
 * `fmt`: an instance of [`StringFormatHelper`](src/main/groovy/com/athaydes/spockframework/report/internal/StringFormatHelper.groovy).
   It provides methods such as `String toTimeDuration( timeInMs )`
   and `String escapeXml( String str )`.
-* `utils`: the [`Utils`](src/main/groovy/com/athaydes/spockframework/report/util/Utils.groovy) class, which offers
+* `utils`: the [`Utils`](src/main/groovy/com/athaydes/spockframework/report/util/Utils.groovy) class offers
   many *useful* methods like `Map stats( SpecData data )`, which returns statistics about the given Specification.
-* `features`: as shown above, an Object which has a `eachFeature` method which can be used to iterate over all features of a
+* `features`: as shown above, is an Object whose `eachFeature` method allows you to iterate over all the features of a
   Specification. When inside the `eachFeature` closure, you can access directly all members of the current feature
-  (an instance of `FeatureInfo`). So, for example, to get the `Title` annotation of a feature, you can do
+  (an instance of `FeatureInfo`). So, for example, to get the `Title` annotation of a feature, you can call
   `utils.specAnnotation( data, spock.lang.Title )`.
 
 As the default template file shows, you can get statistics for the Specification easily with this code snippet:
@@ -325,31 +332,30 @@ As the default template file shows, you can get statistics for the Specification
 Report statistics: $stats
 ```
 
-`stats` is a `Map` containing the following keys:
+The variable `stats` is a `Map` containing the following keys:
 
 ```
 failures, errors, skipped, totalRuns, successRate, time
 ```
 
-So, you can use it in your template like this, for example:
+So, you can use it in your template like this:
 
 ```
-Total number of runs:   ${stats.totalRuns}
-Success rate:           ${stats.successRate}
-Number of failures:     ${stats.failures}
-Number of errors:       ${stats.errors}
-Number of ignored:      ${stats.skipped}
-Total time (ms):        ${stats.time}
+Total number of runs:  ${stats.totalRuns}
+Success rate........:  ${stats.successRate}
+Number of failures..:  ${stats.failures}
+Number of errors....:  ${stats.errors}
+Number of ignored...:  ${stats.skipped}
+Total time (ms).....:  ${stats.time}
 
 Created on ${new Date()} by ${System.properties['user.name']}
 ```
 
 #### Summary template
 
-The summary template has access to a single variable called `data`.
-This is a Map containing all the available data for all Specifications that have been run.
+The summary template has access to a single variable called `data`, which is a Map containing all the available data for all Specifications that were run.
 
-For example, after running two Specifications called `test.FirstSpec` and `test.SecondSpec`,
+For example, after running two Specifications named `test.FirstSpec` and `test.SecondSpec`,
 the `data` Map could look like this:
 
 ```groovy
@@ -357,11 +363,12 @@ the `data` Map could look like this:
   'test.SecondSpec': [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
 ```
 
-You can then iterate over each Spec data as follows:
+You can then iterate over each Spec's data as follows:
 
 ```
 <% data.each { name, map ->
- %>| $name | ${map.totalRuns} | ${map.failures} | ${map.errors} | ${map.skipped} | ${map.successRate} | ${map.time} |
+      def s = map.stats
+ %>| $name | ${s.totalRuns} | ${s.failures} | ${s.errors} | ${s.skipped} | ${s.successRate} | ${s.time} |
 <% }
  %>
 ```
@@ -377,3 +384,5 @@ we can all discuss whether it's a good idea and what's the best way to go about 
 
 Also, please notice that the master branch is supposed to contain only releases... the development branch
 is called `next`, so *all PRs should be submitted against `next`*, not master.
+
+Thank you.

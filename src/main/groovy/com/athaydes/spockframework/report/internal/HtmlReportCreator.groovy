@@ -131,6 +131,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         "Report for ${Utils.getSpecClassName( data )}"
     }
 
+    @Override
     void writeSummary( MarkupBuilder builder, SpecData data ) {
         builder.div( 'class': 'summary-report' ) {
             h3 'Summary:'
@@ -160,6 +161,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
+    @Override
     protected void writeDetails( MarkupBuilder builder, SpecData data ) {
         def specTitle = Utils.specAnnotation( data, Title )?.value() ?: ''
         if ( specTitle ) {
@@ -180,6 +182,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         def sees = Utils.specAnnotation( data, See )
         if ( sees ) {
             writeIssuesOrSees( builder, sees, 'See:' )
+        }
+        def headers = Utils.specHeaders( data )
+        if ( headers ) {
+            writeHeaders( builder, headers )
         }
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
@@ -228,10 +234,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
 
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
+
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
                 run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
+                    def extraInfo = Utils.nextSpecExtraInfo( data )
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
@@ -240,8 +248,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             feature.description.getAnnotation( Ignore ),
                             feature.description.getAnnotation( Issue ),
                             feature.description.getAnnotation( See ),
-                            feature.description.getAnnotation( PendingFeature ) )
+                            feature.description.getAnnotation( PendingFeature ),
+                            extraInfo )
                     writeFeatureBlocks( builder, feature, problems, iteration )
+                    writeRun( builder, run, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
                 }
             } else {
@@ -250,11 +260,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 final cssClass = errors ? 'error' :
                         failures ? 'failure' :
                                 ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
+
+                // collapse the information for all iterations
+                def extraInfo = run ? ( 1..run.failuresByIteration.size() ).collectMany {
+                    Utils.nextSpecExtraInfo( data )
+                } : [ ]
+
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
                         feature.description.getAnnotation( Issue ),
                         feature.description.getAnnotation( See ),
-                        feature.description.getAnnotation( PendingFeature ) )
+                        feature.description.getAnnotation( PendingFeature ),
+                        extraInfo )
                 def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
@@ -432,7 +449,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private void writeRun( MarkupBuilder builder, FeatureRun run ) {
+    private void writeRun( MarkupBuilder builder, FeatureRun run, IterationInfo iterationInfo = null ) {
         if ( !run.feature.parameterized ) return
         builder.tr {
             writeBlockKindTd( builder, 'examples' )
@@ -445,15 +462,21 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             }
                         }
                         tbody {
-                            run.failuresByIteration.each { iteration, errors ->
-                                writeIteration( builder, iteration, errors )
+                            if ( iterationInfo ) {
+                                writeIteration( builder, iterationInfo, run.failuresByIteration[ iterationInfo ] )
+                            } else {
+                                run.failuresByIteration.each { iteration, errors ->
+                                    writeIteration( builder, iteration, errors )
+                                }
                             }
                         }
                     }
                 }
             }
-            td {
-                div( 'class': 'spec-status', Utils.iterationsResult( run ) )
+            if ( !iterationInfo ) {
+                td {
+                    div( 'class': 'spec-status', Utils.iterationsResult( run ) )
+                }
             }
         }
 
@@ -481,7 +504,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                           Ignore ignoreAnnotation,
                                           Issue issueAnnotation,
                                           See seeAnnotation,
-                                          PendingFeature pendingFeature ) {
+                                          PendingFeature pendingFeature,
+                                          List extraInfo ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -501,6 +525,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     writeIssuesOrSees builder, issueAnnotation, 'Issues:'
                     writePendingFeature( builder, pendingFeature )
                     writeIssuesOrSees builder, seeAnnotation, 'See:'
+                    writeExtraInfo( builder, extraInfo )
                 }
             }
         }
@@ -520,6 +545,30 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             } else {
                                 span stringFormatter.escapeXml( value )
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeHeaders( MarkupBuilder builder, List headers ) {
+        builder.div( 'class': 'spec-headers' ) {
+            headers.each { header ->
+                builder.div( 'class': 'spec-header' ) {
+                    mkp.yieldUnescaped( header?.toString() ?: 'null' )
+                }
+            }
+        }
+    }
+
+    private void writeExtraInfo( MarkupBuilder builder, List extraInfo ) {
+        if ( extraInfo ) {
+            builder.div( 'class': 'extra-info' ) {
+                ul {
+                    extraInfo.each { info ->
+                        li {
+                            div { mkp.yieldUnescaped( info?.toString() ?: 'null' ) }
                         }
                     }
                 }
