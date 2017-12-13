@@ -43,8 +43,21 @@ If you want to add information to your Spock-reports programmatically, since ver
 * `void reportInfo( arg )` - add data to the feature's section.
 
 These methods are added as
-[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor)),
+[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor),
 so your IDE should be able to show them in auto-completion!
+
+For example, you could do something like this within your `Specification`:
+
+```groovy
+def setupSpec() {
+    reportHeader "<h2>Browser: ${driver.browser.name}</h2>"
+}
+
+def "My feature"() {
+    expect:
+    reportInfo "Some information I want to show in the report"
+}
+```
 
 ### If you are using Maven
 
