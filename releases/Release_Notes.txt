@@ -1,3 +1,9 @@
+1.4.0 - 2017 December 13
+
+* #85 show data table with a single row in unrolled specifications.
+* #79 support multiple report creators to be configured.
+* #123 added extension methods to Specification class that allow information to be added to reports programmatically.
+
 1.3.2 - 2017 September 26
 
 * #109 any config file property can now be set as a system property as well
