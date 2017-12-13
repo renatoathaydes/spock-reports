@@ -53,7 +53,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.3.2</version>
+  <version>1.4.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -88,7 +88,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.3.2' ) {
+    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -160,7 +160,7 @@ task('functionalTest', type: Test) {
 Here's the default properties file:
 
 ```properties
-# Name of the implementation class of the report creator
+# Name of the implementation class(es) of report creator(s) to enable (separate multiple entries with commas)
 # Currently supported classes are:
 #   1. com.athaydes.spockframework.report.internal.HtmlReportCreator
 #   2. com.athaydes.spockframework.report.template.TemplateReportCreator
