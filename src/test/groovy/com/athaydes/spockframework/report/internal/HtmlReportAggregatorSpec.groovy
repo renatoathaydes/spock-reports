@@ -233,8 +233,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def localJvmLatch = SimulatedReportWriter.write( file, threadCount )
 
         then: 'both writers should finish within a reasonable timeout'
-        localJvmLatch.await( 5, TimeUnit.SECONDS )
-        forkedJvmProcess.waitFor( 5, TimeUnit.SECONDS )
+        localJvmLatch.await( 10, TimeUnit.SECONDS )
+        forkedJvmProcess.waitFor( 15, TimeUnit.SECONDS )
 
         and: 'the forked JVM should finish successfully'
         forkedJvmProcess.errorStream.text == '' && forkedJvmProcess.exitValue() == 0

@@ -43,6 +43,10 @@ test {
     beforeTest { descriptor ->
         logger.lifecycle( "Running test: " + descriptor )
     }
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+    }
 }
 
 jar {

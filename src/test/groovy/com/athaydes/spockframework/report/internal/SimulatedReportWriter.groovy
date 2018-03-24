@@ -12,7 +12,7 @@ class SimulatedReportWriter {
         assert args.size() == 2, "Expected 2 args (name of file to write to, number of threads) but got $args"
         final file = new File( args.first() )
         final threadCount = args.last().toInteger()
-        assert write( file, threadCount ).await( 5, TimeUnit.SECONDS ), "Did not finish writing within timeout"
+        assert write( file, threadCount ).await( 10, TimeUnit.SECONDS ), "Did not finish writing within timeout"
     }
 
     static write( File file, int threadCount ) {
