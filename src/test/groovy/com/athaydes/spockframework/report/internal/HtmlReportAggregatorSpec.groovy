@@ -237,7 +237,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         forkedJvmProcess.waitFor( 15, TimeUnit.SECONDS )
 
         and: 'the forked JVM should finish successfully'
-        forkedJvmProcess.errorStream.text == '' && forkedJvmProcess.exitValue() == 0
+        // in case of error, this will print the errorStream
+        forkedJvmProcess.exitValue() == 0 || forkedJvmProcess.errorStream.text == 'FAILED'
 
         and: 'The contents of the file must be the predicted value if the lock works'
         file.text == ( 1..41 ).join( ' ' )
