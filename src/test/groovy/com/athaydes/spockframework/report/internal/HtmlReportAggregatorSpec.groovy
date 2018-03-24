@@ -223,13 +223,14 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         final file = File.createTempFile( getClass().name, 'txt' )
         file.write( '1' )
 
-        when: 'the file is written to by several Threads in this JVMs, protected with a lock'
+        when: 'the file is written to by several Threads in another JVMs, protected with a lock'
         final threadCount = 20
-        def localJvmLatch = SimulatedReportWriter.write( file, threadCount )
-
-        and: 'the file is written to simultaneously in another JVM, in the same manner'
         def forkedJvmProcess = executeMainInForkedProcess( SimulatedReportWriter,
                 file.absolutePath, threadCount.toString() )
+
+        and: 'the file is written to simultaneously in this JVM, in the same manner'
+        sleep 200 // wait for the other JVM startup-time
+        def localJvmLatch = SimulatedReportWriter.write( file, threadCount )
 
         then: 'both writers should finish within a reasonable timeout'
         localJvmLatch.await( 5, TimeUnit.SECONDS )

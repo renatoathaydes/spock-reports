@@ -1,6 +1,5 @@
 package com.athaydes.spockframework.report.internal
 
-import com.athaydes.spockframework.report.internal.ReportDataAggregator
 import groovy.transform.CompileStatic
 
 import java.util.concurrent.CountDownLatch
@@ -19,7 +18,8 @@ class SimulatedReportWriter {
     static write( File file, int threadCount ) {
         final counter = new CountDownLatch( threadCount )
 
-        ( 1..threadCount ).each {
+        ( 1..threadCount ).each { n ->
+            sleep 50 // pause quickly to make sure the separate JVMs Threads interleave
             Thread.start {
                 final raf = new RandomAccessFile( file, 'rw' )
                 ReportDataAggregator.withFileLock( raf ) {
