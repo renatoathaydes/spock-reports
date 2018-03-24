@@ -52,7 +52,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         }
     }
 
-    def boolean existsOrCanCreate( File reportsDir ) {
+    static boolean existsOrCanCreate( File reportsDir ) {
         reportsDir?.exists() || reportsDir?.mkdirs()
     }
 

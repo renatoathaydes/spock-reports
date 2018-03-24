@@ -2,8 +2,11 @@ package com.athaydes.spockframework.report.internal
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.PackageScope
 
+import java.nio.channels.FileLock
 import java.nio.charset.Charset
+import java.util.concurrent.Callable
 import java.util.regex.Pattern
 
 /**
@@ -23,17 +26,35 @@ class ReportDataAggregator {
         rawFile.createNewFile() // ensure file exists before locking it
 
         final dataFile = new RandomAccessFile( rawFile, 'rw' )
-        final fileLock = dataFile.channel.lock()
 
-        try {
+        return withFileLock( dataFile ) {
             def persistedData = readTextFrom( dataFile ) ?: '{}'
             def allData = jsonParser.parseText( persistedData ) + localData
             appendDataToFile( dataFile, localData )
-            return allData.asImmutable()
+            allData.asImmutable() as Map<String, Map>
+        }
+    }
+
+    static <T> T withFileLock( RandomAccessFile file, Callable<T> action ) {
+        FileLock lock = null
+        Exception error = null
+        def desistTime = System.currentTimeMillis() + 5_000L
+        while ( lock == null && System.currentTimeMillis() < desistTime ) {
+            try {
+                lock = file.channel.tryLock()
+            } catch ( e ) {
+                error = e
+                sleep 25L
+            }
+        }
+        if ( lock == null ) {
+            throw new RuntimeException( 'Unable to get lock on report file', error )
+        } else try {
+            return action.call()
         } finally {
-            fileLock.channel().force( true ) // forces flushing before releasing the lock
-            fileLock.release()
-            dataFile.close()
+            lock.channel().force( true ) // forces flushing before releasing the lock
+            lock.release()
+            file.close()
         }
     }
 
@@ -52,7 +73,8 @@ class ReportDataAggregator {
         file.write( toWrite.getBytes( charset ) )
     }
 
-    private static String readTextFrom( RandomAccessFile file ) {
+    @PackageScope
+    static String readTextFrom( RandomAccessFile file ) {
         def buffer = new byte[8]
         def result = new StringBuilder( file.length() as int )
 
