@@ -150,4 +150,29 @@ class UtilsSpec extends Specification {
         'e' as char   | Character   | 'e' as Character
     }
 
+    def "Utils can find the parents of Specs"() {
+        when: 'We ask for the names of parent Specifications'
+        def parents = Utils.getParentSpecNames( specClassName )
+
+        then: 'The names of all parents should be returned'
+        parents == expectedParents
+
+        where:
+        specClassName      | expectedParents
+        String.name        | [ ]
+        Specification.name | [ ]
+        Spec1.name         | [ ]
+        Spec2.name         | [ Spec1.name ]
+        Spec3.name         | [ Spec2.name, Spec1.name ]
+        Spec4.name         | [ Spec3.name, Spec2.name, Spec1.name ]
+    }
+
 }
+
+class Spec1 extends Specification {}
+
+class Spec2 extends Spec1 {}
+
+class Spec3 extends Spec2 {}
+
+class Spec4 extends Spec3 {}

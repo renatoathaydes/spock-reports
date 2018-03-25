@@ -11,6 +11,7 @@ import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 import org.spockframework.util.Nullable
 import spock.lang.PendingFeature
+import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
@@ -177,6 +178,28 @@ class Utils {
 
     static String getSpecClassName( SpecData data ) {
         data.info.description?.className ?: specNameFromFileName( data.info )
+    }
+
+    static List<String> getParentSpecNames( String className ) {
+        def result = [ ]
+        Class<?> type
+        try {
+            type = Class.forName( className )
+        } catch ( ignore ) {
+            return result
+        }
+
+        if ( !Specification.isAssignableFrom( type ) ) {
+            return result
+        }
+
+        type = type.superclass
+        while ( type && type != Specification && Specification.isAssignableFrom( type ) ) {
+            result << type.name
+            type = type.superclass
+        }
+
+        return result
     }
 
     static String specNameFromFileName( SpecInfo specInfo ) {
