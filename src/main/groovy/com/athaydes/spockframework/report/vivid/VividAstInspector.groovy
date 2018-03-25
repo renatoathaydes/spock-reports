@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.vivid
 
+import com.athaydes.spockframework.report.vivid.VividAstInspector.AstSuccessfullyCaptured
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport

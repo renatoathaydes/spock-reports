@@ -13,14 +13,19 @@ import org.spockframework.util.Nullable
 @CompileStatic
 class SpecSourceCode {
 
-    private final Map<String, FeatureSourceCode> features = [ : ]
+    private final Map<String, FeatureSourceCode> sourceCodeByFeatureName = [ : ]
+    private final LinkedHashSet<SpecSourceCode> parents = [ ]
+
+    void addParent( SpecSourceCode parent ) {
+        parents << parent
+    }
 
     void startBlock( MethodNode feature, String label, @Nullable String text ) {
-        features.get( feature.name, new FeatureSourceCode() ).startBlock( label, text )
+        sourceCodeByFeatureName.get( feature.name, new FeatureSourceCode() ).startBlock( label, text )
     }
 
     void addStatement( MethodNode feature, String statement, int lineNumber ) {
-        def currentFeature = features[ feature.name ]
+        def currentFeature = sourceCodeByFeatureName[ feature.name ]
         if ( currentFeature ) {
             statement = removeIndent( statement )
             currentFeature.addStatement( statement, lineNumber )
@@ -30,7 +35,21 @@ class SpecSourceCode {
     }
 
     List<BlockCode> getBlocks( String featureName ) {
-        features.get( featureName )?.blocks ?: [ ]
+        List<BlockCode> result = sourceCodeByFeatureName[ featureName ]?.blocks
+        if ( result == null ) {
+            log.debug( 'Unable to find code for feature "{}", will try in parent Specs: {}', featureName, parents )
+
+            Iterator<SpecSourceCode> parentIterator = parents.iterator()
+            while ( result == null ) {
+                if ( parentIterator.hasNext() ) {
+                    def parent = parentIterator.next()
+                    result = parent.getBlocks( featureName )
+                } else {
+                    break
+                }
+            }
+        }
+        return result ?: [ ]
     }
 
     static String removeIndent( String code ) {

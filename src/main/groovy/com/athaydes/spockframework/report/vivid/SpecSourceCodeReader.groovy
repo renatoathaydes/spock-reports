@@ -14,10 +14,10 @@ class SpecSourceCodeReader {
     @Nullable
     private SpecSourceCode specSourceCode
 
+    private final VividAstInspector inspector = new VividAstInspector()
+
     void read( SpecData data ) {
         try {
-            VividAstInspector inspector = new VividAstInspector()
-
             File file = Utils.getSpecFile( testSourceRoots, data )
             specSourceCode = inspector.load( file, Utils.getSpecClassName( data ) )
         } catch ( Exception e ) {
@@ -26,6 +26,6 @@ class SpecSourceCodeReader {
     }
 
     List<BlockCode> getBlocks( FeatureInfo feature ) {
-        return specSourceCode?.getBlocks( feature.name ) ?: []
+        return specSourceCode?.getBlocks( feature.name ) ?: [ ]
     }
 }
