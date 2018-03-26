@@ -11,6 +11,10 @@ h3 {
   font-weight: 200;
 }
 
+.back-link {
+  font-size: small;
+}
+
 table {
   margin: 5px;
 }

@@ -13,12 +13,8 @@ import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecElementInfo
 import org.spockframework.runtime.model.Tag
 import spock.lang.Ignore
-import spock.lang.Issue
 import spock.lang.PendingFeature
-import spock.lang.See
 import spock.lang.Title
-
-import java.lang.annotation.Annotation
 
 /**
  *
@@ -136,6 +132,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     @Override
     void writeSummary( MarkupBuilder builder, SpecData data ) {
+        builder.div( 'class': 'back-link' ) {
+            a( href: 'index.html', '<< Back' )
+        }
         builder.div( 'class': 'summary-report' ) {
             h3 'Summary:'
             builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
