@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report
 
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.HtmlReportCreator
+import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.template.TemplateReportCreator
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
@@ -33,7 +34,7 @@ class SpockReportExtensionSpec extends Specification {
 
         then:
         "The config is read once"
-        1 * extension.configLoader.loadConfig() >> new Properties()
+        1 * extension.configLoader.loadConfig( _ ) >> new Properties()
     }
 
     def "The settings found in the config.properties file are used to configure the report framework"() {
@@ -52,7 +53,7 @@ class SpockReportExtensionSpec extends Specification {
         "A real ConfigLoader that uses the properties file"
         def configLoader = new ConfigLoader() {
             @Override
-            Properties loadConfig() { props }
+            Properties loadConfig( SpockReportsConfiguration config ) { props }
         }
 
         and:
@@ -97,24 +98,24 @@ class SpockReportExtensionSpec extends Specification {
         1 * mockReportCreator.done()
     }
 
-    @Unroll("More than one report creator can be specified in the properties when there are #description")
+    @Unroll( "More than one report creator can be specified in the properties when there are #description" )
     def "More than one report creator can be specified in the properties"() {
         given:
         "Properties specifying two report creators in a comma separated property value"
         def props = new Properties()
-        props.setProperty(IReportCreator.name, iReportCreatorPropertyValue)
+        props.setProperty( IReportCreator.name, iReportCreatorPropertyValue )
 
         and:
         "A real ConfigLoader that uses the properties file"
         def configLoader = new ConfigLoader() {
             @Override
-            Properties loadConfig() { props }
+            Properties loadConfig( SpockReportsConfiguration config ) { props }
         }
 
         and:
         "A couple of mock ReportCreators are created"
-        def htmlReportCreator = Mock(HtmlReportCreator)
-        def templateReportCreator = Mock(TemplateReportCreator)
+        def htmlReportCreator = Mock( HtmlReportCreator )
+        def templateReportCreator = Mock( TemplateReportCreator )
 
         and:
         "A mock Spec"
@@ -125,10 +126,10 @@ class SpockReportExtensionSpec extends Specification {
         def extension = new SpockReportExtension() {
             @Override
             IReportCreator instantiateReportCreator( String reportCreatorClassName ) {
-                switch (reportCreatorClassName) {
+                switch ( reportCreatorClassName ) {
                     case HtmlReportCreator.class.name: return htmlReportCreator
                     case TemplateReportCreator.class.name: return templateReportCreator
-                    default: throw new IllegalArgumentException("Unexpected creator requested")
+                    default: throw new IllegalArgumentException( "Unexpected creator requested" )
                 }
             }
         }

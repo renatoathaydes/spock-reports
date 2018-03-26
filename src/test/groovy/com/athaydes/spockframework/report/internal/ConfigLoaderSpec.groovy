@@ -15,6 +15,7 @@ class ConfigLoaderSpec extends Specification {
     private static final String FEATURE_REPORT_CSS = HtmlReportCreator.class.name + '.featureReportCss'
 
     static final String PROP_HIDE_EMPTY_BLOCKS = 'com.athaydes.spockframework.report.hideEmptyBlocks'
+    static final String PROP_ENABLE_VIVID_REPORTS = 'com.athaydes.spockframework.report.showCodeBlocks'
 
     def "The ConfigLoader should load the default configurations"() {
         given:
@@ -66,7 +67,7 @@ class ConfigLoaderSpec extends Specification {
         expected << [ 'example/report.css' ]
     }
 
-    def 'System properties should override props files'() {
+    def 'System properties should override props files and Groovy Spock config'() {
         given:
         "A ConfigLoader without any custom configuration"
         def configLoader = new ConfigLoader()
@@ -76,26 +77,46 @@ class ConfigLoaderSpec extends Specification {
         ( ConfigLoader.CUSTOM_CONFIG as File ).exists()
 
         and:
-        "I have specified a system property override"
-        def origPropVal = System.properties[ PROP_HIDE_EMPTY_BLOCKS ]
-        System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = expected
+        "I have specified a few system property overrides"
+        def originalHideEmptyBlocksProp = System.properties[ PROP_HIDE_EMPTY_BLOCKS ]
+        System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = hideEmptyBlocksProp
+
+        def originalEnableVividReportsProp = System.properties[ PROP_ENABLE_VIVID_REPORTS ]
+        System.properties[ PROP_ENABLE_VIVID_REPORTS ] = enableVividReportsProp.toString()
+
+        and:
+        "There is a Groovy Spock config file specifying some properties"
+        def groovyConfig = new SpockReportsConfiguration( properties: [
+                ( PROP_ENABLE_VIVID_REPORTS ): !enableVividReportsProp,
+                'extra.prop'                 : 'another property'
+        ] as Map<String, Object> )
 
         when:
         "I ask the ConfigLoader to load the configuration"
-        def result = configLoader.loadConfig()
+        def result = configLoader.loadConfig( groovyConfig )
 
         then:
-        "The ConfigLoader must use the value from the system property override"
-        result.getProperty( PROP_HIDE_EMPTY_BLOCKS ) == expected
+        "The ConfigLoader must use the value from the system property overrides"
+        result.getProperty( PROP_HIDE_EMPTY_BLOCKS ) == hideEmptyBlocksProp
+        result.getProperty( PROP_ENABLE_VIVID_REPORTS ) == enableVividReportsProp.toString()
+
+        and:
+        "The extra property added by the Groovy config is found"
+        result.getProperty( 'extra.prop' ) == 'another property'
 
         cleanup:
-        if ( origPropVal )
-            System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = origPropVal
+        if ( originalHideEmptyBlocksProp )
+            System.properties[ PROP_HIDE_EMPTY_BLOCKS ] = originalHideEmptyBlocksProp
         else
             System.properties.remove PROP_HIDE_EMPTY_BLOCKS
+        if ( originalEnableVividReportsProp )
+            System.properties[ PROP_ENABLE_VIVID_REPORTS ] = originalEnableVividReportsProp
+        else
+            System.properties.remove PROP_ENABLE_VIVID_REPORTS
 
         where:
-        expected = 'custom_value'
+        hideEmptyBlocksProp | enableVividReportsProp
+        'custom_value'      | true
     }
 
     @Unroll

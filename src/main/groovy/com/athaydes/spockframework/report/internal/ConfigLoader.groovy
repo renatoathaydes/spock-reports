@@ -4,6 +4,7 @@ import com.athaydes.spockframework.report.IReportCreator
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
+import org.spockframework.util.Nullable
 
 /**
  *
@@ -16,23 +17,15 @@ class ConfigLoader {
 
     static final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
 
-    Properties loadConfig() {
+    Properties loadConfig( @Nullable SpockReportsConfiguration spockConfig = null ) {
         def props = loadSystemProperties(
-                loadCustomProperties(
-                        loadDefaultProperties() ) )
+                loadSpockConfig( spockConfig,
+                        loadCustomProperties(
+                                loadDefaultProperties() ) ) )
 
         log.info( "SpockReports config loaded: {}", props )
 
         props
-    }
-
-    boolean getBoolean( String key, Properties props ) {
-        try {
-            return Boolean.parseBoolean( props.getProperty( key ) )
-        } catch ( e ) {
-            log.warn( "Invalid value for ${key}. Should be true or false. Error: $e" )
-            return false
-        }
     }
 
     void apply( IReportCreator reportCreator, Properties config ) {
@@ -115,5 +108,13 @@ class ConfigLoader {
             }
         }
         properties
+    }
+
+    private Properties loadSpockConfig( @Nullable SpockReportsConfiguration config,
+                                        Properties properties ) {
+        if ( config && config.properties ) {
+            properties.putAll( config.properties )
+        }
+        return properties
     }
 }
