@@ -21,12 +21,19 @@
         out << '<pre>\n' << data.info.narrative << '\n</pre>'
     }
     
-    def writeIssuesOrSees = { issues, description ->
-        if ( issues?.value() ) {
-            out << '\n#### ' << description << ':\n\n'
-            issues.value().each { issue ->
-                out << '* ' << issue << '\n'
+    def writeTagOrAttachment = { feature ->
+        def tagsByKey = feature.tags.groupBy( { t -> t.key } )
+        tagsByKey.each { key, values ->
+            out << '\n#### ' << key.capitalize() << 's:\n\n'
+            values.each { tag ->
+                out << '* ' << tag.url << '\n'
             }
+        }
+        if ( feature.attachments.size > 0 ) {
+            out << '\n#### ' << 'See:' << '\n\n'
+            feature.attachments.each { value ->
+                out << '* ' << value.url << '\n'
+            } 
         }
     }
     def writePendingFeature = { pendingFeature ->
@@ -48,9 +55,8 @@
             }
         }
     }
-    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.Issue ), 'Issues' )
-    writeIssuesOrSees( utils.specAnnotation( data, spock.lang.See ), 'See' )
     writeHeaders( utils.specHeaders( data ) )
+    writeTagOrAttachment data.info
 %>
 
 ## Features
@@ -60,8 +66,7 @@
 ### $name
 <% 
  writePendingFeature( description.getAnnotation( spock.lang.PendingFeature ) )
- writeIssuesOrSees( description.getAnnotation( spock.lang.Issue ), 'Issues' )
- writeIssuesOrSees( description.getAnnotation( spock.lang.See ), 'See' )
+ writeTagOrAttachment( delegate )
  if ( utils.isUnrolled( delegate ) ) {
     writeExtraInfo( utils.nextSpecExtraInfo( data ) )
  } else {

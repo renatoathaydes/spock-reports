@@ -6,9 +6,12 @@ import com.athaydes.spockframework.report.vivid.BlockCode
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
+import org.spockframework.runtime.model.Attachment
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import org.spockframework.runtime.model.SpecElementInfo
+import org.spockframework.runtime.model.Tag
 import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.PendingFeature
@@ -171,22 +174,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( narrative ) {
             builder.pre( 'class': 'narrative', narrative )
         }
-        def issues = Utils.specAnnotation( data, Issue )
-        if ( issues ) {
-            writeIssuesOrSees( builder, issues, 'Issues:' )
-        }
         def pendingFeature = Utils.specAnnotation( data, PendingFeature )
         if ( pendingFeature ) {
             writePendingFeature( builder, pendingFeature )
-        }
-        def sees = Utils.specAnnotation( data, See )
-        if ( sees ) {
-            writeIssuesOrSees( builder, sees, 'See:' )
         }
         def headers = Utils.specHeaders( data )
         if ( headers ) {
             writeHeaders( builder, headers )
         }
+        writeTagOrAttachment( builder, data.info)
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
             colgroup {
@@ -246,10 +242,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                     Utils.isSkipped( feature ) ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
                             feature.description.getAnnotation( Ignore ),
-                            feature.description.getAnnotation( Issue ),
-                            feature.description.getAnnotation( See ),
                             feature.description.getAnnotation( PendingFeature ),
-                            extraInfo )
+                            extraInfo,
+                            run.feature )
                     writeFeatureBlocks( builder, feature, problems, iteration )
                     writeRun( builder, run, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
@@ -268,10 +263,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
-                        feature.description.getAnnotation( Issue ),
-                        feature.description.getAnnotation( See ),
                         feature.description.getAnnotation( PendingFeature ),
-                        extraInfo )
+                        extraInfo,
+                        run?.feature )
                 def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
@@ -502,10 +496,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     private void writeFeatureDescription( MarkupBuilder builder, String name,
                                           String cssClass,
                                           Ignore ignoreAnnotation,
-                                          Issue issueAnnotation,
-                                          See seeAnnotation,
                                           PendingFeature pendingFeature,
-                                          List extraInfo ) {
+                                          List extraInfo,
+                                          SpecElementInfo feature ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -522,28 +515,50 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         div()
                         span( 'class': 'reason', ignoreReason )
                     }
-                    writeIssuesOrSees builder, issueAnnotation, 'Issues:'
                     writePendingFeature( builder, pendingFeature )
-                    writeIssuesOrSees builder, seeAnnotation, 'See:'
                     writeExtraInfo( builder, extraInfo )
+                    if ( feature ) {
+                        writeTagOrAttachment builder, feature
+                    }
                 }
             }
         }
     }
 
-    private void writeIssuesOrSees( MarkupBuilder builder, Annotation annotation, String description ) {
-        if ( annotation?.value() ) {
-            builder.div( 'class': 'issues' ) {
-                div( description )
+   private void writeTagOrAttachment( MarkupBuilder builder, SpecElementInfo feature ) {
+        
+        if ( feature.attachments.isEmpty() &&  feature.tags.isEmpty()) {
+            return;
+        }
+        
+        builder.div( 'class': 'issues' ) {
+            if ( !feature.tags.isEmpty() ) {
+                def tagsByKey = feature.tags.groupBy( { t -> t.key } )
+                tagsByKey.each { key, values ->
+                    div( key.capitalize() + 's:' )
+                    ul {
+						for ( Tag value in values ) {
+	                        li {
+	                            if ( Utils.isUrl( value.url ) ) {
+	                                a( 'href': value.url ) { mkp.yield value.name }
+	                            } else {
+	                                span stringFormatter.escapeXml( value.name )
+	                            }
+	                        }
+                        }
+                    }
+                }
+            }
+
+            if (!feature.attachments.isEmpty()) {
+                div( 'See:' )
                 ul {
-                    for ( String value in annotation.value() ) {
+					for ( Attachment value in feature.attachments ) {
                         li {
-                            if ( Utils.isUrl( value ) ) {
-                                a( 'href': value ) {
-                                    mkp.yield value
-                                }
+                            if ( Utils.isUrl( value.url ) ) {
+                                a( 'href': value.url ) { mkp.yield value.name }
                             } else {
-                                span stringFormatter.escapeXml( value )
+                                span stringFormatter.escapeXml( value.name )
                             }
                         }
                     }

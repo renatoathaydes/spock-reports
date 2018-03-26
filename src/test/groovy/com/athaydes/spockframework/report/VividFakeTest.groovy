@@ -47,7 +47,7 @@ class VividFakeTest extends Specification {
         return a + b
     }
 
-    @Issue( [ "http://myhost.com/issues/995", "http://myhost.com/issues/973" ] )
+    @Issue( [ "http://myhost.com/issues/995", "https://myhost.com/issues/973" ] )
     def "A test with an error"() {
         when:
         "An Exception is thrown"
@@ -57,7 +57,7 @@ class VividFakeTest extends Specification {
         "Will never succeed"
     }
 
-    @See( "http://myhost.com/features/feature-234" )
+    @See( [ "http://myhost.com/features/feature-234" ] )
     def "A test with a failure"() {
         when:
         "Do nothing"

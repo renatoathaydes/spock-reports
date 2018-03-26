@@ -66,7 +66,7 @@ class FakeTest extends Specification {
         "Nothing happens"
     }
 
-    @Issue( [ "http://myhost.com/issues/995", "http://myhost.com/issues/973" ] )
+    @Issue( [ "http://myhost.com/issues/995", "https://myhost.com/issues/973" ] )
     def "A test with an error"() {
         when:
         "An Exception is thrown"
@@ -76,7 +76,7 @@ class FakeTest extends Specification {
         "Will never succeed"
     }
 
-    @See( "http://myhost.com/features/feature-234" )
+    @See( [ "http://myhost.com/features/feature-234" ] )
     def "A test with a failure"() {
         when:
         "Do nothing"
