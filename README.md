@@ -171,9 +171,11 @@ spockReports {
 Alternatively:
 
 ```groovy
+spockReports {
     // set all properties at once
     set( [ 'com.athaydes.spockframework.report.showCodeBlocks': true,
            'com.athaydes.spockframework.report.outputDir': 'target/spock-reports' ] )
+}
 ```
 
 ### Using a properties file
