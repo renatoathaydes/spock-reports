@@ -6,12 +6,10 @@ import com.athaydes.spockframework.report.vivid.BlockCode
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
-import org.spockframework.runtime.model.Attachment
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecElementInfo
-import org.spockframework.runtime.model.Tag
 import spock.lang.Ignore
 import spock.lang.PendingFeature
 import spock.lang.Title
@@ -181,7 +179,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( headers ) {
             writeHeaders( builder, headers )
         }
-        writeTagOrAttachment( builder, data.info)
+        writeTagOrAttachment( builder, data.info )
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
             colgroup {
@@ -524,42 +522,39 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-   private void writeTagOrAttachment( MarkupBuilder builder, SpecElementInfo feature ) {
-        
-        if ( feature.attachments.isEmpty() &&  feature.tags.isEmpty()) {
-            return;
+    private void writeTagOrAttachment( MarkupBuilder builder, SpecElementInfo feature ) {
+        if ( feature.attachments.isEmpty() && feature.tags.isEmpty() ) {
+            return
         }
-        
+
+        def listItem = { value ->
+            builder.li {
+                if ( Utils.isUrl( value.url ) ) {
+                    a( 'href': value.url, value.name )
+                } else {
+                    span stringFormatter.escapeXml( value.name )
+                }
+            }
+        }
+
         builder.div( 'class': 'issues' ) {
             if ( !feature.tags.isEmpty() ) {
                 def tagsByKey = feature.tags.groupBy( { t -> t.key } )
-                tagsByKey.each { key, values ->
+                tagsByKey.each { key, tags ->
                     div( key.capitalize() + 's:' )
                     ul {
-						for ( Tag value in values ) {
-	                        li {
-	                            if ( Utils.isUrl( value.url ) ) {
-	                                a( 'href': value.url ) { mkp.yield value.name }
-	                            } else {
-	                                span stringFormatter.escapeXml( value.name )
-	                            }
-	                        }
+                        for ( tag in tags ) {
+                            listItem tag
                         }
                     }
                 }
             }
 
-            if (!feature.attachments.isEmpty()) {
+            if ( !feature.attachments.isEmpty() ) {
                 div( 'See:' )
                 ul {
-					for ( Attachment value in feature.attachments ) {
-                        li {
-                            if ( Utils.isUrl( value.url ) ) {
-                                a( 'href': value.url ) { mkp.yield value.name }
-                            } else {
-                                span stringFormatter.escapeXml( value.name )
-                            }
-                        }
+                    for ( attachment in feature.attachments ) {
+                        listItem attachment
                     }
                 }
             }
