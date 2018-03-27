@@ -1,5 +1,6 @@
 package com.athaydes.spockframework.report.vivid
 
+import com.athaydes.spockframework.report.util.Utils
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.MethodNode
@@ -20,7 +21,7 @@ class SpecSourceCodeCollector {
     final SourceLookup sourceLookup
     final ModuleNode module
 
-    private final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ] as ConcurrentHashMap
+    private static final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ] as ConcurrentHashMap
 
     @Nullable
     private String className
@@ -33,6 +34,7 @@ class SpecSourceCodeCollector {
     }
 
     void setClassName( String className ) {
+        log.debug( "Collecting code for class {}", className )
         this.@className = className
         specSourceCodeByClassName[ className ] = new SpecSourceCode()
     }
@@ -43,7 +45,17 @@ class SpecSourceCodeCollector {
 
     @Nullable
     SpecSourceCode getResultFor( String className ) {
-        specSourceCodeByClassName.remove( className )
+        def sourceCode = specSourceCodeByClassName[ className ]
+        if ( sourceCode ) {
+            def parentSpecs = Utils.getParentSpecNames( className )
+            for ( parentSpec in parentSpecs ) {
+                def parentCode = specSourceCodeByClassName[ parentSpec ]
+                if ( parentCode ) {
+                    sourceCode.addParent( parentCode )
+                }
+            }
+        }
+        sourceCode
     }
 
     void add( Statement statement ) {

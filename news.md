@@ -2,6 +2,32 @@
 
 > Most recent first
 
+* `27th of March 2018`
+
+Quite a lot of improvements in this release, including a couple of bug fixes and some small, but nice new features.
+
+The main new feature is support for Spock's `SpockConfig.groovy` file, which can now be used to configure spock-reports.
+
+So, if you already configure other Spock extensions via the `SpockConfig.groovy` file, now there's no need to create a
+separate file just for spock-reports.
+
+Here's a simple example configuration file you could use:
+
+```
+// configure the @Issue extension
+report {
+    issueUrlPrefix = 'http://myserver.com/issues/'
+}
+
+// configure spock-reports
+spockReports {
+    set 'com.athaydes.spockframework.report.showCodeBlocks': true
+    set 'com.athaydes.spockframework.report.outputDir': 'target/spock-reports'
+}
+```
+
+All properties are supported, of course! See more info in the [README](README.md) page.
+
 * `26th of September 2017`
 
 Version 1.3.2 of spock-reports released.

@@ -1,3 +1,13 @@
+1.5.0 - 2018 March 27
+
+* #76 support Spock's @Issue configuration (issueUrlPrefix and issueNamePrefix).
+* #131 Fixed bug causing OverlappingFileLockException when writing reports from multiple JVMs/Threads.
+* #139 removed println statements.
+* #138 added support for Specification parent class' code to be included in Vivid Reports.
+* #132 added link to the summary report (index.html) in Spec HTML reports.
+* #141 support for Spock's SpockConfig.groovy file to configure spock-reports.
+* Added Automatic-Module-Name to Manifest to stabilize Java 9's module name.
+
 1.4.0 - 2017 December 13
 
 * #85 show data table with a single row in unrolled specifications.

@@ -85,7 +85,7 @@ Result: **IGNORED**
 #### Issues:
 
 * http://myhost.com/issues/995
-* http://myhost.com/issues/973
+* https://myhost.com/issues/973
 
 Result: **ERROR**
 

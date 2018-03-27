@@ -7,6 +7,8 @@ import org.junit.runner.Description
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.SpecInfo
 
+import java.util.concurrent.TimeUnit
+
 import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
@@ -214,6 +216,38 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         json.stats == stats
         json.ignoredFeatures == [ 'aFeature' ]
         json.executedFeatures == [ 'bFeature', 'cFeature' ]
+    }
+
+    def "Must be able to lock the report file properly across JVMs"() {
+        given: 'A report file'
+        final file = File.createTempFile( getClass().name, 'txt' )
+        file.write( '1' )
+
+        when: 'the file is written to by several Threads in another JVMs, protected with a lock'
+        final threadCount = 20
+        def forkedJvmProcess = executeMainInForkedProcess( SimulatedReportWriter,
+                file.absolutePath, threadCount.toString() )
+
+        and: 'the file is written to simultaneously in this JVM, in the same manner'
+        sleep 200 // wait for the other JVM startup-time
+        def localJvmLatch = SimulatedReportWriter.write( file, threadCount )
+
+        then: 'both writers should finish within a reasonable timeout'
+        localJvmLatch.await( 10, TimeUnit.SECONDS )
+        forkedJvmProcess.waitFor( 15, TimeUnit.SECONDS )
+
+        and: 'the forked JVM should finish successfully'
+        // in case of error, this will print the errorStream
+        forkedJvmProcess.exitValue() == 0 || forkedJvmProcess.errorStream.text == 'FAILED'
+
+        and: 'The contents of the file must be the predicted value if the lock works'
+        file.text == ( 1..41 ).join( ' ' )
+    }
+
+    private static Process executeMainInForkedProcess( Class mainClass, String... args ) {
+        def java = System.getProperty( 'java.home' )
+        def cp = System.getProperty( 'java.class.path' )
+        [ "$java/bin/java", '-cp', cp, mainClass.name, *args ].execute()
     }
 
     private String testSummaryExpectedHtml() {

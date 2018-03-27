@@ -9,13 +9,10 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.BlockInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import org.spockframework.runtime.model.SpecElementInfo
 import spock.lang.Ignore
-import spock.lang.Issue
 import spock.lang.PendingFeature
-import spock.lang.See
 import spock.lang.Title
-
-import java.lang.annotation.Annotation
 
 /**
  *
@@ -133,6 +130,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     @Override
     void writeSummary( MarkupBuilder builder, SpecData data ) {
+        builder.div( 'class': 'back-link' ) {
+            a( href: 'index.html', '<< Back' )
+        }
         builder.div( 'class': 'summary-report' ) {
             h3 'Summary:'
             builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
@@ -171,22 +171,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( narrative ) {
             builder.pre( 'class': 'narrative', narrative )
         }
-        def issues = Utils.specAnnotation( data, Issue )
-        if ( issues ) {
-            writeIssuesOrSees( builder, issues, 'Issues:' )
-        }
         def pendingFeature = Utils.specAnnotation( data, PendingFeature )
         if ( pendingFeature ) {
             writePendingFeature( builder, pendingFeature )
-        }
-        def sees = Utils.specAnnotation( data, See )
-        if ( sees ) {
-            writeIssuesOrSees( builder, sees, 'See:' )
         }
         def headers = Utils.specHeaders( data )
         if ( headers ) {
             writeHeaders( builder, headers )
         }
+        writeTagOrAttachment( builder, data.info )
         builder.h3 "Features:"
         builder.table( 'class': 'features-table' ) {
             colgroup {
@@ -246,10 +239,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                     Utils.isSkipped( feature ) ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
                             feature.description.getAnnotation( Ignore ),
-                            feature.description.getAnnotation( Issue ),
-                            feature.description.getAnnotation( See ),
                             feature.description.getAnnotation( PendingFeature ),
-                            extraInfo )
+                            extraInfo,
+                            run.feature )
                     writeFeatureBlocks( builder, feature, problems, iteration )
                     writeRun( builder, run, iteration )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
@@ -268,10 +260,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
                 writeFeatureDescription( builder, feature.name, cssClass,
                         feature.description.getAnnotation( Ignore ),
-                        feature.description.getAnnotation( Issue ),
-                        feature.description.getAnnotation( See ),
                         feature.description.getAnnotation( PendingFeature ),
-                        extraInfo )
+                        extraInfo,
+                        run?.feature )
                 def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
@@ -502,10 +493,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     private void writeFeatureDescription( MarkupBuilder builder, String name,
                                           String cssClass,
                                           Ignore ignoreAnnotation,
-                                          Issue issueAnnotation,
-                                          See seeAnnotation,
                                           PendingFeature pendingFeature,
-                                          List extraInfo ) {
+                                          List extraInfo,
+                                          SpecElementInfo feature ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -522,30 +512,49 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         div()
                         span( 'class': 'reason', ignoreReason )
                     }
-                    writeIssuesOrSees builder, issueAnnotation, 'Issues:'
                     writePendingFeature( builder, pendingFeature )
-                    writeIssuesOrSees builder, seeAnnotation, 'See:'
                     writeExtraInfo( builder, extraInfo )
+                    if ( feature ) {
+                        writeTagOrAttachment builder, feature
+                    }
                 }
             }
         }
     }
 
-    private void writeIssuesOrSees( MarkupBuilder builder, Annotation annotation, String description ) {
-        if ( annotation?.value() ) {
-            builder.div( 'class': 'issues' ) {
-                div( description )
-                ul {
-                    for ( String value in annotation.value() ) {
-                        li {
-                            if ( Utils.isUrl( value ) ) {
-                                a( 'href': value ) {
-                                    mkp.yield value
-                                }
-                            } else {
-                                span stringFormatter.escapeXml( value )
-                            }
+    private void writeTagOrAttachment( MarkupBuilder builder, SpecElementInfo feature ) {
+        if ( feature.attachments.isEmpty() && feature.tags.isEmpty() ) {
+            return
+        }
+
+        def listItem = { value ->
+            builder.li {
+                if ( Utils.isUrl( value.url ) ) {
+                    a( 'href': value.url, value.name )
+                } else {
+                    span stringFormatter.escapeXml( value.name )
+                }
+            }
+        }
+
+        builder.div( 'class': 'issues' ) {
+            if ( !feature.tags.isEmpty() ) {
+                def tagsByKey = feature.tags.groupBy( { t -> t.key } )
+                tagsByKey.each { key, tags ->
+                    div( key.capitalize() + 's:' )
+                    ul {
+                        for ( tag in tags ) {
+                            listItem tag
                         }
+                    }
+                }
+            }
+
+            if ( !feature.attachments.isEmpty() ) {
+                div( 'See:' )
+                ul {
+                    for ( attachment in feature.attachments ) {
+                        listItem attachment
                     }
                 }
             }

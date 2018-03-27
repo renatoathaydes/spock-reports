@@ -67,7 +67,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.4.0</version>
+  <version>1.5.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -102,7 +102,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.4.0' ) {
+    testCompile( 'com.athaydes:spock-reports:1.5.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -149,11 +149,38 @@ The base `spock-reports`'s logger name is `com.athaydes.spockframework.report`.
 
 ## Customizing the reports
 
-Spock-reports can be configured via a configuration file or system properties.
+Spock-reports can be configured via the [Spock config file](http://spockframework.org/spock/docs/1.1/extensions.html#_spock_configuration_file),
+a dedicated properties file or system properties.
 
-All properties listed in the configuration file below are supported either way.
+All properties listed below are supported either way.
 
-If you prefer to use a file, the properties file should be located at the following location (relative to the classpath):
+### Using SpockConfig.groovy
+
+> supported since version 1.5.0
+
+All properties for spock-reports should be added in the `spockReports` block.
+To set properties, use the following syntax:
+
+```groovy
+spockReports {
+    set 'com.athaydes.spockframework.report.showCodeBlocks': true
+    set 'com.athaydes.spockframework.report.outputDir': 'target/spock-reports'
+}
+```
+
+Alternatively:
+
+```groovy
+spockReports {
+    // set all properties at once
+    set( [ 'com.athaydes.spockframework.report.showCodeBlocks': true,
+           'com.athaydes.spockframework.report.outputDir': 'target/spock-reports' ] )
+}
+```
+
+### Using a properties file
+
+If you prefer to use a properties file, the file should be located at the following location (relative to the classpath):
 
 `META-INF/services/com.athaydes.spockframework.report.IReportCreator.properties`
 
@@ -164,14 +191,16 @@ you're using. See the following blog posts by @rdmueller for instructions:
 * [Spock Reports with Grails 2.5](https://rdmueller.github.io/Spock-Reports-with-Grails-2.5/)
 * [Spock Reports with Grails 3.0](https://rdmueller.github.io/Spock-Reports-with-Grails-3.0/)
 
-If you use Gradle and prefer system properties, they should be configured on test task, e.g.:
+### Using system properties
+
+If you use Gradle and prefer system properties, they should be configured on the test task, e.g.:
 ```groovy
 task('functionalTest', type: Test) {
   systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
 }
 ```
 
-Here's the default properties file:
+### Default properties' values
 
 ```properties
 # Name of the implementation class(es) of report creator(s) to enable (separate multiple entries with commas)

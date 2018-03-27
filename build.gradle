@@ -8,7 +8,7 @@ plugins {
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.4.0"
+version = "1.5.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 def groovyVersion = '2.0.8'
@@ -43,13 +43,19 @@ test {
     beforeTest { descriptor ->
         logger.lifecycle( "Running test: " + descriptor )
     }
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showStackTraces = true
+    }
 }
 
 jar {
     manifest {
         attributes(
                 "Implementation-Title": "Athaydes-Spock-Reports",
-                "Implementation-Version": version )
+                "Implementation-Version": version,
+                "Automatic-Module-Name": 'com.athaydes.spock.reports' )
     }
 }
 

@@ -8,6 +8,7 @@ import com.athaydes.spockframework.report.internal.MultiReportCreator
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
+import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
@@ -30,6 +31,10 @@ class SpockReportExtension implements IGlobalExtension {
     static final PROJECT_URL = 'https://github.com/renatoathaydes/spock-reports'
 
     private final AtomicBoolean initialized = new AtomicBoolean( false )
+
+    //@Injected
+    private SpockReportsConfiguration configuration
+
     protected ConfigLoader configLoader = new ConfigLoader()
 
     IReportCreator reportCreator
@@ -37,8 +42,9 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void start() {
         if ( !initialized.getAndSet( true ) ) {
+            log.warn( "Got configuration from Spock: {}", configuration )
             log.debug "Configuring ${this.class.name}"
-            def config = configLoader.loadConfig()
+            def config = configLoader.loadConfig( configuration )
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
