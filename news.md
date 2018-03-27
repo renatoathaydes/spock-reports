@@ -8,7 +8,7 @@ Quite a lot of improvements in this release, including a couple of bug fixes and
 
 The main new feature is support for Spock's `SpockConfig.groovy` file, which can now be used to configure spock-reports.
 
-So, if already configure other Spock extensions via the `SpockConfig.groovy` file, now there's no need to create a
+So, if you already configure other Spock extensions via the `SpockConfig.groovy` file, now there's no need to create a
 separate file just for spock-reports.
 
 Here's a simple example configuration file you could use:
