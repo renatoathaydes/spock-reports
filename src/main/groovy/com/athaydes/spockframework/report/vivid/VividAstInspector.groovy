@@ -144,7 +144,7 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     @Override
     void visitMethod( MethodNode node ) {
         def previousIsTestMethod = visitStatements
-        visitStatements = node.isPublic() && node.parameters.size() == 0
+        visitStatements = node.isPublic() && !node.isStatic()
 
         if ( visitStatements ) {
             currentLabel = null
