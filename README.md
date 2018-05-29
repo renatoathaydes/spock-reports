@@ -200,6 +200,10 @@ task('functionalTest', type: Test) {
 }
 ```
 
+If you use Maven and prefer system properties, they should be configured as 
+[`systemPropertyVariables` in the `configuration` section](https://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html)
+ of the `failsafe` and `surefire` plugins.
+
 ### Default properties' values
 
 ```properties
