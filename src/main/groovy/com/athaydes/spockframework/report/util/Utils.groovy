@@ -151,11 +151,15 @@ class Utils {
 
     static Map createAggregatedData( List<FeatureInfo> executedFeatures,
                                      List<FeatureInfo> ignoredFeatures,
-                                     Map stats ) {
+                                     Map stats,
+                                     String specTitle = '',
+                                     String narrative = '' ) {
         [
                 executedFeatures: executedFeatures?.name?.sort() ?: [ ],
                 ignoredFeatures : ignoredFeatures?.name?.sort() ?: [ ],
-                stats           : stats
+                stats           : stats,
+                title           : specTitle,
+                narrative       : narrative,
         ]
     }
 

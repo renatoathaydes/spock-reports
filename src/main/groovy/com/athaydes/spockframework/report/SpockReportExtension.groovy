@@ -42,7 +42,7 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void start() {
         if ( !initialized.getAndSet( true ) ) {
-            log.warn( "Got configuration from Spock: {}", configuration )
+            log.info( "Got configuration from Spock: {}", configuration )
             log.debug "Configuring ${this.class.name}"
             def config = configLoader.loadConfig( configuration )
 

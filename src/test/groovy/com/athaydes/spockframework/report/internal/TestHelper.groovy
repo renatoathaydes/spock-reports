@@ -1,12 +1,16 @@
 package com.athaydes.spockframework.report.internal
 
 import junit.framework.ComparisonFailure
+import spock.lang.Narrative
 import spock.lang.Specification
+import spock.lang.Title
 
 /**
  *
  * User: Renato
  */
+@Title( "spock-reports TestHelper specification" )
+@Narrative( "This specification ensures the helper works" )
 class TestHelper extends Specification {
 
     static String minify( String xml ) {

@@ -3,8 +3,12 @@ package com.athaydes.spockframework.report.internal
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
+import spock.lang.Title
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
+import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.CLASS_NAME
+import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.CLASS_NAME_AND_TITLE
+import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.TITLE
 
 /**
  *
@@ -19,6 +23,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     String projectName
     String projectVersion
+    SpecSummaryNameOption specSummaryNameOption = CLASS_NAME_AND_TITLE
 
     protected HtmlReportAggregator() {
         // provided for testing only (need to Mock it)
@@ -31,8 +36,11 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         def specName = Utils.getSpecClassName( data )
         def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> Utils.isSkipped( feature ) }
 
+        def specTitle = Utils.specAnnotation( data, Title )?.value() ?: ''
+        def narrative = data.info.narrative ?: ''
+
         aggregatedData[ specName ] = Utils.createAggregatedData(
-                allFeatures[ false ], allFeatures[ true ], stats )
+                allFeatures[ false ], allFeatures[ true ], stats, specTitle, narrative )
     }
 
     void writeOut() {
@@ -120,24 +128,48 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             tbody {
                 data.keySet().sort().each { String specName ->
                     def stats = data[ specName ].stats
-                    def cssClasses = [ ]
-                    if ( stats.failures ) cssClasses << 'failure'
-                    if ( stats.errors ) cssClasses << 'error'
-                    tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
-                        td {
-                            a( href: "${specName}.html", specName )
-                        }
-                        td stats.totalRuns
-                        td stats.failures
-                        td stats.errors
-                        td stats.skipped
-                        td stringFormatter.toPercentage( stats.successRate )
-                        td stringFormatter.toTimeDuration( stats.time )
-                    }
+                    def title = data[ specName ].title
+                    writeSpecSummary( builder, stats, specName, title )
                 }
             }
         }
 
+    }
+
+    protected void writeSpecSummary( MarkupBuilder builder, Map stats, String specName, String title ) {
+        def cssClasses = [ ]
+        if ( stats.failures ) cssClasses << 'failure'
+        if ( stats.errors ) cssClasses << 'error'
+        builder.tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
+            td {
+                switch ( specSummaryNameOption ) {
+                    case CLASS_NAME_AND_TITLE:
+                        a( href: "${specName}.html", specName )
+                        if ( title ) {
+                            div( 'class': 'spec-title', title )
+                        }
+                        break
+                    case CLASS_NAME:
+                        a( href: "${specName}.html", specName )
+                        break
+                    case TITLE:
+                        if (title) {
+                            a( href: "${specName}.html" ) {
+                                div( 'class': 'spec-title', title )
+                            }
+                        } else {
+                            a( href: "${specName}.html", specName )
+                        }
+                        break
+                }
+            }
+            td stats.totalRuns
+            td stats.failures
+            td stats.errors
+            td stats.skipped
+            td stringFormatter.toPercentage( stats.successRate )
+            td stringFormatter.toTimeDuration( stats.time )
+        }
     }
 
 }

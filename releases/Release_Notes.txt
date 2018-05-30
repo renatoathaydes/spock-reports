@@ -1,3 +1,11 @@
+1.6.0 - 2018 May 30
+
+* changed log level of message showing spock-reports config from warning to info.
+* #147 vivid reports can include test methods which have parameters.
+* #146 added specification's title and narrative to aggregated data.
+* added spec's title to summary report. Allow configuring whether to show both name and title (default),
+  only class name, or only title (if available).
+
 1.5.0 - 2018 March 27
 
 * #76 support Spock's @Issue configuration (issueUrlPrefix and issueNamePrefix).
