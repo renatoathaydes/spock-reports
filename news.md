@@ -2,6 +2,12 @@
 
 > Most recent first
 
+* `30th of May 2018`
+
+Small release fixing small issues and adding a new feature: the specification's titles, by default, will now be shown
+in the HTML summary report along with the class' name. This can be configured to show only class name or only title
+(when available) if desired. Details in the README page.
+
 * `27th of March 2018`
 
 Quite a lot of improvements in this release, including a couple of bug fixes and some small, but nice new features.
