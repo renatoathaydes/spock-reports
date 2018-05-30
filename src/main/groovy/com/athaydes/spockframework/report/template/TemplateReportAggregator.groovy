@@ -5,6 +5,7 @@ import com.athaydes.spockframework.report.internal.StringFormatHelper
 import com.athaydes.spockframework.report.util.Utils
 import groovy.text.GStringTemplateEngine
 import groovy.util.logging.Slf4j
+import spock.lang.Title
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
 
@@ -22,9 +23,11 @@ class TemplateReportAggregator {
 
         def stats = Utils.stats( data )
         def allFeatures = data.info.allFeaturesInExecutionOrder.groupBy { feature -> Utils.isSkipped( feature ) }
+        def specTitle = Utils.specAnnotation( data, Title )?.value() ?: ''
+        def narrative = data.info.narrative ?: ''
 
         aggregatedData[ specName ] = Utils.createAggregatedData(
-                allFeatures[ false ], allFeatures[ true ], stats )
+                allFeatures[ false ], allFeatures[ true ], stats, specTitle, narrative )
     }
 
     private String summary( String templateLocation, Map allData ) {
