@@ -16,9 +16,6 @@ If you prefer to have your own template to generate reports from, you can use th
 to generate reports in any text format.
 See the **"Using template reports"** section below.
 
-> **NEW FEATURE**: since version 1.3.0, you can now get spock-reports to show the source code of each Specification
-block in the reports with the `com.athaydes.spockframework.report.showCodeBlocks` property (what we call _vivid_ reports).
-
 > Support for Geb tests: if you use [Geb](http://gebish.org/) for web testing, check out the
   [geb-spock-reports](https://github.com/AOEpeople/geb-spock-reports) extension which adds screenshots to Spock reports.
 
@@ -67,7 +64,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -102,7 +99,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.5.0' ) {
+    testCompile( 'com.athaydes:spock-reports:1.6.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
