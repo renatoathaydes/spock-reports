@@ -22,8 +22,6 @@ import spock.lang.Title
 class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         implements IReportCreator {
 
-    private static final defaultAggregator = new HtmlReportAggregator()
-
     final HtmlReportAggregator reportAggregator
 
     def stringFormatter = new StringFormatHelper()
@@ -34,7 +32,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     boolean enabled = true
 
     HtmlReportCreator() {
-        reportAggregator = defaultAggregator
+        reportAggregator = new HtmlReportAggregator()
     }
 
     HtmlReportCreator( HtmlReportAggregator reportAggregator ) {
@@ -71,6 +69,14 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             this.@enabled = Boolean.parseBoolean( enabled )
         } catch ( e ) {
             log.warn( "Problem parsing 'enabled' property, invalid value: $enabled", e )
+        }
+    }
+
+    void setSpecSummaryNameOption( String option ) {
+        try {
+            reportAggregator?.specSummaryNameOption = SpecSummaryNameOption.valueOf( option.toUpperCase() )
+        } catch ( e ) {
+            log.warn( "Error trying to set specSummaryNameOption: {}", e.toString() )
         }
     }
 

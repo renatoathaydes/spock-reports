@@ -244,6 +244,84 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         file.text == ( 1..41 ).join( ' ' )
     }
 
+    def "Should be able to write spec name or title according to chosen settings"() {
+        given: 'A HtmlReportAggregator using a specific summary option of #summarySetting'
+        def aggregator = new HtmlReportAggregator(
+                specSummaryNameOption: SpecSummaryNameOption.valueOf( summarySetting.toUpperCase() ) )
+
+        and: 'A MarkupBuilder'
+        def writer = new StringWriter()
+        def builder = new MarkupBuilder( writer )
+
+        when: 'The details of the data is written with the builder'
+        aggregator.writeSpecSummary( builder, stats, specName, specTitle )
+
+        then: 'The data should be written according to chosen settings'
+        assertVerySimilar( minify( expectedSummary ), minify( writer.toString() ) )
+
+        where:
+        stats                  | specName | specTitle | summarySetting | expectedSummary
+        [ failures   : 1,
+          errors     : 0,
+          skipped    : 2,
+          totalRuns  : 5,
+          successRate: 0.25,
+          time       : 0 ]     |
+                'abc.SpecA'               |
+                'Spec A'                              |
+                'class_name_and_title'                                 |
+                "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a><div class='spec-title'>Spec A</div>" +
+                "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+
+        [ failures   : 1,
+          errors     : 0,
+          skipped    : 2,
+          totalRuns  : 5,
+          successRate: 0.25,
+          time       : 0 ]     |
+                'abc.SpecA'               |
+                ''                                    |
+                'class_name_and_title'                                 |
+                "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
+                "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+
+        [ failures   : 2,
+          errors     : 4,
+          skipped    : 1,
+          totalRuns  : 7,
+          successRate: 0.33,
+          time       : 1_000 ] |
+                'abc.SpecA'               |
+                'Spec A'                              |
+                'title'                                                |
+                "<tr class='failure error'><td><a href='abc.SpecA.html'><div class='spec-title'>Spec A</div></a>" +
+                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+
+        [ failures   : 2,
+          errors     : 4,
+          skipped    : 1,
+          totalRuns  : 7,
+          successRate: 0.33,
+          time       : 1_000 ] |
+                'abc.SpecA'               |
+                ''                                    |
+                'title'                                                |
+                "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
+                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+
+        [ failures   : 2,
+          errors     : 4,
+          skipped    : 1,
+          totalRuns  : 7,
+          successRate: 0.33,
+          time       : 1_000 ] |
+                'abc.SpecA'               |
+                'Spec A'                              |
+                'class_name'                                           |
+                "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
+                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+    }
+
     private static Process executeMainInForkedProcess( Class mainClass, String... args ) {
         def java = System.getProperty( 'java.home' )
         def cp = System.getProperty( 'java.class.path' )
