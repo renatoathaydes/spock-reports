@@ -67,13 +67,15 @@
 <% 
  writePendingFeature( description.getAnnotation( spock.lang.PendingFeature ) )
  writeTagOrAttachment( delegate )
- if ( utils.isUnrolled( delegate ) ) {
-    writeExtraInfo( utils.nextSpecExtraInfo( data ) )
- } else {
-    // collapse all iterations
-    (1..iterations.size()).each {
-        writeExtraInfo( utils.nextSpecExtraInfo( data ) )
-    }
+ if (result != "IGNORED") {
+      if ( utils.isUnrolled( delegate ) ) {
+          writeExtraInfo( utils.nextSpecExtraInfo( data ) )
+      } else {
+          // collapse all iterations
+          (1..iterations.size()).each {
+              writeExtraInfo( utils.nextSpecExtraInfo( data ) )
+          }
+     }
  }
 %>
 Result: **$result**
