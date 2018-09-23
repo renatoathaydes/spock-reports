@@ -22,6 +22,7 @@ So that bar
 ### A first test
 
 Result: **FAIL**
+Time: Unknown
 
 * Given: we have x and y
 
@@ -33,10 +34,10 @@ Result: **FAIL**
 
 * Where: The examples below are used
 
- | x | y |
- |---|---|
- | a | a | (PASS)
- | b | c | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | a | a | Unknown | (PASS)
+ | b | c | Unknown | (FAIL)
 
 The following problems occurred:
 
@@ -57,6 +58,7 @@ b |  c
 ### Another feature!!!!
 
 Result: **PASS**
+Time: Unknown
 
 * Given: Setup block here
 
@@ -65,6 +67,7 @@ Result: **PASS**
 ### A when then spec
 
 Result: **PASS**
+Time: Unknown
 
 * When: This is the when
 
@@ -73,6 +76,7 @@ Result: **PASS**
 ### Please ignore me
 
 Result: **IGNORED**
+Time: Unknown
 
 * Given: Nothing
 
@@ -88,6 +92,7 @@ Result: **IGNORED**
 * https://myhost.com/issues/973
 
 Result: **ERROR**
+Time: Unknown
 
 * When: An Exception is thrown
 
@@ -106,6 +111,7 @@ java.lang.RuntimeException: As expected
 * http://myhost.com/features/feature-234
 
 Result: **FAIL**
+Time: Unknown
 
 * When: Do nothing
 
@@ -129,12 +135,14 @@ Condition not satisfied:
 	and what the expected outcomes are in such a way that the best possible common understanding is reached
 
 Result: **PASS**
+Time: Unknown
 
 * Expect: The long description above to look good in the report
 
 ### A Spec with empty block Strings
 
 Result: **PASS**
+Time: Unknown
 
 * Given: ----
 
@@ -145,6 +153,7 @@ Result: **PASS**
 ### An @Unrolled spec with x=0 and y=1
 
 Result: **PASS**
+Time: Unknown
 
 * Given: nothing
 
@@ -154,13 +163,14 @@ Result: **PASS**
 
 * Where: ----
 
- | x | y |
- |---|---|
- | 0 | 1 | (PASS)
+ | x | y |         |
+ |---|---|---------|
+ | 0 | 1 | Unknown | (PASS)
 
 ### An @Unrolled spec with x=2 and y=3
 
 Result: **FAILURE**
+Time: Unknown
 
 * Given: nothing
 
@@ -170,9 +180,9 @@ Result: **FAILURE**
 
 * Where: ----
 
- | x | y |
- |---|---|
- | 2 | 3 | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | 2 | 3 | Unknown | (FAIL)
 
 The following problems occurred:
 
@@ -189,6 +199,7 @@ x == 0
 ### An @Unrolled spec with x=0 and y=5
 
 Result: **ERROR**
+Time: Unknown
 
 * Given: nothing
 
@@ -198,9 +209,9 @@ Result: **ERROR**
 
 * Where: ----
 
- | x | y |
- |---|---|
- | 0 | 5 | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | 0 | 5 | Unknown | (FAIL)
 
 The following problems occurred:
 
@@ -214,6 +225,7 @@ java.lang.RuntimeException: y is 5
 > Pending Feature
 
 Result: **IGNORED**
+Time: Unknown
 
 * When: the feature is ready
 

@@ -19,6 +19,7 @@ I want to see my code
 ### A first test with Then code block
 
 Result: **FAIL**
+Time: Unknown
 
 * Given: we have x and y
 
@@ -34,10 +35,10 @@ x == y
 
 * Where: The examples below are used
 
- | x | y |
- |---|---|
- | a | a | (PASS)
- | b | c | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | a | a | Unknown | (PASS)
+ | b | c | Unknown | (FAIL)
 
 The following problems occurred:
 
@@ -58,6 +59,7 @@ b |  c
 ### Another feature without code
 
 Result: **PASS**
+Time: Unknown
 
 * Given: Setup block here
 
@@ -66,6 +68,7 @@ Result: **PASS**
 ### Another feature with method call
 
 Result: **PASS**
+Time: Unknown
 
 * Expect: 
 
@@ -81,6 +84,7 @@ add( 1, 2 ) == 3
 * https://myhost.com/issues/973
 
 Result: **ERROR**
+Time: Unknown
 
 * When: An Exception is thrown
 
@@ -103,6 +107,7 @@ java.lang.RuntimeException: As expected
 * http://myhost.com/features/feature-234
 
 Result: **FAIL**
+Time: Unknown
 
 * When: Do nothing
 
@@ -126,6 +131,7 @@ Condition not satisfied:
 ### A Spec without block Strings
 
 Result: **PASS**
+Time: Unknown
 
 * Given: 
 
@@ -164,6 +170,7 @@ c > 0
 ### An @Unrolled spec with x=0 and y=1
 
 Result: **PASS**
+Time: Unknown
 
 * Given: nothing
 
@@ -183,13 +190,14 @@ if ( y == 5 ) {
 
 * Where: 
 
- | x | y |
- |---|---|
- | 0 | 1 | (PASS)
+ | x | y |         |
+ |---|---|---------|
+ | 0 | 1 | Unknown | (PASS)
 
 ### An @Unrolled spec with x=2 and y=3
 
 Result: **FAILURE**
+Time: Unknown
 
 * Given: nothing
 
@@ -209,9 +217,9 @@ if ( y == 5 ) {
 
 * Where: 
 
- | x | y |
- |---|---|
- | 2 | 3 | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | 2 | 3 | Unknown | (FAIL)
 
 The following problems occurred:
 
@@ -228,6 +236,7 @@ x == 0
 ### An @Unrolled spec with x=0 and y=5
 
 Result: **ERROR**
+Time: Unknown
 
 * Given: nothing
 
@@ -247,9 +256,9 @@ if ( y == 5 ) {
 
 * Where: 
 
- | x | y |
- |---|---|
- | 0 | 5 | (FAIL)
+ | x | y |         |
+ |---|---|---------|
+ | 0 | 5 | Unknown | (FAIL)
 
 The following problems occurred:
 

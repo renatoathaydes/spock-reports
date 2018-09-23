@@ -77,8 +77,11 @@
           }
      }
  }
+ def iterationTimes = iterations.collect { it.time ?: 0L }
+ def totalTime = fmt.toTimeDuration( iterationTimes.sum() )
 %>
 Result: **$result**
+Time: $totalTime
 <%
         for ( block in blocks ) {
  %>
@@ -93,13 +96,17 @@ Result: **$result**
           }
         }
         def executedIterations = iterations.findAll { it.dataValues || it.errors }
+        
         if ( params && executedIterations ) {
+            def iterationReportedTimes = executedIterations.collect { it.time ?: 0L }
+                        .collect { fmt.toTimeDuration( it ) }
+            def maxTimeLength = iterationReportedTimes.collect { it.size() }.sort().last()
  %>
- | ${params.join( ' | ' )} |
- |${params.collect { ( '-' * ( it.size() + 2 ) ) + '|' }.join()}
+ | ${params.join( ' | ' )} | ${' ' * maxTimeLength} |
+ |${params.collect { ( '-' * ( it.size() + 2 ) ) + '|' }.join()}${'-' * ( maxTimeLength + 2 )}|
 <%
-            for ( iteration in executedIterations ) {
-%> | ${iteration.dataValues.join( ' | ' )} | ${iteration.errors ? '(FAIL)' : '(PASS)'}
+            executedIterations.eachWithIndex { iteration, i -> 
+%> | ${( iteration.dataValues + [ iterationReportedTimes[ i ] ] ).join( ' | ' )} | ${iteration.errors ? '(FAIL)' : '(PASS)'}
 <%          }
         }
         def problems = executedIterations.findAll { it.errors }
