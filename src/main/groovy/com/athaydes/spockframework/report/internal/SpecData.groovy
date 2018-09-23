@@ -7,8 +7,7 @@ import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 
 /**
- *
- * User: Renato
+ * Data collected for a Spock Specification.
  */
 class SpecData {
     SpecInfo info
@@ -17,6 +16,9 @@ class SpecData {
     ErrorInfo initializationError
 }
 
+/**
+ * Data related to a single feature run in a Specification.
+ */
 class FeatureRun {
     FeatureInfo feature
     Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
@@ -27,6 +29,9 @@ class FeatureRun {
     }
 }
 
+/**
+ * Information about an error that occurred within a feature run.
+ */
 class SpecProblem {
 
     final ErrorInfo failure
@@ -43,6 +48,11 @@ class SpecProblem {
 
 }
 
+/**
+ * Kind of failure for a feature run.
+ *
+ * An ERROR means an unexpected {@link Throwable} was thrown, while FAILURE means a test assertion failure.
+ */
 enum FailureKind {
     FAILURE, ERROR
 }
