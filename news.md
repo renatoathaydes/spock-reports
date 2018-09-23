@@ -2,6 +2,13 @@
 
 > Most recent first
 
+* `23rd of September 2018`
+
+1.6.1 version allows template report authors to access time information for each feature run iteration. The default
+markdown template was updated to demonstrate how that information can be accessed.
+
+This release also contains small bug fixes and it allows changing the location of the aggregated JSON report.
+
 * `30th of May 2018`
 
 Small release fixing small issues and adding a new feature: the specification's titles, by default, will now be shown

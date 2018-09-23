@@ -1,3 +1,11 @@
+1.6.1 - 2018 September 23
+
+* #154 collect time each feature iteration takes to run, so information can be used in template reports.
+* #154 added feature iteration time to markdown default template report.
+* #155 allow location of aggregated json report file to be customized.
+* #157 show extra reportInfo even when feature is ignored.
+* tiny improvement in the appearance of example tables in HTML reports.
+
 1.6.0 - 2018 May 30
 
 * changed log level of message showing spock-reports config from warning to info.
