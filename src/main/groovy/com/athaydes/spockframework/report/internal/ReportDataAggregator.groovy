@@ -3,6 +3,7 @@ package com.athaydes.spockframework.report.internal
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
+import groovy.util.logging.Slf4j
 
 import java.nio.channels.FileLock
 import java.nio.charset.Charset
@@ -14,6 +15,7 @@ import java.util.regex.Pattern
  *
  * This is necessary to support parallel builds.
  */
+@Slf4j
 class ReportDataAggregator {
 
     static final AGGREGATED_DATA_FILE = 'aggregated_report.json'
@@ -22,6 +24,16 @@ class ReportDataAggregator {
     static final jsonParser = new JsonSlurper()
 
     static Map<String, Map> getAllAggregatedDataAndPersistLocalData( File dir, Map localData ) {
+        if ( dir != null && !dir.exists() ) {
+            dir.mkdirs()
+        }
+
+        if ( !dir?.isDirectory() ) {
+            log.warn( "Cannot store aggregated JSON report in the 'aggregatedJsonReportDir' as it does not exist " +
+                    "or is not a directory: {}", dir )
+            return localData
+        }
+
         final rawFile = new File( dir, AGGREGATED_DATA_FILE )
         rawFile.createNewFile() // ensure file exists before locking it
 

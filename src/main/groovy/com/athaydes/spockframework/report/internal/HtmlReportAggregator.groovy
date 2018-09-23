@@ -23,6 +23,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     String projectName
     String projectVersion
+    String aggregatedJsonReportDir
     SpecSummaryNameOption specSummaryNameOption = CLASS_NAME_AND_TITLE
 
     protected HtmlReportAggregator() {
@@ -47,9 +48,10 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         final reportsDir = outputDirectory as File // try to force it into being a File!
         if ( existsOrCanCreate( reportsDir ) ) {
             final aggregatedReport = new File( reportsDir, 'index.html' )
+            final jsonDir = aggregatedJsonReportDir ? new File( aggregatedJsonReportDir ) : reportsDir
 
             try {
-                def allData = getAllAggregatedDataAndPersistLocalData( reportsDir, aggregatedData )
+                def allData = getAllAggregatedDataAndPersistLocalData( jsonDir, aggregatedData )
                 aggregatedData.clear()
                 aggregatedReport.write( reportFor( allData ) )
             } catch ( e ) {
@@ -153,7 +155,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                         a( href: "${specName}.html", specName )
                         break
                     case TITLE:
-                        if (title) {
+                        if ( title ) {
                             a( href: "${specName}.html" ) {
                                 div( 'class': 'spec-title', title )
                             }
@@ -171,5 +173,4 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             td stringFormatter.toTimeDuration( stats.time )
         }
     }
-
 }

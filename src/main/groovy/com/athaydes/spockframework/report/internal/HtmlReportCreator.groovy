@@ -81,13 +81,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     @Override
+    void setAggregatedJsonReportDir( String dir ) {
+        reportAggregator?.aggregatedJsonReportDir = dir
+    }
+
+    @Override
     void setProjectName( String projectName ) {
-        reportAggregator.projectName = projectName
+        reportAggregator?.projectName = projectName
     }
 
     @Override
     void setProjectVersion( String projectVersion ) {
-        reportAggregator.projectVersion = projectVersion
+        reportAggregator?.projectVersion = projectVersion
     }
 
     @Override

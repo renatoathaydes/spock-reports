@@ -3,8 +3,7 @@ package com.athaydes.spockframework.report
 import com.athaydes.spockframework.report.internal.SpecData
 
 /**
- *
- * User: Renato
+ * A spock-reports report creator.
  */
 interface IReportCreator {
 
@@ -12,9 +11,11 @@ interface IReportCreator {
 
     void setOutputDir( String path )
 
+    void setAggregatedJsonReportDir( String path )
+
     void setHideEmptyBlocks( boolean hide )
 
-    void setShowCodeBlocks(boolean show )
+    void setShowCodeBlocks( boolean show )
 
     void setTestSourceRoots( String roots )
 

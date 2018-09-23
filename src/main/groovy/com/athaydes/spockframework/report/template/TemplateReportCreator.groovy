@@ -58,12 +58,17 @@ class TemplateReportCreator implements IReportCreator {
 
     @Override
     void setProjectName( String projectName ) {
-        reportAggregator.projectName = projectName
+        reportAggregator?.projectName = projectName
     }
 
     @Override
     void setProjectVersion( String projectVersion ) {
-        reportAggregator.projectVersion = projectVersion
+        reportAggregator?.projectVersion = projectVersion
+    }
+
+    @Override
+    void setAggregatedJsonReportDir( String path ) {
+        reportAggregator?.aggregatedJsonReportDir = path
     }
 
     void done() {
@@ -73,7 +78,7 @@ class TemplateReportCreator implements IReportCreator {
 
         def reportsDir = Utils.createDir( outputDir )
 
-        reportAggregator.writeOut(
+        reportAggregator?.writeOut(
                 new File( reportsDir, summaryFileName ),
                 summaryTemplateFile )
     }

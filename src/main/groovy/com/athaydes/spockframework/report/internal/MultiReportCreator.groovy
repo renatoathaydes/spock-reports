@@ -37,6 +37,11 @@ class MultiReportCreator implements IReportCreator {
     }
 
     @Override
+    void setAggregatedJsonReportDir( String path ) {
+        throw new OperationNotSupportedException( "No modifications after construction" )
+    }
+
+    @Override
     void setHideEmptyBlocks( boolean hide ) {
         throw new OperationNotSupportedException( "No modifications after construction" )
     }

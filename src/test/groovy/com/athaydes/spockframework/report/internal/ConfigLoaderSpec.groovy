@@ -151,6 +151,7 @@ class ConfigLoaderSpec extends Specification {
         propertiesMap << [
                 [ cool: true, name: 'nice', count: 4, percentage: 0.33 ],
                 [ cool: false, name: 'boo', count: -2, percentage: -0.1 ],
+                [ cool: false, name: 'bar', count: 2, percentage: 0.5, aggregatedJsonReportDir: 'json_dir' ],
                 [ cool: true, name: 'nice', count: 4, percentage: 0.33 ],
                 [ cool: false, name: 'boo', count: -2, percentage: -0.1 ],
         ]
@@ -158,13 +159,15 @@ class ConfigLoaderSpec extends Specification {
         propertyPrefix << [
                 IReportCreator.package.name + '.',
                 IReportCreator.package.name + '.',
+                IReportCreator.package.name + '.',
                 ReportCreatorWithManyProperties.name + '.',
-                ReportCreatorWithManyProperties.name + '.'
+                ReportCreatorWithManyProperties.name + '.',
         ]
 
         methodCalls << [
                 [ : ],
                 [ outputDir: 'hi', projectName: 'hello', projectVersion: '1.0' ],
+                [ outputDir: 'hi', projectName: 'hello', projectVersion: '1.0', aggregatedJsonReportDir: 'json_dir' ],
                 [ hideEmptyBlocks: true, showCodeBlocks: true ],
                 [ showCodeBlocks: false ],
         ]
@@ -199,6 +202,11 @@ class ReportCreatorWithManyProperties implements IReportCreator {
     }
 
     @Override
+    void setAggregatedJsonReportDir( String path ) {
+        methodCalls << [ 'aggregatedJsonReportDir': path ]
+    }
+
+    @Override
     void setHideEmptyBlocks( boolean hide ) {
         methodCalls << [ 'hideEmptyBlocks': hide ]
     }
@@ -218,7 +226,6 @@ class ReportCreatorWithManyProperties implements IReportCreator {
     @Override
     void setProjectName( String projectName ) {
         methodCalls << [ 'projectName': projectName ]
-
     }
 
     @Override

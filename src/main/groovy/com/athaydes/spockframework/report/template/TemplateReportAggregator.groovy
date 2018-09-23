@@ -16,6 +16,7 @@ class TemplateReportAggregator {
 
     volatile String projectName
     volatile String projectVersion
+    volatile String aggregatedJsonReportDir
 
     void addData( SpecData data ) {
         def specName = Utils.getSpecClassName( data )
@@ -51,10 +52,11 @@ class TemplateReportAggregator {
 
     void writeOut( File summaryFile, String templateLocation ) {
         final reportsDir = summaryFile.parentFile
+        final jsonDir = aggregatedJsonReportDir ? new File( aggregatedJsonReportDir ) : reportsDir
         log.info( "Writing summary report to {}", summaryFile.absolutePath )
 
         try {
-            def allData = getAllAggregatedDataAndPersistLocalData( reportsDir, aggregatedData )
+            def allData = getAllAggregatedDataAndPersistLocalData( jsonDir, aggregatedData )
             aggregatedData.clear()
             summaryFile.write summary( templateLocation, allData )
         } catch ( e ) {
