@@ -250,9 +250,23 @@ com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileNam
 com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
 ```
 
+### Notes on `outputDir`
+
 Be aware that the `outputDir` property is relative to the working directory.
 
 For Maven projects which use the defaults, you might want to change the `outputDir` to `target/spock-reports`.
+
+If your build system can cache build outputs (to, for example, skip unnecessary build steps when in/out do not change),
+register the `outputDir` as an output of the `test` task.
+
+In Gradle, for example, this can be accomplished with the following declaration in your `build.gradle` file:
+
+```groovy
+test {
+    // set to the same value as 'com.athaydes.spockframework.report.outputDir'
+    outputs.dir "$buildDir/spock-reports"
+}
+```
 
 ### Customizing the report stylesheets
 
