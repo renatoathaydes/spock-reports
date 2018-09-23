@@ -20,6 +20,7 @@ class SpecData {
 class FeatureRun {
     FeatureInfo feature
     Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
+    Map<IterationInfo, Long> timeByIteration = [ : ]
 
     int iterationCount() {
         failuresByIteration.size()

@@ -255,7 +255,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             run.feature )
                     writeFeatureBlocks( builder, feature, problems, iteration )
                     writeRun( builder, run, iteration )
-                    problemWriter.writeProblemBlockForIteration( builder, iteration, problems )
+                    def time = run.timeByIteration.get( iteration, 0L )
+                    problemWriter.writeProblemBlockForIteration( builder, iteration, problems, time )
                 }
             } else {
                 final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0

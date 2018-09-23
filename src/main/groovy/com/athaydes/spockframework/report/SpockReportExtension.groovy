@@ -137,13 +137,25 @@ class SpecInfoListener implements IRunListener {
     @Override
     void beforeIteration( IterationInfo iteration ) {
         log.debug( "Before iteration: {}", iteration.name )
-        currentRun().failuresByIteration[ iteration ] = [ ]
+        currentRun().with {
+            failuresByIteration[ iteration ] = [ ]
+            timeByIteration[ iteration ] = System.nanoTime()
+        }
         currentIteration = iteration
     }
 
     @Override
     void afterIteration( IterationInfo iteration ) {
         log.debug( "After iteration: {}", iteration.name )
+        currentRun().with {
+            def startTime = timeByIteration[ iteration ]
+            if ( !startTime ) {
+                timeByIteration[ iteration ] = 0L
+            } else {
+                long totalTime = ( ( System.nanoTime() - startTime ) / 1_000_000L ).toLong()
+                timeByIteration[ iteration ] = totalTime
+            }
+        }
         currentIteration = null
         InfoContainer.addSeparator( Utils.getSpecClassName( specData ) )
     }

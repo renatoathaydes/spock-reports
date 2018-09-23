@@ -16,15 +16,16 @@ class ProblemBlockWriter {
     void writeProblemBlockForAllIterations( MarkupBuilder builder, FeatureRun run, boolean isError, boolean isFailure ) {
         if ( isError || isFailure ) {
             problemsContainer( builder ) {
-                writeProblems( builder, problemsByIteration( run.failuresByIteration ) )
+                writeProblems( builder, problemsByIteration( run.failuresByIteration, run.timeByIteration ) )
             }
         }
     }
 
-    void writeProblemBlockForIteration( MarkupBuilder builder, IterationInfo iteration, List<SpecProblem> problems ) {
+    void writeProblemBlockForIteration( MarkupBuilder builder, IterationInfo iteration,
+                                        List<SpecProblem> problems, Long time ) {
         if ( problems ) {
             problemsContainer( builder ) {
-                def problemsByIteration = problemsByIteration( [ ( iteration ): problems ] )
+                def problemsByIteration = problemsByIteration( [ ( iteration ): problems ], [ ( iteration ): time ] )
                 problemsByIteration.each { it.dataValues = null } // do not show data values in the report
                 writeProblems( builder, problemsByIteration )
             }
@@ -76,8 +77,9 @@ class ProblemBlockWriter {
         }
     }
 
-    private static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
-        Utils.problemsByIteration( failures ).collect { Map entry ->
+    private static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures,
+                                                  Map<IterationInfo, Long> times ) {
+        Utils.iterationData( failures, times ).collect { Map entry ->
             entry + [ messages: entry.errors ]
         }
     }

@@ -148,7 +148,7 @@ class TemplateReportCreator implements IReportCreator {
         final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
         final isSkipped = !run || Utils.isSkipped( feature )
         final result = errors ? 'ERROR' : failures ? 'FAIL' : isSkipped ? 'IGNORED' : 'PASS'
-        final problemsByIteration = run ? Utils.problemsByIteration( run.failuresByIteration ) : [ : ]
+        final problemsByIteration = run ? Utils.iterationData( run.failuresByIteration, run.timeByIteration ) : [ : ]
         callback.call( feature.name, result, processedBlocks( feature ), problemsByIteration, feature.parameterNames )
     }
 
@@ -158,7 +158,8 @@ class TemplateReportCreator implements IReportCreator {
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAILURE' :
                             Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'
-            final problemsByIteration = Utils.problemsByIteration( [ ( iteration ): problems ] )
+            final time = run.timeByIteration.get( iteration, 0L )
+            final problemsByIteration = Utils.iterationData( [ ( iteration ): problems ], [ (iteration ) : time ] )
             callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration, feature.parameterNames )
         }
     }

@@ -126,10 +126,11 @@ class Utils {
         "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
     }
 
-    static List<Map> problemsByIteration( Map<IterationInfo, List<SpecProblem>> failures ) {
-        failures.inject( [ ] ) { List<Map> acc, iteration, List<SpecProblem> failureList ->
+    static List<Map> iterationData( Map<IterationInfo, List<SpecProblem>> failures, Map<IterationInfo, Long> times ) {
+        failures.inject( [ ] ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
-            acc << [ dataValues: iteration.dataValues, errors: allErrors ]
+            def time = times.get( iteration, 0L )
+            acc << [ dataValues: iteration.dataValues, errors: allErrors, time: time ]
         }
     }
 

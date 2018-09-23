@@ -15,7 +15,7 @@ class StringFormatHelper {
     static final ds = new DecimalFormat().decimalFormatSymbols.decimalSeparator
 
     String toTimeDuration( timeInMs ) {
-        long t = timeInMs.toLong()
+        long t = timeInMs?.toLong() ?: 0L
         int hours = ( t / HOUR ).toInteger()
         int mins = ( ( t - HOUR * hours ) / MINUTE ).toInteger()
         int secs = ( ( t - HOUR * hours - mins * MINUTE ) / 1000 ).toInteger()
