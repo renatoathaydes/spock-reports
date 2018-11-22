@@ -137,13 +137,13 @@ class TemplateReportCreator implements IReportCreator {
                 if ( run && Utils.isUnrolled( feature ) ) {
                     handleUnrolledFeature( run, feature, callback )
                 } else {
-                    handleRegularFeature( run, callback, feature )
+                    handleRegularFeature( run, feature, callback )
                 }
             }
         } ]
     }
 
-    protected void handleRegularFeature( FeatureRun run, Closure callback, FeatureInfo feature ) {
+    protected void handleRegularFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
         final failures = run ? Utils.countProblems( [ run ], Utils.&isFailure ) : 0
         final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
         final isSkipped = !run || Utils.isSkipped( feature )
@@ -155,9 +155,10 @@ class TemplateReportCreator implements IReportCreator {
     protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
         run.failuresByIteration.eachWithIndex { iteration, problems, index ->
             final name = Utils.featureNameFrom( feature, iteration, index )
-            final result = problems.any( Utils.&isError ) ? 'ERROR' :
-                    problems.any( Utils.&isFailure ) ? 'FAILURE' :
-                            Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'
+            final errors = problems.any( Utils.&isError )
+            final failures = problems.any( Utils.&isFailure )
+            final isSkipped = Utils.isSkipped( feature )
+            final result = errors ? 'ERROR' : failures ? 'FAILURE' : isSkipped ? 'IGNORED' : 'PASS'
             final time = run.timeByIteration.get( iteration, 0L )
             final problemsByIteration = Utils.iterationData( [ ( iteration ): problems ], [ (iteration ) : time ] )
             callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration, feature.parameterNames )
