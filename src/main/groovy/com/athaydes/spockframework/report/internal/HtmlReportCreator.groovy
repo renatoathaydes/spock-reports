@@ -124,7 +124,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     codeReader.read( data )
                 }
                 new File( reportsDir, specClassName + '.html' )
-                        .write( reportFor( data ) )
+                        .write( reportFor( data ), 'UTF-8' )
             } catch ( e ) {
                 log.warn( "Failed to create report for $specClassName", e )
             }

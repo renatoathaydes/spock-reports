@@ -96,7 +96,7 @@ class TemplateReportCreator implements IReportCreator {
         try {
             if ( reportsDir.isDirectory() ) {
                 log.debug( "Writing report to file: {}", reportFile )
-                reportFile.write( reportFor( data ) )
+                reportFile.write( reportFor( data ), 'UTF-8' )
                 reportAggregator.addData( data )
             } else {
                 log.warn "${this.class.name} cannot create output directory: ${reportsDir.absolutePath}"

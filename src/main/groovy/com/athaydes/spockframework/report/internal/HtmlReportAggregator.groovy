@@ -53,7 +53,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             try {
                 def allData = getAllAggregatedDataAndPersistLocalData( jsonDir, aggregatedData )
                 aggregatedData.clear()
-                aggregatedReport.write( reportFor( allData ) )
+                aggregatedReport.write( reportFor( allData ), 'UTF-8' )
             } catch ( e ) {
                 log.warn( "Failed to create aggregated report", e )
             }
