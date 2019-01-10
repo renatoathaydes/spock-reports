@@ -30,7 +30,7 @@ abstract class AbstractHtmlCreator<T> {
     }
 
     String reportFor( T data ) {
-        def writer = new StringWriter()
+        def writer = new StringWriter( 4096 )
         def builder = new MarkupBuilder( new IndentPrinter( new PrintWriter( writer ), "" ) )
         builder.expandEmptyElements = true
         builder.html {
