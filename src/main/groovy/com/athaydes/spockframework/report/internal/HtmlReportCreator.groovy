@@ -328,6 +328,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
 
         def failureLineNumber = -1
+        def specName = Utils.getSpecClassName( feature.spec )
 
         if ( problems ) {
             def cause = problems.first().failure.exception
@@ -335,7 +336,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 cause = cause.cause
             }
 
-            def stackTraceItem = cause.stackTrace.find { it.className.contains( feature.spec.name ) }
+            def stackTraceItem = cause.stackTrace.find { it.className == specName }
             if ( stackTraceItem ) {
                 failureLineNumber = stackTraceItem.lineNumber
             }

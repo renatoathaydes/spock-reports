@@ -182,7 +182,11 @@ class Utils {
     }
 
     static String getSpecClassName( SpecData data ) {
-        data.info.description?.className ?: specNameFromFileName( data.info )
+        getSpecClassName( data.info )
+    }
+
+    static String getSpecClassName( SpecInfo info ) {
+        info.description?.className ?: specNameFromFileName( info )
     }
 
     static List<String> getParentSpecNames( String className ) {
