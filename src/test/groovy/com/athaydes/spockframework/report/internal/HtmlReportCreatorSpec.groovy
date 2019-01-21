@@ -82,7 +82,8 @@ class HtmlReportCreatorSpec extends ReportSpec {
         when:
         "A Specification containing different types of features is run by Spock"
         PredictableStringHashCode.code = 0
-        use( configShowCodeBlocks, ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
+        use( configShowCodeBlocks, ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest,
+                NoTocGenerated, PredictableStringHashCode ) {
             new Sputnik( specification ).run( new RunNotifier() )
         }
 
@@ -92,7 +93,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( expectedHtml )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
 
         where:
         specification | configShowCodeBlocks   | reportBinding
@@ -216,7 +219,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( expectedHtml )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
 
         where:
         reportBinding = [
@@ -287,7 +292,9 @@ class HtmlReportCreatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        assertVerySimilar( minify( reportFile.text ), minify( expectedHtml ) )
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( expectedHtml )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
     }
 
     private String textOf( String cssPath ) {

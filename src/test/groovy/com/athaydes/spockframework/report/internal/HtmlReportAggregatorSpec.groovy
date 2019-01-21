@@ -22,7 +22,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
            should create a report with data from the single spec"""() {
         given:
         "A single spec stats"
-        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.25, time: 0 ]
+        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5, successRate: 0.25, time: 0 ]
 
         and:
         "A clean output directory"
@@ -64,14 +64,16 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        assertVerySimilar( minify( reportFile.text ), minify( singleTestSummaryExpectedHtml() ) )
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( singleTestSummaryExpectedHtml() )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
     }
 
     def """When a single spec data is provided to the HtmlReportAggregator it
            should create a report with data from the single spec including project name and version"""() {
         given:
         "A single spec stats"
-        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.25, time: 0 ]
+        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5, successRate: 0.25, time: 0 ]
 
         and:
         "A clean output directory"
@@ -124,7 +126,10 @@ class HtmlReportAggregatorSpec extends ReportSpec {
           <span class='project-version'>Version: ${aggregator.projectVersion}</span>
         </div>"""
 
-        assertVerySimilar( minify( reportFile.text ), minify( singleTestSummaryExpectedHtml( expectedProjectHeader ) ) )
+
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( singleTestSummaryExpectedHtml( expectedProjectHeader ) )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
     }
 
     def """When several specs data are provided to the HtmlReportAggregator it
@@ -132,13 +137,13 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         given:
         "Several specs"
         def allSpecs = [
-                'Spec1'      : [ failures: 0, errors: 0, skipped: 2, totalRuns: 5, successRate: 0.1, time: 1000 ],      // 1
-                'a.Spec2'    : [ failures: 0, errors: 1, skipped: 3, totalRuns: 6, successRate: 0.2, time: 2000 ],    // 2
-                'a.Spec3'    : [ failures: 3, errors: 2, skipped: 4, totalRuns: 7, successRate: 0.3, time: 3000 ],    // 3
-                'a.b.c.Spec4': [ failures: 4, errors: 3, skipped: 5, totalRuns: 8, successRate: 0.4, time: 4000 ],// 4
-                'b.c.Spec6'  : [ failures: 6, errors: 5, skipped: 7, totalRuns: 10, successRate: 0.6, time: 5000 ], // 6
-                'a.b.c.Spec5': [ failures: 5, errors: 4, skipped: 6, totalRuns: 9, successRate: 0.5, time: 6000 ],// 5
-                'c.d.Spec6'  : [ failures: 7, errors: 6, skipped: 8, totalRuns: 11, successRate: 0.7, time: 7000 ]  // 7
+                'Spec1'      : [ failures: 0, errors: 0, skipped: 2, totalFeatures: 5, successRate: 0.1, time: 1000 ],
+                'a.Spec2'    : [ failures: 0, errors: 1, skipped: 3, totalFeatures: 6, successRate: 0.2, time: 2000 ],
+                'a.Spec3'    : [ failures: 3, errors: 2, skipped: 4, totalFeatures: 7, successRate: 0.3, time: 3000 ],
+                'a.b.c.Spec4': [ failures: 4, errors: 3, skipped: 5, totalFeatures: 8, successRate: 0.4, time: 4000 ],
+                'b.c.Spec6'  : [ failures: 6, errors: 5, skipped: 7, totalFeatures: 10, successRate: 0.6, time: 5000 ],
+                'a.b.c.Spec5': [ failures: 5, errors: 4, skipped: 6, totalFeatures: 9, successRate: 0.5, time: 6000 ],
+                'c.d.Spec6'  : [ failures: 7, errors: 6, skipped: 8, totalFeatures: 11, successRate: 0.7, time: 7000 ]
         ]
 
         and:
@@ -169,7 +174,9 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "The contents are functionally the same as expected"
-        assertVerySimilar( minify( reportFile.text ), minify( testSummaryExpectedHtml() ) )
+        def minifiedActualReport = minify( reportFile.text )
+        def minifiedExpectedReport = minify( testSummaryExpectedHtml() )
+        assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
     }
 
     def "Can aggregate reports data into a Map for persistence"() {
@@ -257,67 +264,70 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         aggregator.writeSpecSummary( builder, stats, specName, specTitle )
 
         then: 'The data should be written according to chosen settings'
-        assertVerySimilar( minify( expectedSummary ), minify( writer.toString() ) )
+
+        def minifiedExpectedSummary = minify( expectedSummary )
+        def minifiedActualSummary = minify( writer.toString() )
+        assertVerySimilar( minifiedExpectedSummary, minifiedActualSummary )
 
         where:
-        stats                  | specName | specTitle | summarySetting | expectedSummary
-        [ failures   : 1,
-          errors     : 0,
-          skipped    : 2,
-          totalRuns  : 5,
-          successRate: 0.25,
-          time       : 0 ]     |
-                'abc.SpecA'               |
-                'Spec A'                              |
-                'class_name_and_title'                                 |
+        stats                    | specName | specTitle | summarySetting | expectedSummary
+        [ failures     : 1,
+          errors       : 0,
+          skipped      : 2,
+          totalFeatures: 5,
+          successRate  : 0.25,
+          time         : 0 ]     |
+                'abc.SpecA'                 |
+                'Spec A'                                |
+                'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a><div class='spec-title'>Spec A</div>" +
                 "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
 
-        [ failures   : 1,
-          errors     : 0,
-          skipped    : 2,
-          totalRuns  : 5,
-          successRate: 0.25,
-          time       : 0 ]     |
-                'abc.SpecA'               |
-                ''                                    |
-                'class_name_and_title'                                 |
+        [ failures     : 1,
+          errors       : 0,
+          skipped      : 2,
+          totalFeatures: 5,
+          successRate  : 0.25,
+          time         : 0 ]     |
+                'abc.SpecA'                 |
+                ''                                      |
+                'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
                 "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
 
-        [ failures   : 2,
-          errors     : 4,
-          skipped    : 1,
-          totalRuns  : 7,
-          successRate: 0.33,
-          time       : 1_000 ] |
-                'abc.SpecA'               |
-                'Spec A'                              |
-                'title'                                                |
+        [ failures     : 2,
+          errors       : 4,
+          skipped      : 1,
+          totalFeatures: 7,
+          successRate  : 0.33,
+          time         : 1_000 ] |
+                'abc.SpecA'                 |
+                'Spec A'                                |
+                'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'><div class='spec-title'>Spec A</div></a>" +
                 "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
 
-        [ failures   : 2,
-          errors     : 4,
-          skipped    : 1,
-          totalRuns  : 7,
-          successRate: 0.33,
-          time       : 1_000 ] |
-                'abc.SpecA'               |
-                ''                                    |
-                'title'                                                |
+        [ failures     : 2,
+          errors       : 4,
+          skipped      : 1,
+          totalFeatures: 7,
+          successRate  : 0.33,
+          time         : 1_000 ] |
+                'abc.SpecA'                 |
+                ''                                      |
+                'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
                 "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
 
-        [ failures   : 2,
-          errors     : 4,
-          skipped    : 1,
-          totalRuns  : 7,
-          successRate: 0.33,
-          time       : 1_000 ] |
-                'abc.SpecA'               |
-                'Spec A'                              |
-                'class_name'                                           |
+        [ failures     : 2,
+          errors       : 4,
+          skipped      : 1,
+          totalFeatures: 7,
+          successRate  : 0.33,
+          time         : 1_000 ] |
+                'abc.SpecA'                 |
+                'Spec A'                                |
+                'class_name'                                             |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
                 "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
     }

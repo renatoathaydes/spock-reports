@@ -165,7 +165,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                         break
                 }
             }
-            td stats.totalRuns
+            td stats.totalFeatures
             td stats.failures
             td stats.errors
             td stats.skipped
