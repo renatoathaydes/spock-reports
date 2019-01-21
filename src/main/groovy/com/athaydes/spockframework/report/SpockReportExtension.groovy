@@ -223,7 +223,16 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void specSkipped( SpecInfo spec ) {
-        // specInfo already knows if it's skipped
+        beforeSpec( spec )
+        log.debug( "Skipping specification {}", Utils.getSpecClassName( spec ) )
+
+        spec.features.each { feature ->
+            feature.skipped = true
+            beforeFeature( feature )
+            afterFeature( feature )
+        }
+
+        afterSpec( spec )
     }
 
     @Override
