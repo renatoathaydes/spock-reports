@@ -61,9 +61,9 @@ class Utils {
         def failures = countProblems( data.featureRuns, this.&isFailure )
         def errors = countProblems( data.featureRuns, this.&isError )
         def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
-        def total = countFeatures( data.featureRuns )
-        def totalExecuted = countFeatures( data.featureRuns ) { run -> !isSkipped( run.feature ) }
-        def successRate = successRate( total, ( errors + failures ).toInteger() )
+        def total = data.info.features.size()
+        def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
+        def successRate = successRate( totalExecuted, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
           successRate: successRate, time: data.totalTime ]
     }
@@ -109,8 +109,7 @@ class Utils {
     static int countFeatures( List<FeatureRun> runs,
                               Closure<Boolean> featureFilter = { _ -> true } ) {
         runs.findAll( featureFilter ).inject( 0 ) { int count, FeatureRun fr ->
-            if ( isSkipped( fr.feature ) ) count
-            else count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
+            count + ( isUnrolled( fr.feature ) ? fr.iterationCount() : 1 )
         } as int
     }
 
