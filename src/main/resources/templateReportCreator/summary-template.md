@@ -16,12 +16,11 @@
 
 ## Specifications
 
-
 |Name  | Features | Failed | Errors | Skipped | Success rate | Time |
 |------|----------|--------|--------|---------|--------------|------|
 <% data.each { name, map ->
       def s = map.stats
- %>| $name | ${s.totalRuns} | ${s.failures} | ${s.errors} | ${s.skipped} | ${s.successRate} | ${s.time} |
+ %>| $name | ${s.totalFeatures} | ${s.failures} | ${s.errors} | ${s.skipped} | ${s.successRate} | ${s.time} |
 <% }
  %>
 
