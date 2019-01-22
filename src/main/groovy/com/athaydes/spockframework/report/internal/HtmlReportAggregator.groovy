@@ -140,8 +140,12 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     protected void writeSpecSummary( MarkupBuilder builder, Map stats, String specName, String title ) {
         def cssClasses = [ ]
-        if ( stats.failures ) cssClasses << 'failure'
-        if ( stats.errors ) cssClasses << 'error'
+        if ( stats.totalRuns == 0 ) {
+            cssClasses << 'ignored'
+        } else {
+            if ( stats.failures ) cssClasses << 'failure'
+            if ( stats.errors ) cssClasses << 'error'
+        }
         builder.tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
             td {
                 switch ( specSummaryNameOption ) {

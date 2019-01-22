@@ -15,6 +15,10 @@ table {
   margin: 5px;
 }
 
+.ignored {
+  color: gray;
+}
+
 div.project-header {
   margin-bottom: 10px;
   font-size: large;
