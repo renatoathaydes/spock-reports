@@ -2,6 +2,11 @@
 
 > Most recent first
 
+* `10th of April 2019`
+
+Version 1.6.2 of spock-reports released! This is a bug-fix release, but it fixes some things that may affect a lot
+of users, so an upgrade is highly recommended.
+
 * `23rd of September 2018`
 
 1.6.1 version allows template report authors to access time information for each feature run iteration. The default

@@ -1,3 +1,10 @@
+1.6.2 - 2019 April 10
+
+* #167 use UTF-8 to write all reports.
+* #169 include line number of failure in report in more cases.
+* #170 include ignored Specification in reports.
+* Added new `totalFeatures` statistic to report results and improved accuracy of feature count.
+
 1.6.1 - 2018 September 23
 
 * #154 collect time each feature iteration takes to run, so information can be used in template reports.
