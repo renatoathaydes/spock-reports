@@ -61,7 +61,7 @@ class Utils {
         def failures = countProblems( data.featureRuns, this.&isFailure )
         def errors = countProblems( data.featureRuns, this.&isError )
         def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
-        def total = data.info.features.size()
+        def total = data.info.allFeatures.size()
         def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
         def successRate = successRate( totalExecuted, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
