@@ -22,7 +22,10 @@ class VividFakeTest extends Specification {
         "I do crazy things"
 
         then:
-        x == y
+        verifyAll {
+            x == y
+            y == x
+        }
 
         where:
         "The examples below are used"
