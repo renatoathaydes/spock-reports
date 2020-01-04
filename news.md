@@ -2,6 +2,11 @@
 
 > Most recent first
 
+* `04th of January 2020`
+
+spock-reports version 1.6.3 released with several bug fixes, including some important changes on how feature counts
+are calculated.
+
 * `10th of April 2019`
 
 Version 1.6.2 of spock-reports released! This is a bug-fix release, but it fixes some things that may affect a lot

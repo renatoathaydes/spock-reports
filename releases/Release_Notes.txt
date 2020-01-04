@@ -1,3 +1,9 @@
+1.6.3 - 2020 January 04
+
+* #144 include tests originating from a jar rather than the project's source code into the reports.
+* #173 report correct number of failures when multiple failures are generated from same iteration, using `verifyAll`.
+* #174 #187 include features declared in abstract base-class in all concrete sub-types.
+
 1.6.2 - 2019 April 10
 
 * #167 use UTF-8 to write all reports.
