@@ -30,7 +30,10 @@ Time: Unknown
 * Then: 
 
 ```
-x == y
+verifyAll {
+    x == y
+    y == x
+}
 ```
 
 * Where: The examples below are used
@@ -53,6 +56,18 @@ b |  c
   1 difference (0% similarity)
   (b)
   (c)
+
+```
+```
+Condition not satisfied:
+
+y == x
+| |  |
+c |  b
+  false
+  1 difference (0% similarity)
+  (c)
+  (b)
 
 ```
 

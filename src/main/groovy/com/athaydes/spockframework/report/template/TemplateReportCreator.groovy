@@ -166,7 +166,10 @@ class TemplateReportCreator implements IReportCreator {
 
     protected List processedBlocks( FeatureInfo feature, IterationInfo iteration = null ) {
         if ( showCodeBlocks ) {
-            return processedBlocksFromCode( feature, iteration )
+            def result = processedBlocksFromCode( feature, iteration )
+            if ( result ) { // only return if we found something, otherwise, run the conventional procedure
+                return result
+            }
         }
 
         // as we don't have the AST, we need to use the old way to get the block text from Spock's API

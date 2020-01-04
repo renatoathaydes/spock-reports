@@ -61,7 +61,7 @@ class Utils {
         def failures = countProblems( data.featureRuns, this.&isFailure )
         def errors = countProblems( data.featureRuns, this.&isError )
         def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
-        def total = data.info.features.size()
+        def total = data.info.allFeatures.size()
         def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
         def successRate = successRate( totalExecuted, ( errors + failures ).toInteger() )
         [ failures   : failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
@@ -115,10 +115,15 @@ class Utils {
 
     static int countProblems( List<FeatureRun> runs, Closure problemFilter ) {
         runs.inject( 0 ) { int count, FeatureRun fr ->
-            def allProblems = fr.failuresByIteration.values().flatten()
-            count + ( isUnrolled( fr.feature ) ?
-                    allProblems.count( problemFilter ) :
-                    allProblems.any( problemFilter ) ? 1 : 0 )
+            // count how many iterations had one or more failures... a single iteration may
+            // fail many times!
+            def allProblems = fr.failuresByIteration.values().count { iterationFailures ->
+                iterationFailures.any( problemFilter )
+            }
+            count + ( allProblems > 0
+                    ? // only count 1 feature failure if NOT unrolled
+                    ( isUnrolled( fr.feature ) ? allProblems : 1 )
+                    : 0 )
         } as int
     }
 

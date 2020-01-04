@@ -82,7 +82,10 @@ class FakeTest extends Specification {
         "Do nothing"
         then:
         "Test fails"
-        assert 3 == 2
+        verifyAll {
+            3 == 2
+            5 == 1
+        }
     }
 
     def """An incredibly long feature description that unfortunately will popup in some cases where business

@@ -127,6 +127,14 @@ Condition not satisfied:
   false
 
 ```
+```
+Condition not satisfied:
+
+5 == 1
+  |
+  false
+
+```
 
 ### An incredibly long feature description that unfortunately will popup in some cases where business
 	analysts write these too detailed overviews of what the test should be all about when what they really

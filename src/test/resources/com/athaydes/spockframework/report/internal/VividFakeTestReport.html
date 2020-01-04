@@ -80,7 +80,10 @@
 		<div class='block-kind'>Then:</div>
 	</td>
 	<td>
-		<pre class='block-source error'>x == y // line 25</pre>
+		<pre class='block-source error'>verifyAll { // line 25</pre>
+		<pre class='block-source after-error'>    x == y
+    y == x
+}</pre>
 	</td>
 </tr>
 <tr>
@@ -132,6 +135,9 @@
 						<ul>
 							<li>
 								<pre>Condition not satisfied:<br/><br/>x == y<br/>| |  |<br/>b |  c<br/>  false<br/>  1 difference (0% similarity)<br/>  (b)<br/>  (c)<br/></pre>
+							</li>
+							<li>
+								<pre>Condition not satisfied:<br/><br/>y == x<br/>| |  |<br/>c |  b<br/>  false<br/>  1 difference (0% similarity)<br/>  (c)<br/>  (b)<br/></pre>
 							</li>
 						</ul>
 					</li>
@@ -202,7 +208,7 @@
 <tr>
 	<td></td>
 	<td>
-		<pre class='block-source error'>throw new RuntimeException( 'As expected' ) // line 54</pre>
+		<pre class='block-source error'>throw new RuntimeException( 'As expected' ) // line 57</pre>
 	</td>
 </tr>
 <tr>
@@ -259,7 +265,7 @@
 <tr>
 	<td></td>
 	<td>
-		<pre class='block-source error'>assert 3 == 2 // line 66</pre>
+		<pre class='block-source error'>assert 3 == 2 // line 69</pre>
 	</td>
 </tr>
 <tr>
@@ -405,7 +411,7 @@ c == 2 * b</pre>
 		<div class='block-kind'>Expect:</div>
 	</td>
 	<td>
-		<pre class='block-source error'>x == 0 // line 95</pre>
+		<pre class='block-source error'>x == 0 // line 98</pre>
 	</td>
 </tr>
 <tr>
@@ -494,7 +500,7 @@ c == 2 * b</pre>
 	<td></td>
 	<td>
 <pre class='block-source before-error'>if ( y == 5 ) {</pre>
-<pre class='block-source error'>    throw new RuntimeException( 'y is 5' ) // line 99</pre>
+<pre class='block-source error'>    throw new RuntimeException( 'y is 5' ) // line 102</pre>
 <pre class='block-source after-error'>}</pre>
 	</td>
 </tr>
