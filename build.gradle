@@ -39,6 +39,7 @@ test {
     maxParallelForks = 4
     exclude '**/*FakeTest.class', '**/UnrolledSpec.class', '**/SpecIncludingExtraInfo.class'
     systemProperty 'project.buildDir', project.buildDir
+    systemProperty 'org.slf4j.simpleLogger.defaultLogLevel', 'debug'
     testLogging.showStandardStreams = true
     beforeTest { descriptor ->
         logger.lifecycle( "Running test: " + descriptor )
