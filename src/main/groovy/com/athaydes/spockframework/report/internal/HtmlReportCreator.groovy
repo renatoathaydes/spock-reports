@@ -14,6 +14,8 @@ import spock.lang.Ignore
 import spock.lang.PendingFeature
 import spock.lang.Title
 
+import static com.athaydes.spockframework.report.util.Utils.featureAnnotation
+
 /**
  *
  * User: Renato
@@ -249,8 +251,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     Utils.isSkipped( feature ) ? 'ignored' : ''
                     writeFeatureDescription( builder, name, cssClass,
-                            feature.description.getAnnotation( Ignore ),
-                            feature.description.getAnnotation( PendingFeature ),
+                            featureAnnotation( feature, Ignore ),
+                            featureAnnotation( feature, PendingFeature ),
                             extraInfo,
                             run.feature )
                     writeFeatureBlocks( builder, feature, problems, iteration )
@@ -271,8 +273,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 } : [ ]
 
                 writeFeatureDescription( builder, feature.name, cssClass,
-                        feature.description.getAnnotation( Ignore ),
-                        feature.description.getAnnotation( PendingFeature ),
+                        featureAnnotation( feature, Ignore ),
+                        featureAnnotation( feature, PendingFeature ),
                         extraInfo,
                         run?.feature )
                 def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]

@@ -64,8 +64,8 @@
     features.eachFeature { name, result, blocks, iterations, params ->
 %>
 ### $name
-<% 
- writePendingFeature( description.getAnnotation( spock.lang.PendingFeature ) )
+<%
+ writePendingFeature( featureMethod.getAnnotation( spock.lang.PendingFeature ) )
  writeTagOrAttachment( delegate )
  if (result != "IGNORED") {
       if ( utils.isUnrolled( delegate ) ) {
