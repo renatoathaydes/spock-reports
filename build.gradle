@@ -11,8 +11,8 @@ group = 'com.athaydes'
 version = "1.6.3"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
-def groovyVersion = '2.0.8'
-def spockVersion = '1.1-groovy-2.0'
+def groovyVersion = '2.5.10'
+def spockVersion = '1.2-groovy-2.5'
 
 repositories {
     mavenLocal()

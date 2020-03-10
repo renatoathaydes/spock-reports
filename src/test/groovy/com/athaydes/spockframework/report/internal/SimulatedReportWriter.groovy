@@ -15,7 +15,7 @@ class SimulatedReportWriter {
         assert write( file, threadCount ).await( 10, TimeUnit.SECONDS ), "Did not finish writing within timeout"
     }
 
-    static write( File file, int threadCount ) {
+    static CountDownLatch write( File file, int threadCount ) {
         final counter = new CountDownLatch( threadCount )
 
         ( 1..threadCount ).each { n ->
