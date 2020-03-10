@@ -3,7 +3,7 @@
 
 Check out [the latest news](news.md) about this project!
 
-[![Build Status](https://travis-ci.org/renatoathaydes/spock-reports.svg?branch=next)](https://travis-ci.org/renatoathaydes/spock-reports)
+[![Actions Status](https://github.com/renatoathaydes/spock-reports/workflows/Run%20Gradle%20on%20PRs/badge.svg)](https://github.com/renatoathaydes/spock-reports/actions)
 [ ![Download](https://api.bintray.com/packages/renatoathaydes/maven/spock-reports/images/download.svg) ](https://bintray.com/renatoathaydes/maven/spock-reports/_latestVersion)
 
 ## What it is
