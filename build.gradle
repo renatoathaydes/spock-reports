@@ -8,7 +8,7 @@ plugins {
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "2.0-SNAPSHOT"
+version = "2.0-RC1"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 def groovyVersion = '3.0.1'
