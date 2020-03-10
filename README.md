@@ -31,7 +31,9 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 
 Spock-reports is available on Maven Central and on JCenter.
 
-> Since version 1.3.2, Spock version 1.1+ is required
+> Since version 1.3.2, Spock version 1.1+ is required.
+> From version 1.7.0, Spock 1.2-groovy-2.5 or newer should be used.
+> If you use Java 9+, use the latest versions of both Spock and spock-reports.
 
 If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
 `Specification` class' extension methods which are added by Spock Reports:
@@ -64,7 +66,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.6.3</version>
+  <version>1.7.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -99,7 +101,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.6.3' ) {
+    testCompile( 'com.athaydes:spock-reports:1.7.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!

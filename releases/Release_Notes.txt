@@ -1,3 +1,7 @@
+1.7.0 - 2020 March 10
+
+* Upgraded Spock and Groovy versions to 1.2-groovy-2.5 and 2.5.10 respectively to support both Java 8 and Java 9+.
+
 1.6.3 - 2020 January 04
 
 * #144 include tests originating from a jar rather than the project's source code into the reports.
