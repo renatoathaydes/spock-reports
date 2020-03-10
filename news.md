@@ -4,10 +4,10 @@
 
 * `10th of March 2020`
 
-This release does not contain code changes. It is only a dependency upgrade release that should bring
+This release (1.7.0) does not contain code changes. It is only a dependency upgrade release that should bring
 support for builds running Java 9+ (tested up to Java 12).
 
-Java 8 can still be used!
+Java 8 can still be used, but version spock-reports version 1.7.1 should be used!
 
 This is expected to be the last 1.x release, as version 2.0 is already in the works!
 I intend to base spock-reports 2.x on Groovy 3 and Spock 2.x.
