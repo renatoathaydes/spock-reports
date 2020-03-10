@@ -3,7 +3,7 @@
 
 Check out [the latest news](news.md) about this project!
 
-[![Actions Status](https://github.com/renatoathaydes/spock-reports/workflows/Run%20Gradle%20on%20PRs/badge.svg)](https://github.com/renatoathaydes/spock-reports/actions)
+[![Actions Status](https://github.com/renatoathaydes/spock-reports/workflows/Build%20And%20Test%20on%20All%20OSs/badge.svg)](https://github.com/renatoathaydes/spock-reports/actions)
 [ ![Download](https://api.bintray.com/packages/renatoathaydes/maven/spock-reports/images/download.svg) ](https://bintray.com/renatoathaydes/maven/spock-reports/_latestVersion)
 
 ## What it is

@@ -1,4 +1,4 @@
-name: Run Gradle on PRs
+name: Build And Test on All OSs
 on: [push, pull_request]
 jobs:
   gradle:
