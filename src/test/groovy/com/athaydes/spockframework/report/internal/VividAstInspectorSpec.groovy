@@ -7,7 +7,7 @@ import spock.lang.Subject
 class VividAstInspectorSpec extends Specification {
 
     @Subject
-    final inspector = new VividAstInspector()
+    def inspector = new VividAstInspector()
 
     def "Vivid AST Inspector can load single line code blocks from Groovy Specification files"() {
         given: 'A Groovy source file'

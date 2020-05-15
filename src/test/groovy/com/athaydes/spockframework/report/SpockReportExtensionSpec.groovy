@@ -14,7 +14,7 @@ import spock.lang.Unroll
  */
 class SpockReportExtensionSpec extends Specification {
 
-    def "The settings found in the config.properties file are read only once"() {
+    def "The settings found in the config_properties file are read only once"() {
         given:
         "An instance of SpockReportExtension with a mocked out config loader"
         def mockReportCreator = Mock IReportCreator
@@ -37,7 +37,7 @@ class SpockReportExtensionSpec extends Specification {
         1 * extension.configLoader.loadConfig( _ ) >> new Properties()
     }
 
-    def "The settings found in the config.properties file are used to configure the report framework"() {
+    def "The settings found in the config_properties file are used to configure the report framework"() {
         given:
         "A set of valid and invalid properties emulating the properties file"
         def className = 'MockReportCreator'

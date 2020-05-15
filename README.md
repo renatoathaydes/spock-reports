@@ -3,7 +3,7 @@
 
 Check out [the latest news](news.md) about this project!
 
-[![Build Status](https://travis-ci.org/renatoathaydes/spock-reports.svg?branch=next)](https://travis-ci.org/renatoathaydes/spock-reports)
+[![Actions Status](https://github.com/renatoathaydes/spock-reports/workflows/Build%20And%20Test%20on%20All%20OSs/badge.svg)](https://github.com/renatoathaydes/spock-reports/actions)
 [ ![Download](https://api.bintray.com/packages/renatoathaydes/maven/spock-reports/images/download.svg) ](https://bintray.com/renatoathaydes/maven/spock-reports/_latestVersion)
 
 ## What it is
@@ -31,7 +31,9 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 
 Spock-reports is available on Maven Central and on JCenter.
 
-> Since version 1.3.2, Spock version 1.1+ is required
+> Since version 1.3.2, Spock version 1.1+ is required.
+> From version 1.7.0, Spock 1.2-groovy-2.5 or newer should be used.
+> If you use Java 9+, use the latest versions of both Spock and spock-reports.
 
 If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
 `Specification` class' extension methods which are added by Spock Reports:
