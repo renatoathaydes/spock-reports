@@ -141,11 +141,15 @@ class Utils {
     }
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
-        data.info.getAnnotation( annotation ) as A
+        data.info.isAnnotationPresent( annotation )
+                ? data.info.getAnnotation( annotation ) as A
+                : null
     }
 
     static <A extends Annotation> A featureAnnotation( FeatureInfo feature, Class<A> annotation ) {
-        feature.featureMethod.getAnnotation( annotation ) as A
+        feature.featureMethod.isAnnotationPresent( annotation )
+                ? feature.featureMethod.getAnnotation( annotation ) as A
+                : null
     }
 
     static List nextSpecExtraInfo( SpecData data ) {
@@ -227,7 +231,7 @@ class Utils {
         def lastDotInFileName = fileName.lastIndexOf( '.' )
         def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
 
-        return specInfo.package + '.' + name
+        return (specInfo.package ? specInfo.package + '.' : '') + name
     }
 
     @Nullable
