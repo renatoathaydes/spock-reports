@@ -31,9 +31,9 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 
 Spock-reports is available on Maven Central and on JCenter.
 
-> Since version 1.3.2, Spock version 1.1+ is required.
-> From version 1.7.0, Spock 1.2-groovy-2.5 or newer should be used.
-> If you use Java 9+, use the latest versions of both Spock and spock-reports.
+> The versions below work with the new Spock 2 / Groovy 3 versions.
+> If you want to stay with Spock 1 and Groovy 2.5.x, use spock-reports version 1.7.1.
+> Spock-reports should work fine with Java 9+ since version 1.7.1.
 
 If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
 `Specification` class' extension methods which are added by Spock Reports:
@@ -59,10 +59,6 @@ def "My feature"() {
 ```
 
 ### If you are using Maven
-
-> NOTE about Spock/Groovy versions:
-> The versions below work with the new Spock 2 / Groovy 3 versions.
-> If you want to stay with Spock 1 and Groovy 2.5.x, use spock-reports version 1.7.1. 
 
 Add ``spock-reports`` to your ``<dependencies>``:
 
