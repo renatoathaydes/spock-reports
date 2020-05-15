@@ -25,9 +25,11 @@ dependencies {
     implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     implementation "org.spockframework:spock-core:${spockVersion}", {
-        transitive = false
+        exclude group: 'org.codehaus.groovy'
     }
-    implementation 'org.slf4j:slf4j-api:1.7.13'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    testImplementation 'org.junit.platform:junit-platform-testkit:1.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
     testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
     testImplementation "cglib:cglib-nodep:3.2.10"
     testImplementation "org.slf4j:slf4j-simple:1.7.30"
