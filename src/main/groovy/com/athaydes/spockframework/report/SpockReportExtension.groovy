@@ -43,13 +43,13 @@ class SpockReportExtension implements IGlobalExtension {
     void start() {
         if ( !initialized.getAndSet( true ) ) {
             log.info( "Got configuration from Spock: {}", configuration )
-            log.debug "Configuring ${this.class.name}"
+            log.debug "Configuring ${ this.class.name }"
             def config = configLoader.loadConfig( configuration )
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
             if ( !commaListOfReportClasses ) {
-                log.warn( "Missing property: ${IReportCreator.name} - no report classes defined" )
+                log.warn( "Missing property: ${ IReportCreator.name } - no report classes defined" )
                 return
             }
 
@@ -77,7 +77,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
+            log.warn "Not creating report for ${ specInfo.name } as reportCreator is null"
         }
     }
 
@@ -123,6 +123,10 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     synchronized void beforeSpec( SpecInfo spec ) {
+        if ( specData != null ) {
+            log.debug( 'Unexpected state: Current specData is {}, not done yet and already started with {}',
+                    specData?.info?.name, spec.name )
+        }
         specData = new SpecData( info: spec )
         log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
         startT = System.currentTimeMillis()
@@ -167,6 +171,10 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void afterSpec( SpecInfo spec ) {
+        if ( specData == null ) {
+            log.debug( 'Unexpected state: running afterSpec without having a specData' )
+            return
+        }
         assert specData.info == spec
         log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - startT
@@ -179,7 +187,7 @@ class SpecInfoListener implements IRunListener {
         try {
             def errorInInitialization = ( specData == null )
             log.debug( "Error on spec: {}", errorInInitialization ?
-                    "<${EmptyInitializationException.INIT_ERROR}>" :
+                    "<${ EmptyInitializationException.INIT_ERROR }>" :
                     Utils.getSpecClassName( specData ) )
 
             if ( errorInInitialization ) {
@@ -249,7 +257,7 @@ class SpecInfoListener implements IRunListener {
 
     private void markWithInitializationError( FeatureInfo featureInfo ) {
         def originalGetName = featureInfo.&getName
-        featureInfo.metaClass.getName = { "[${EmptyInitializationException.INIT_ERROR}] ${originalGetName()}" }
+        featureInfo.metaClass.getName = { "[${ EmptyInitializationException.INIT_ERROR }] ${ originalGetName() }" }
     }
 
     private IterationInfo dummySpecIteration() {

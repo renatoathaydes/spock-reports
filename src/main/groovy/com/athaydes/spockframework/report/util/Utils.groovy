@@ -90,7 +90,7 @@ class Utils {
 
     static boolean isUnrolled( FeatureInfo feature ) {
         feature.spec?.isAnnotationPresent( Unroll ) ||
-                feature.description?.annotations?.any { Annotation a -> a.annotationType() == Unroll } ?: false
+                featureAnnotation( feature, Unroll ) != null
     }
 
     static boolean isFailure( SpecProblem problem ) {
@@ -103,7 +103,7 @@ class Utils {
 
     static boolean isSkipped( FeatureInfo featureInfo ) {
         // pending features are not marked as skipped but they are always skipped or fail
-        featureInfo.skipped || featureInfo.description.getAnnotation( PendingFeature )
+        featureInfo.skipped || featureAnnotation( featureInfo, PendingFeature ) != null
     }
 
     static int countFeatures( List<FeatureRun> runs,
@@ -141,7 +141,15 @@ class Utils {
     }
 
     static <A extends Annotation> A specAnnotation( SpecData data, Class<A> annotation ) {
-        data.info.description?.testClass?.getAnnotation( annotation )
+        data.info.isAnnotationPresent( annotation )
+                ? data.info.getAnnotation( annotation ) as A
+                : null
+    }
+
+    static <A extends Annotation> A featureAnnotation( FeatureInfo feature, Class<A> annotation ) {
+        feature.featureMethod.isAnnotationPresent( annotation )
+                ? feature.featureMethod.getAnnotation( annotation ) as A
+                : null
     }
 
     static List nextSpecExtraInfo( SpecData data ) {
@@ -192,7 +200,7 @@ class Utils {
     }
 
     static String getSpecClassName( SpecInfo info ) {
-        info.description?.className ?: specNameFromFileName( info )
+        specNameFromFileName( info )
     }
 
     static List<String> getParentSpecNames( String className ) {
@@ -223,7 +231,7 @@ class Utils {
         def lastDotInFileName = fileName.lastIndexOf( '.' )
         def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
 
-        return specInfo.package + '.' + name
+        return (specInfo.package ? specInfo.package + '.' : '') + name
     }
 
     @Nullable

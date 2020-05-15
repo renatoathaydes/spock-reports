@@ -60,13 +60,17 @@ def "My feature"() {
 
 ### If you are using Maven
 
+> NOTE about Spock/Groovy versions:
+> The versions below work with the new Spock 2 / Groovy 3 versions.
+> If you want to stay with Spock 1 and Groovy 2.5.x, use spock-reports version 1.7.1. 
+
 Add ``spock-reports`` to your ``<dependencies>``:
 
 ```xml
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.7.1</version>
+  <version>2.0-RC2</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -81,13 +85,13 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-api</artifactId>
-  <version>1.7.13</version>
+  <version>1.7.30</version>
   <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-simple</artifactId>
-  <version>1.7.13</version>
+  <version>1.7.30</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -100,21 +104,26 @@ repositories {
   jcenter()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.7.1' ) {
+    // you can use testRuntimeClasspath if you don't want to use spock-report-specific features in your Specs
+    testImplementation( 'com.athaydes:spock-reports:2.0-RC2' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
-    testCompile 'org.slf4j:slf4j-api:1.7.13'
-    testCompile 'org.slf4j:slf4j-simple:1.7.13'
+    testImplementation 'org.slf4j:slf4j-api:1.7.30'
+    testRuntimeClasspath 'org.slf4j:slf4j-simple:1.7.30'
 }
 ```
 
 If you prefer, you can just download the jar directly from [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/).
 
-The only dependencies this project has are Groovy version 2.0+ (only the
-`groovy`, `groovy-templates`, `groovy-xml` and `groovy-json`
-modules are required) and `Spock`, but if you're using Spock (version 0.7-groovy-2.0+) then you already have them all!
+The only dependencies this project has are Groovy (only the
+`groovy`, `groovy-templates`, `groovy-xml` and `groovy-json` modules are required)
+and `Spock`, of course.
 
 ## Customizing spock-reports logging
 
@@ -135,7 +144,7 @@ To get rid of the warning, add a dependency on a logging framework that implemen
 For example, to use `slf4j-simple`, add this line to your Gradle dependencies (or the equivalent XML in your Maven pom):
 
 ```groovy
-testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
+testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
 ```
 
 To configure the logging framework itself, please check the documentation of the framework you decide to use.

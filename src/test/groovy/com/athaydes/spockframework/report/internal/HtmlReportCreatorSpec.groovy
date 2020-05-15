@@ -7,10 +7,9 @@ import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.UnrolledSpec
 import com.athaydes.spockframework.report.VividFakeTest
+import com.athaydes.spockframework.report.engine.CanRunSpockSpecs
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
-import org.junit.runner.notification.RunNotifier
-import org.spockframework.runtime.Sputnik
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Unroll
 
@@ -24,7 +23,8 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
  * User: Renato
  */
 @Unroll
-class HtmlReportCreatorSpec extends ReportSpec {
+class HtmlReportCreatorSpec extends ReportSpec
+implements CanRunSpockSpecs {
 
     static final String UNKNOWN = 'Unknown'
     static final char DS = StringFormatHelper.ds
@@ -84,7 +84,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         PredictableStringHashCode.code = 0
         use( configShowCodeBlocks, ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest,
                 NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( specification ).run( new RunNotifier() )
+            runSpec( specification )
         }
 
         then:
@@ -210,7 +210,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         use( ConfigOutputDir, PredictableTimeResponse,
                 FakeKnowsWhenAndWhoRanTest, NoTocGenerated,
                 PredictableStringHashCode, ShowCodeBlocksDisabled ) {
-            new Sputnik( UnrolledSpec ).run( new RunNotifier() )
+            runSpec( UnrolledSpec )
         }
 
         then:
@@ -283,7 +283,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         "A Specification containing different types of features is run by Spock"
         PredictableStringHashCode.code = 0
         use( ConfigOutputDir, PredictableTimeResponse, FakeKnowsWhenAndWhoRanTest, NoTocGenerated, PredictableStringHashCode ) {
-            new Sputnik( specification ).run( new RunNotifier() )
+            runSpec( specification )
         }
 
         then:

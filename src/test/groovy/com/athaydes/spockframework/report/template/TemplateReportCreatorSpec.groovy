@@ -4,17 +4,17 @@ import com.athaydes.spockframework.report.FakeTest
 import com.athaydes.spockframework.report.SpecInfoListener
 import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.VividFakeTest
+import com.athaydes.spockframework.report.engine.CanRunSpockSpecs
 import com.athaydes.spockframework.report.internal.HtmlReportCreatorSpec
 import com.athaydes.spockframework.report.internal.StringFormatHelper
-import org.junit.runner.notification.RunNotifier
-import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.nio.file.Paths
 
 @Unroll
-class TemplateReportCreatorSpec extends Specification {
+class TemplateReportCreatorSpec extends Specification
+        implements CanRunSpockSpecs {
 
     def "A correct Template report is generated for a #specName including different types of features"() {
         given:
@@ -24,7 +24,7 @@ class TemplateReportCreatorSpec extends Specification {
         when:
         "A Specification containing different types of features is run by Spock"
         use( reportCreator, HtmlReportCreatorSpec.PredictableTimeResponse ) {
-            new Sputnik( specification ).run( new RunNotifier() )
+            runSpec( specification )
         }
 
         then:

@@ -8,11 +8,11 @@ plugins {
 defaultTasks 'clean', 'jar', 'test'
 
 group = 'com.athaydes'
-version = "1.7.1"
+version = "2.0-RC1"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
-def groovyVersion = '2.5.10'
-def spockVersion = '1.2-groovy-2.5'
+def groovyVersion = '3.0.1'
+def spockVersion = '2.0-M2-groovy-3.0'
 
 repositories {
     mavenLocal()
@@ -20,22 +20,24 @@ repositories {
 }
 
 dependencies {
-    compile "org.codehaus.groovy:groovy:${groovyVersion}"
-    compile "org.codehaus.groovy:groovy-xml:${groovyVersion}"
-    compile "org.codehaus.groovy:groovy-json:${groovyVersion}"
-    compile "org.codehaus.groovy:groovy-templates:${groovyVersion}"
-    compile "org.spockframework:spock-core:${spockVersion}", {
-        transitive = false
+    implementation "org.codehaus.groovy:groovy:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-xml:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
+    implementation "org.spockframework:spock-core:${spockVersion}", {
+        exclude group: 'org.codehaus.groovy'
     }
-    compile 'org.slf4j:slf4j-api:1.7.13'
-    compile 'junit:junit:4.12'
-
-    testCompile "org.codehaus.groovy:groovy-test:${groovyVersion}"
-    testCompile "cglib:cglib-nodep:2.2.2"
-    testCompile "org.slf4j:slf4j-simple:1.7.13"
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    testImplementation 'org.junit.platform:junit-platform-testkit:1.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+    testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
+    testImplementation "cglib:cglib-nodep:3.2.10"
+    testImplementation "org.slf4j:slf4j-simple:1.7.30"
 }
 
 test {
+    useJUnitPlatform()
+
     maxParallelForks = 4
     exclude '**/*FakeTest.class', '**/UnrolledSpec.class', '**/SpecIncludingExtraInfo.class'
     systemProperty 'project.buildDir', project.buildDir

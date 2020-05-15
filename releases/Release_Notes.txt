@@ -1,3 +1,7 @@
+2.0-RC2 - 2020 May 15
+
+* Upgrade to Spock 2 and Groovy 3.
+
 1.7.1 - 2020 March 10
 
 * Publishing same code as 1.7.0 but compiled with Java 8. Use this version if Java 8 is required.

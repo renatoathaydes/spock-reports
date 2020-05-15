@@ -2,6 +2,14 @@
 
 > Most recent first
 
+* `15th of May 2020`
+
+spock-reports has caught up with the new Groovy and Spock releases!
+The new version, 2.0-RC2, works with Groovy 3 and Spock 2.
+
+This is only a release-candidate (hence RC in the version), so please give it a go and as soon as Spock 2 is stabilized,
+hopefully spock-reports 2 will also have been well tested enough to update version to 2.0 itself.
+
 * `10th of March 2020`
 
 This release (1.7.0) does not contain code changes. It is only a dependency upgrade release that should bring
