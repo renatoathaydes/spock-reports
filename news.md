@@ -2,12 +2,17 @@
 
 > Most recent first
 
+* `04th of October 2020`
+
+Released spock-reports version 1.8.0 adding more statistics to reports (see issue #193) and to fix Java 9+ support
+when using JPMS modules (thanks to @fenixcitizen for the contribution).
+
 * `10th of March 2020`
 
-This release (1.7.0) does not contain code changes. It is only a dependency upgrade release that should bring
+This release (1.7.1) does not contain code changes. It is only a dependency upgrade release that should bring
 support for builds running Java 9+ (tested up to Java 12).
 
-Java 8 can still be used, but version spock-reports version 1.7.1 should be used!
+Java 8 can still be used, but spock-reports version 1.7.x should be used!
 
 This is expected to be the last 1.x release, as version 2.0 is already in the works!
 I intend to base spock-reports 2.x on Groovy 3 and Spock 2.x.

@@ -32,31 +32,7 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 Spock-reports is available on Maven Central and on JCenter.
 
 > Since version 1.3.2, Spock version 1.1+ is required.
-> From version 1.7.0, Spock 1.2-groovy-2.5 or newer should be used.
-> If you use Java 9+, use the latest versions of both Spock and spock-reports.
-
-If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
-`Specification` class' extension methods which are added by Spock Reports:
-
-* `void reportHeader( arg )` - dynamically insert data into the top of the Specification report.
-* `void reportInfo( arg )` - add data to the feature's section.
-
-These methods are added as
-[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor),
-so your IDE should be able to show them in auto-completion!
-
-For example, you could do something like this within your `Specification`:
-
-```groovy
-def setupSpec() {
-    reportHeader "<h2>Browser: ${driver.browser.name}</h2>"
-}
-
-def "My feature"() {
-    expect:
-    reportInfo "Some information I want to show in the report"
-}
-```
+> If you use Java 9+ and Groovy 2.5+, use the Spock 1.3+ and spock-reports 1.7+.
 
 ### If you are using Maven
 
@@ -66,7 +42,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>1.7.1</version>
+  <version>1.8.0</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -101,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    testCompile( 'com.athaydes:spock-reports:1.7.1' ) {
+    testCompile( 'com.athaydes:spock-reports:1.8.0' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
@@ -115,6 +91,31 @@ If you prefer, you can just download the jar directly from [JCenter](http://jcen
 The only dependencies this project has are Groovy version 2.0+ (only the
 `groovy`, `groovy-templates`, `groovy-xml` and `groovy-json`
 modules are required) and `Spock`, but if you're using Spock (version 0.7-groovy-2.0+) then you already have them all!
+
+## Adding information to reports programmatically
+
+If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
+`Specification` class' extension methods which are added by Spock Reports:
+
+* `void reportHeader( arg )` - dynamically insert data into the top of the Specification report.
+* `void reportInfo( arg )` - add data to the feature's section.
+
+These methods are added as
+[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor),
+so your IDE should be able to show them in auto-completion!
+
+For example, you could do something like this within your `Specification`:
+
+```groovy
+def setupSpec() {
+    reportHeader "<h2>Browser: ${driver.browser.name}</h2>"
+}
+
+def "My feature"() {
+    expect:
+    reportInfo "Some information I want to show in the report"
+}
+```
 
 ## Customizing spock-reports logging
 
