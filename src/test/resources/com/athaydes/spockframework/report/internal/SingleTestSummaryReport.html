@@ -12,21 +12,29 @@ ${projectHeader}
 	<div class='date-test-ran'>Created on ${dateTestRan} by ${username}</div>
 	<table class='summary-table'>
 		<thead>
-		<th>Total</th>
-		<th>Passed</th>
-		<th>Failed</th>
-		<th>Feature failures</th>
-		<th>Feature errors</th>
-		<th>Success rate</th>
-		<th>Total time</th>
+		<tr>
+			<th>Total</th>
+			<th>Passed</th>
+			<th>Failed</th>
+			<th>Skipped</th>
+			<th>Ft Total</th>
+			<th>Ft Passed</th>
+			<th>Ft Failed</th>
+			<th>Ft Skipped</th>
+			<th>Success rate</th>
+			<th>Total time</th>
+		</tr>
 		</thead>
 		<tbody>
 		<tr>
 			<td>1</td>
 			<td>0</td>
 			<td class='failure'>1</td>
-			<td class='failure'>1</td>
 			<td>0</td>
+			<td>5</td>
+			<td>6</td>
+			<td class='failure'>1</td>
+			<td>2</td>
 			<td class='failure'>25.0%</td>
 			<td>1.0 second</td>
 		</tr>
@@ -36,18 +44,22 @@ ${projectHeader}
 <h3>Specifications:</h3>
 <table class='summary-table'>
 	<thead>
+	<tr>
 	<th>Name</th>
 	<th>Features</th>
+	<th>Iterations</th>
 	<th>Failed</th>
 	<th>Errors</th>
 	<th>Skipped</th>
 	<th>Success rate</th>
 	<th>Time</th>
+	</tr>
 	</thead>
 	<tbody>
 	<tr class='failure'>
 		<td><a href='Spec1.html'>Spec1</a></td>
 		<td>5</td>
+		<td>3</td>
 		<td>1</td>
 		<td>0</td>
 		<td>2</td>

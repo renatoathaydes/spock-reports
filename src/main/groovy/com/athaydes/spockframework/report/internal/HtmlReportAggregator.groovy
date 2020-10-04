@@ -90,23 +90,31 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
             builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
             table( 'class': 'summary-table' ) {
                 thead {
-                    th 'Total'
-                    th 'Passed'
-                    th 'Failed'
-                    th 'Feature failures'
-                    th 'Feature errors'
-                    th 'Success rate'
-                    th 'Total time'
+                    tr {
+                        th 'Total'
+                        th 'Passed'
+                        th 'Failed'
+                        th 'Skipped'
+                        th 'Ft Total'
+                        th 'Ft Passed'
+                        th 'Ft Failed'
+                        th 'Ft Skipped'
+                        th 'Success rate'
+                        th 'Total time'
+                    }
                 }
                 tbody {
                     tr {
                         td stats.total
                         td stats.passed
                         td( cssClassIfTrue( stats.failed, 'failure' ), stats.failed )
-                        td( cssClassIfTrue( stats.fFails, 'failure' ), stats.fFails )
-                        td( cssClassIfTrue( stats.fErrors, 'error' ), stats.fErrors )
+                        td stats.skipped
+                        td stats.fTotal
+                        td stats.fPassed
+                        td( cssClassIfTrue( stats.fFails + stats.fErrors, 'failure' ), stats.fFails + stats.fErrors )
+                        td stats.fSkipped
                         td( cssClassIfTrue( stats.failed, 'failure' ), stringFormatter
-                                .toPercentage( Utils.successRate( stats.total, stats.failed ) ) )
+                                .toPercentage( stats.successRate as double ) )
                         td stringFormatter.toTimeDuration( stats.time )
                     }
                 }
@@ -119,13 +127,16 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
         builder.h3 'Specifications:'
         builder.table( 'class': 'summary-table' ) {
             thead {
-                th 'Name'
-                th 'Features'
-                th 'Failed'
-                th 'Errors'
-                th 'Skipped'
-                th 'Success rate'
-                th 'Time'
+                tr {
+                    th 'Name'
+                    th 'Features'
+                    th 'Iterations'
+                    th 'Failed'
+                    th 'Errors'
+                    th 'Skipped'
+                    th 'Success rate'
+                    th 'Time'
+                }
             }
             tbody {
                 data.keySet().sort().each { String specName ->
@@ -170,6 +181,7 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
                 }
             }
             td stats.totalFeatures
+            td stats.totalRuns
             td stats.failures
             td stats.errors
             td stats.skipped

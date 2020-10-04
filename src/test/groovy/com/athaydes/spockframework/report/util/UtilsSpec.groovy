@@ -62,19 +62,25 @@ class UtilsSpec extends Specification {
         where:
         aggregatedData | expected
         [
-                'A': [ stats: [ failures   : 1, errors: 2,
-                                skipped    : 0, totalRuns: 10,
+                'A': [ stats: [ failures   : 1, errors: 2, passed: 7,
+                                skipped    : 0, totalRuns: 10, totalFeatures: 10,
                                 successRate: 0.7, time: 1.25 ] ],
-                'B': [ stats: [ failures   : 6, errors: 4,
-                                skipped    : 0, totalRuns: 20,
+                'B': [ stats: [ failures   : 6, errors: 4, passed: 10,
+                                skipped    : 0, totalRuns: 20, totalFeatures: 20,
                                 successRate: 0.5, time: 2.0 ] ],
-                'C': [ stats: [ failures   : 0, errors: 0,
-                                skipped    : 0, totalRuns: 1,
+                'C': [ stats: [ failures   : 0, errors: 0, passed: 1,
+                                skipped    : 0, totalRuns: 1, totalFeatures: 1,
                                 successRate: 1.0, time: 3.0 ] ],
-                'D': [ stats: [ failures   : 0, errors: 0,
-                                skipped    : 2, totalRuns: 3,
-                                successRate: 1.0, time: 2.0 ] ]
-        ]              | [ total: 4, passed: 2, failed: 2, fFails: 7, fErrors: 6, time: 8.25, successRate: 0.5 ]
+                'D': [ stats: [ failures   : 0, errors: 0, passed: 1,
+                                skipped    : 2, totalRuns: 3, totalFeatures: 1,
+                                successRate: 1.0, time: 2.0 ] ],
+                'E': [ stats: [ failures   : 0, errors: 0, passed: 0,
+                                skipped    : 5, totalRuns: 0, totalFeatures: 5,
+                                successRate: 1.0, time: 0.0 ] ],
+        ]              | [ total      : 5, executed: 4, passed: 2, failed: 2, skipped: 1,
+                           fTotal     : 37, fExecuted: 34, fPassed: 19, fSkipped: 7, fFails: 7, fErrors: 6, time: 8.25,
+                           // fSuccessRate: 34 features executed with 7 failures and 6 errors ( 13 problems )
+                           successRate: 0.5, fSuccessRate: Utils.successRate( 34, 13 ) ]
     }
 
     def "Recognizes valid URLs"() {

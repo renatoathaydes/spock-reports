@@ -33,6 +33,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
             title           : 'This is just a Fake test to test spock-reports',
             narrative       : '\nAs a user\nI want foo\nSo that bar',
             executedFeatures: 10,
+            passed          : 5,
             failures        : 3,
             errors          : 2,
             skipped         : 2,
@@ -41,12 +42,14 @@ class HtmlReportCreatorSpec extends ReportSpec {
     static final Map vividFakeTestBinding = [
             narrative       : '\nAs a developer\nI want to see my code',
             executedFeatures: 9,
+            passed          : 4,
             failures        : 3,
             errors          : 2,
             skipped         : 0,
             successRate     : "44${DS}44%"
     ]
 
+    @Unroll
     def "A correct HTML report is generated for a #specification.simpleName including different types of features"() {
         given:
         "The project build folder location is known"
@@ -226,6 +229,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         where:
         reportBinding = [
                 executedFeatures: 5,
+                passed          : 5,
                 failures        : 0,
                 errors          : 0,
                 skipped         : 0,
@@ -246,6 +250,7 @@ class HtmlReportCreatorSpec extends ReportSpec {
         "Report binding data"
         def reportBinding = [
                 executedFeatures: 6,
+                passed          : 6,
                 failures        : 0,
                 errors          : 0,
                 skipped         : 0,
