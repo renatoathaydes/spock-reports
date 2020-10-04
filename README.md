@@ -401,17 +401,19 @@ Report statistics: $stats
 The variable `stats` is a `Map` containing the following keys:
 
 ```
-failures, errors, skipped, totalRuns, successRate, time
+failures, errors, skipped, totalRuns, totalFeatures, passed, successRate, time
 ```
 
 So, you can use it in your template like this:
 
 ```
+Features:           :  ${stats.totalFeatures}
 Total number of runs:  ${stats.totalRuns}
-Success rate........:  ${stats.successRate}
+Passed              :  ${stats.passed}
 Number of failures..:  ${stats.failures}
 Number of errors....:  ${stats.errors}
 Number of ignored...:  ${stats.skipped}
+Success rate........:  ${stats.successRate}
 Total time (ms).....:  ${stats.time}
 
 Created on ${new Date()} by ${System.properties['user.name']}
@@ -425,8 +427,10 @@ For example, after running two Specifications named `test.FirstSpec` and `test.S
 the `data` Map could look like this:
 
 ```groovy
-[ 'test.FirstSpec': [ failures: 1, errors: 0, skipped: 0, totalRuns: 1, successRate: 0.0, time: 159],
-  'test.SecondSpec': [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
+[
+ 'test.FirstSpec' : [ failures: 0, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 4, passed: 5, successRate: 0.1, time: 1000 ],
+ 'test.SecondSpec': [ failures: 0, errors: 1, skipped: 3, totalRuns: 4, totalFeatures: 6, passed: 6, successRate: 0.2, time: 2000 ],
+]
 ```
 
 You can then iterate over each Spec's data as follows:
