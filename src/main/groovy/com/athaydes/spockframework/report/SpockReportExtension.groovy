@@ -262,7 +262,7 @@ class SpecInfoListener implements IRunListener {
 
     private IterationInfo dummySpecIteration() {
         def currentRun = currentRun()
-        def iteration = new IterationInfo( currentRun.feature, [ ] as Object[], 1 )
+        def iteration = new IterationInfo( currentRun.feature, 0, [ ] as Object[], 1 )
         iteration.name = '<No Iteration!>'
         currentRun.failuresByIteration.put( iteration, [ ] )
         iteration
