@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-import org.junit.ComparisonFailure
+import org.opentest4j.AssertionFailedError
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -41,7 +41,7 @@ class SpecProblem {
     }
 
     FailureKind getKind() {
-        failure.exception instanceof AssertionError || failure.exception instanceof ComparisonFailure ?
+        failure.exception instanceof AssertionError || failure.exception instanceof AssertionFailedError ?
                 FailureKind.FAILURE :
                 FailureKind.ERROR
     }
