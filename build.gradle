@@ -14,8 +14,8 @@ description = 'This project is a global extension for Spock to create test (or, 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-def groovyVersion = '3.0.1'
-def spockVersion = '2.0-M2-groovy-3.0'
+def groovyVersion = '3.0.6'
+def spockVersion = '2.0-M4-groovy-3.0'
 
 repositories {
     mavenLocal()
@@ -31,10 +31,11 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
     implementation 'org.slf4j:slf4j-api:1.7.30'
-    testImplementation 'org.junit.platform:junit-platform-testkit:1.6.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+    testImplementation platform('org.junit:junit-bom:5.7.0')
+    testImplementation 'org.junit.platform:junit-platform-testkit'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
-    testImplementation "cglib:cglib-nodep:3.2.10"
+    testImplementation "cglib:cglib-nodep:3.3.0"
     testImplementation "org.slf4j:slf4j-simple:1.7.30"
 }
 
