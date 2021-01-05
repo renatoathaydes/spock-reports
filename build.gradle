@@ -11,6 +11,9 @@ group = 'com.athaydes'
 version = "2.0-RC2"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 def groovyVersion = '3.0.1'
 def spockVersion = '2.0-M2-groovy-3.0'
 

@@ -17,16 +17,20 @@
 	<div class='date-test-ran'>Created on ${dateTestRan} by ${username}</div>
 	<table class='summary-table'>
 		<thead>
+		<tr>
 		<th>Executed features</th>
+		<th>Passed</th>
 		<th>Failures</th>
 		<th>Errors</th>
 		<th>Skipped</th>
 		<th>Success rate</th>
 		<th>Time</th>
+		</tr>
 		</thead>
 		<tbody>
 		<tr>
 			<td>${executedFeatures}</td>
+			<td>${passed}</td>
 			<td>${failures}</td>
 			<td>${errors}</td>
 			<td>${skipped}</td>
@@ -102,8 +106,10 @@
 		<div class='spec-examples'>
 			<table class='ex-table'>
 				<thead>
+				<tr>
 				<th class='ex-header'>x</th>
 				<th class='ex-header'>y</th>
+				</tr>
 				</thead>
 				<tbody>
 				<tr class='ex-pass'>
@@ -378,8 +384,10 @@ c == 2 * b</pre>
 		<div class='spec-examples'>
 			<table class='ex-table'>
 				<thead>
+				<tr>
 				<th class='ex-header'>x</th>
 				<th class='ex-header'>y</th>
+				</tr>
 				</thead>
 				<tbody>
 				<tr class='ex-pass'>
@@ -438,8 +446,10 @@ c == 2 * b</pre>
 		<div class='spec-examples'>
 			<table class='ex-table'>
 				<thead>
+				<tr>
 				<th class='ex-header'>x</th>
 				<th class='ex-header'>y</th>
+				</tr>
 				</thead>
 				<tbody>
 				<tr class='ex-fail'>
@@ -512,8 +522,10 @@ c == 2 * b</pre>
 		<div class='spec-examples'>
 			<table class='ex-table'>
 				<thead>
+				<tr>
 				<th class='ex-header'>x</th>
 				<th class='ex-header'>y</th>
+				</tr>
 				</thead>
 				<tbody>
 				<tr class='ex-fail'>

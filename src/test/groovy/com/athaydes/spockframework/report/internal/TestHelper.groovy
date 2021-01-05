@@ -14,7 +14,7 @@ import spock.lang.Title
 class TestHelper extends Specification {
 
     static String minify( String xml ) {
-        xml.replaceAll( /[\t\r\n]/, '' ).replaceAll( />\s+</, '><' )
+        xml.replaceAll( /[\t\r\n]\s*/, '' ).replaceAll( />\s+</, '><' )
     }
 
     static void assertVerySimilar( String actual, String expected ) {
@@ -62,7 +62,7 @@ class TestHelper extends Specification {
         '<a>  </a> <b> </b>'           | '<a></a><b></b>'
         ' '                            | ' '
         '\t\t\t\t\t<hi></hi>\n\r<ho/>' | '<hi></hi><ho/>'
-        '\n\r \n\r \n\r '              | '   '
+        '\n\r \n\r \n\r '              | ''
     }
 
 }

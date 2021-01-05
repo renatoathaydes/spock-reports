@@ -31,32 +31,8 @@ To enable this Spock extension, you only need to declare a dependency to it (if 
 
 Spock-reports is available on Maven Central and on JCenter.
 
-> The versions below work with the new Spock 2 / Groovy 3 versions.
-> If you want to stay with Spock 1 and Groovy 2.5.x, use spock-reports version 1.7.1.
-> Spock-reports should work fine with Java 9+ since version 1.7.1.
-
-If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
-`Specification` class' extension methods which are added by Spock Reports:
-
-* `void reportHeader( arg )` - dynamically insert data into the top of the Specification report.
-* `void reportInfo( arg )` - add data to the feature's section.
-
-These methods are added as
-[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor),
-so your IDE should be able to show them in auto-completion!
-
-For example, you could do something like this within your `Specification`:
-
-```groovy
-def setupSpec() {
-    reportHeader "<h2>Browser: ${driver.browser.name}</h2>"
-}
-
-def "My feature"() {
-    expect:
-    reportInfo "Some information I want to show in the report"
-}
-```
+> Since version 1.3.2, Spock version 1.1+ is required.
+> If you use Java 9+ and Groovy 2.5+, use the Spock 1.3+ and spock-reports 1.7+.
 
 ### If you are using Maven
 
@@ -120,6 +96,31 @@ If you prefer, you can just download the jar directly from [JCenter](http://jcen
 The only dependencies this project has are Groovy (only the
 `groovy`, `groovy-templates`, `groovy-xml` and `groovy-json` modules are required)
 and `Spock`, of course.
+
+## Adding information to reports programmatically
+
+If you want to add information to your Spock-reports programmatically, since version 1.4.0, you can use the following
+`Specification` class' extension methods which are added by Spock Reports:
+
+* `void reportHeader( arg )` - dynamically insert data into the top of the Specification report.
+* `void reportInfo( arg )` - add data to the feature's section.
+
+These methods are added as
+[Groovy extensions](http://docs.groovy-lang.org/docs/next/html/documentation/core-metaprogramming.html#module-descriptor),
+so your IDE should be able to show them in auto-completion!
+
+For example, you could do something like this within your `Specification`:
+
+```groovy
+def setupSpec() {
+    reportHeader "<h2>Browser: ${driver.browser.name}</h2>"
+}
+
+def "My feature"() {
+    expect:
+    reportInfo "Some information I want to show in the report"
+}
+```
 
 ## Customizing spock-reports logging
 
@@ -405,17 +406,19 @@ Report statistics: $stats
 The variable `stats` is a `Map` containing the following keys:
 
 ```
-failures, errors, skipped, totalRuns, successRate, time
+failures, errors, skipped, totalRuns, totalFeatures, passed, successRate, time
 ```
 
 So, you can use it in your template like this:
 
 ```
+Features:           :  ${stats.totalFeatures}
 Total number of runs:  ${stats.totalRuns}
-Success rate........:  ${stats.successRate}
+Passed              :  ${stats.passed}
 Number of failures..:  ${stats.failures}
 Number of errors....:  ${stats.errors}
 Number of ignored...:  ${stats.skipped}
+Success rate........:  ${stats.successRate}
 Total time (ms).....:  ${stats.time}
 
 Created on ${new Date()} by ${System.properties['user.name']}
@@ -429,8 +432,10 @@ For example, after running two Specifications named `test.FirstSpec` and `test.S
 the `data` Map could look like this:
 
 ```groovy
-[ 'test.FirstSpec': [ failures: 1, errors: 0, skipped: 0, totalRuns: 1, successRate: 0.0, time: 159],
-  'test.SecondSpec': [ failures: 0, errors: 1, skipped: 0, totalRuns: 3, successRate: 0.6666666666666666, time: 8 ] ]
+[
+ 'test.FirstSpec' : [ failures: 0, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 4, passed: 5, successRate: 0.1, time: 1000 ],
+ 'test.SecondSpec': [ failures: 0, errors: 1, skipped: 3, totalRuns: 4, totalFeatures: 6, passed: 6, successRate: 0.2, time: 2000 ],
+]
 ```
 
 You can then iterate over each Spec's data as follows:

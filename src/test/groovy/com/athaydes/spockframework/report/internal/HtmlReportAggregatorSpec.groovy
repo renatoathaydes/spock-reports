@@ -6,6 +6,7 @@ import groovy.xml.MarkupBuilder
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.MethodInfo
 import org.spockframework.runtime.model.SpecInfo
+import spock.lang.Unroll
 
 import java.util.concurrent.TimeUnit
 
@@ -22,7 +23,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
            should create a report with data from the single spec"""() {
         given:
         "A single spec stats"
-        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5, successRate: 0.25, time: 0 ]
+        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5,
+                      passed  : 6, successRate: 0.25, time: 0 ]
 
         and:
         "A clean output directory"
@@ -73,7 +75,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
            should create a report with data from the single spec including project name and version"""() {
         given:
         "A single spec stats"
-        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5, successRate: 0.25, time: 0 ]
+        def stats = [ failures: 1, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 5,
+                      passed  : 6, successRate: 0.25, time: 0 ]
 
         and:
         "A clean output directory"
@@ -137,13 +140,13 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         given:
         "Several specs"
         def allSpecs = [
-                'Spec1'      : [ failures: 0, errors: 0, skipped: 2, totalFeatures: 5, successRate: 0.1, time: 1000 ],
-                'a.Spec2'    : [ failures: 0, errors: 1, skipped: 3, totalFeatures: 6, successRate: 0.2, time: 2000 ],
-                'a.Spec3'    : [ failures: 3, errors: 2, skipped: 4, totalFeatures: 7, successRate: 0.3, time: 3000 ],
-                'a.b.c.Spec4': [ failures: 4, errors: 3, skipped: 5, totalFeatures: 8, successRate: 0.4, time: 4000 ],
-                'b.c.Spec6'  : [ failures: 6, errors: 5, skipped: 7, totalFeatures: 10, successRate: 0.6, time: 5000 ],
-                'a.b.c.Spec5': [ failures: 5, errors: 4, skipped: 6, totalFeatures: 9, successRate: 0.5, time: 6000 ],
-                'c.d.Spec6'  : [ failures: 7, errors: 6, skipped: 8, totalFeatures: 11, successRate: 0.7, time: 7000 ]
+                'Spec1'      : [ failures: 0, errors: 0, skipped: 2, totalRuns: 3, totalFeatures: 4, passed: 5, successRate: 0.1, time: 1000 ],
+                'a.Spec2'    : [ failures: 0, errors: 1, skipped: 3, totalRuns: 4, totalFeatures: 6, passed: 6, successRate: 0.2, time: 2000 ],
+                'a.Spec3'    : [ failures: 3, errors: 2, skipped: 4, totalRuns: 5, totalFeatures: 7, passed: 7, successRate: 0.3, time: 3000 ],
+                'a.b.c.Spec4': [ failures: 4, errors: 3, skipped: 5, totalRuns: 6, totalFeatures: 8, passed: 8, successRate: 0.4, time: 4000 ],
+                'b.c.Spec6'  : [ failures: 6, errors: 5, skipped: 7, totalRuns: 7, totalFeatures: 10, passed: 9, successRate: 0.6, time: 5000 ],
+                'a.b.c.Spec5': [ failures: 5, errors: 4, skipped: 6, totalRuns: 8, totalFeatures: 9, passed: 10, successRate: 0.5, time: 6000 ],
+                'c.d.Spec6'  : [ failures: 7, errors: 6, skipped: 8, totalRuns: 9, totalFeatures: 10, passed: 11, successRate: 0.7, time: 7000 ]
         ]
 
         and:
@@ -254,6 +257,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         file.text == ( 1..41 ).join( ' ' )
     }
 
+    @Unroll
     def "Should be able to write spec name or title according to chosen settings"() {
         given: 'A HtmlReportAggregator using a specific summary option of #summarySetting'
         def aggregator = new HtmlReportAggregator(
@@ -277,18 +281,21 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         [ failures     : 1,
           errors       : 0,
           skipped      : 2,
+          totalRuns    : 8,
           totalFeatures: 5,
+          passed       : 4,
           successRate  : 0.25,
           time         : 0 ]     |
                 'abc.SpecA'                 |
                 'Spec A'                                |
                 'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a><div class='spec-title'>Spec A</div>" +
-                "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+                "</td><td>5</td><td>8</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
 
         [ failures     : 1,
           errors       : 0,
           skipped      : 2,
+          totalRuns    : 6,
           totalFeatures: 5,
           successRate  : 0.25,
           time         : 0 ]     |
@@ -296,11 +303,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 ''                                      |
                 'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>5</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+                "</td><td>5</td><td>6</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
           skipped      : 1,
+          totalRuns    : 5,
           totalFeatures: 7,
           successRate  : 0.33,
           time         : 1_000 ] |
@@ -308,11 +316,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 'Spec A'                                |
                 'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'><div class='spec-title'>Spec A</div></a>" +
-                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>5</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
           skipped      : 1,
+          totalRuns    : 3,
           totalFeatures: 7,
           successRate  : 0.33,
           time         : 1_000 ] |
@@ -320,11 +329,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 ''                                      |
                 'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
           skipped      : 1,
+          totalRuns    : 3,
           totalFeatures: 7,
           successRate  : 0.33,
           time         : 1_000 ] |
@@ -332,7 +342,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 'Spec A'                                |
                 'class_name'                                             |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>7</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
     }
 
     private static Process executeMainInForkedProcess( Class mainClass, String... args ) {
@@ -350,7 +360,11 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 username    : TEST_USER_NAME,
                 total       : 7,
                 passed      : 1,
+                skipped     : 0,
                 failed      : 6,
+                fTotal      : 54,
+                fPassed     : 56,
+                fSkipped    : 35,
                 fFails      : 25,
                 fErrors     : 21,
                 successRate : sf.toPercentage( 1 / 7 ),
