@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-import org.junit.ComparisonFailure
+
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -41,9 +41,7 @@ class SpecProblem {
     }
 
     FailureKind getKind() {
-        failure.exception instanceof AssertionError || failure.exception instanceof ComparisonFailure ?
-                FailureKind.FAILURE :
-                FailureKind.ERROR
+        failure.exception instanceof AssertionError ? FailureKind.FAILURE : FailureKind.ERROR
     }
 
 }

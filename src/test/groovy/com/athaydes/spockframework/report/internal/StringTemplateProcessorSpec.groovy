@@ -6,14 +6,16 @@ import spock.lang.Specification
 
 class StringTemplateProcessorSpec extends Specification {
 
-    def "Should replace #variables with the provided values"() {
+    def "Should replace #variableNames with the provided values"() {
         given:
         "A StringTemplateProcessor"
         def processor = new StringTemplateProcessor()
 
         when:
         "A String is processed"
-        def iteration = new IterationInfo( new FeatureInfo( name: string ), variableValues as Object[], 1 )
+        def feature = new FeatureInfo( name: string )
+        variableNames.each{ value -> feature.addDataVariable( value?.toString() ) }
+        def iteration = new IterationInfo( feature, 0, variableValues as Object[], variableValues.size() )
         def result = processor.process( string, variableNames, iteration )
 
         then:

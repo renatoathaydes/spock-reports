@@ -48,13 +48,13 @@ class ProblemBlockWriterSpec extends Specification {
 
     def "Can print stacktrace in report"() {
         given: 'An Throwable with a real stacktrace'
-        def throwable = throwAndGet new RuntimeException( "An error" )
+        def someThrowable = throwAndGet new RuntimeException( "An error" )
 
         and: 'A ProblemBlockWriter that prints stacktraces'
         problemBlockWriter.printThrowableStackTrace = true
 
         when: 'The Throwable is printed using ProblemBlockWriter'
-        def result = problemBlockWriter.formatProblemMessage throwable
+        def result = problemBlockWriter.formatProblemMessage(someThrowable)
 
         then: 'The given String contains the stack-trace of the Throwable'
         result.startsWith 'java.lang.RuntimeException: An error'

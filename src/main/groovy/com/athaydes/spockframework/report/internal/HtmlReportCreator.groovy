@@ -151,17 +151,21 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             builder.div( 'class': 'date-test-ran', whenAndWho.whenAndWhoRanTest( stringFormatter ) )
             table( 'class': 'summary-table' ) {
                 thead {
-                    th 'Executed features'
-                    th 'Failures'
-                    th 'Errors'
-                    th 'Skipped'
-                    th 'Success rate'
-                    th 'Time'
+                    tr {
+                        th 'Executed features'
+                        th 'Passed'
+                        th 'Failures'
+                        th 'Errors'
+                        th 'Skipped'
+                        th 'Success rate'
+                        th 'Time'
+                    }
                 }
                 tbody {
                     tr {
                         def stats = Utils.stats( data )
                         td stats.totalRuns
+                        td stats.passed
                         td stats.failures
                         td stats.errors
                         td stats.skipped
@@ -463,8 +467,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 div( 'class': 'spec-examples' ) {
                     table( 'class': 'ex-table' ) {
                         thead {
-                            for ( param in run.feature.parameterNames ) {
-                                th( 'class': 'ex-header', param )
+                            tr {
+                                for ( param in run.feature.parameterNames ) {
+                                    th( 'class': 'ex-header', param )
+                                }
                             }
                         }
                         tbody {

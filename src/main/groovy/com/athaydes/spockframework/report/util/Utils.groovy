@@ -63,24 +63,33 @@ class Utils {
         def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
         def total = data.info.allFeatures.size()
         def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
-        def successRate = successRate( totalExecuted, ( errors + failures ).toInteger() )
-        [ failures   : failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
-          successRate: successRate, time: data.totalTime ]
+        def successRate = totalExecuted == 0 ? 1.0D : successRate( totalExecuted, ( errors + failures ).toInteger() )
+        [ failures: failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
+          passed  : totalExecuted - failures - errors, successRate: successRate, time: data.totalTime ]
     }
 
     static Map aggregateStats( Map<String, Map> aggregatedData ) {
-        def result = [ total: 0, passed: 0, failed: 0, fFails: 0, fErrors: 0, time: 0.0 ]
+        def result = [ total : 0, executed: 0, passed: 0, failed: 0, skipped: 0,
+                       fTotal: 0, fExecuted: 0, fPassed: 0, fSkipped: 0, fFails: 0, fErrors: 0, time: 0.0 ]
         aggregatedData.values().each { Map json ->
             def stats = json.stats
             def isFailure = stats.failures + stats.errors > 0
+            def isSkipped = stats.totalRuns == 0
             result.total += 1
-            result.passed += ( isFailure ? 0 : 1 )
+            result.executed += ( isSkipped ? 0 : 1 )
+            result.passed += isSkipped ? 0 : ( isFailure ? 0 : 1 )
             result.failed += ( isFailure ? 1 : 0 )
+            result.skipped += isSkipped ? 1 : 0
+            result.fTotal += stats.totalFeatures
+            result.fExecuted += stats.totalRuns
             result.fFails += stats.failures
             result.fErrors += stats.errors
+            result.fSkipped += stats.skipped
+            result.fPassed += stats.passed
             result.time += stats.time
         }
-        result.successRate = successRate( result.total, result.failed )
+        result.successRate = successRate( result.executed, result.failed )
+        result.fSuccessRate = successRate( result.fExecuted, result.fFails + result.fErrors )
         result
     }
 
