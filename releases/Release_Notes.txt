@@ -1,3 +1,8 @@
+2.0-RC3 - 2021 January 05
+
+* Merged 1.8.0 fixes to the 2.0 branch.
+* Upgrade to Spock 2.0-M4-groovy-3.0.
+
 1.8.0 - 2020 October 04
 
 * #193 added more statistics to reports.

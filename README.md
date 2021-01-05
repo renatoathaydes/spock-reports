@@ -42,7 +42,7 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>com.athaydes</groupId>
   <artifactId>spock-reports</artifactId>
-  <version>2.0-RC2</version>
+  <version>2.0-RC3</version>
   <scope>test</scope>
   <!-- this avoids affecting your version of Groovy/Spock -->
   <exclusions>
@@ -82,7 +82,7 @@ test {
 
 dependencies {
     // you can use testRuntimeClasspath if you don't want to use spock-report-specific features in your Specs
-    testImplementation( 'com.athaydes:spock-reports:2.0-RC2' ) {
+    testImplementation( 'com.athaydes:spock-reports:2.0-RC3' ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!

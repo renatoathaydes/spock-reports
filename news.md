@@ -2,6 +2,20 @@
 
 > Most recent first
 
+* `05th of January 2021`
+
+A lot of folks seem to be interested in migrating to Spock 2.x even before it stabilizes! So I decided to listen to
+them and merge all fixes from the 1.8.0 branch into master, and release a new spock-reports version that now uses
+Spock version `2.0-M4-groovy-3.0`. Thankfully, Spock has not changed much since the last milestone, so this upgrade
+should go smoothly for everyone, including spock-reports itself.
+
+For now, the Spcok reports will include additional information on the feature title when a feature contains examples
+and is not unrolled... this is a useful feature if you don't use spock-reports, but as spock-reports has always shown
+the examples even in such cases, this is not really helpful in spock-reports, so I intend to remove that at a future
+release, before 2.0. For now, though, this release should let you enjoy the newest, shiny Spock version.
+
+TL;DR if you want to use the latest Spock 2/Groovy 3, upgrade to spock-reports version `2.0-RC3` and have fun.
+
 * `04th of October 2020`
 
 Released spock-reports version 1.8.0 adding more statistics to reports (see issue #193) and to fix Java 9+ support
