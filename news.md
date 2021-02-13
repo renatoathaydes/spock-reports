@@ -2,6 +2,17 @@
 
 > Most recent first
 
+* `13th of February 2021`
+
+Minor release to fix the POM published in the previous version, which was incorrect due to a careless change to use
+the new, recommended BOM feature from Gradle!
+
+This release also marks the first release where spock-reports is published only to Maven Central, dropping JCenter
+releases. This is due to the [recent announcement by Bintray](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
+that JCenter will be shutdown in April 2021, unfortunately.
+
+Make sure you change all your projects to use Maven Central instead of JCenter.
+
 * `05th of January 2021`
 
 A lot of folks seem to be interested in migrating to Spock 2.x even before it stabilizes! So I decided to listen to

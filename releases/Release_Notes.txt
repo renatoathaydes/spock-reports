@@ -1,3 +1,7 @@
+2.0.1-RC3 - 2021 February 13
+
+* Fixes the POM published to Maven Central, which was incorrect in the previous version.
+
 2.0-RC3 - 2021 January 05
 
 * Merged 1.8.0 fixes to the 2.0 branch.
