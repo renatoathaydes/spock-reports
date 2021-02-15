@@ -1,14 +1,15 @@
 plugins {
-    id "com.jfrog.bintray" version "1.6"
+    id 'java-library'
     id 'groovy'
     id 'idea'
-    id 'maven'
+    id 'maven-publish'
+    id 'signing'
 }
 
-defaultTasks 'clean', 'jar', 'test'
+defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.0-RC3"
+version = "2.0.1-RC3"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 sourceCompatibility = '1.8'
@@ -18,20 +19,19 @@ def groovyVersion = '3.0.6'
 def spockVersion = '2.0-M4-groovy-3.0'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation "org.codehaus.groovy:groovy:${groovyVersion}"
+    api "org.codehaus.groovy:groovy:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-xml:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
-    implementation "org.spockframework:spock-core:${spockVersion}", {
+    api "org.spockframework:spock-core:${spockVersion}", {
         exclude group: 'org.codehaus.groovy'
     }
     implementation 'org.slf4j:slf4j-api:1.7.30'
-    testImplementation platform('org.junit:junit-bom:5.7.0')
+    testImplementation platform( 'org.junit:junit-bom:5.7.0' )
     testImplementation 'org.junit.platform:junit-platform-testkit'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
@@ -66,52 +66,14 @@ jar {
     }
 }
 
-/* Publishing config */
-
-task javadocJar( type: Jar ) {
-    classifier = 'javadoc'
-    from javadoc
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-task sourcesJar( type: Jar ) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-// add all the info required by Maven Central to the pom
-configure( install.repositories.mavenInstaller ) {
-    pom.project {
-        inceptionYear '2013'
-        name project.name
-        packaging 'jar'
-        description project.description
-
-        url 'https://github.com/renatoathaydes/spock-reports'
-
-        scm {
-            connection 'git@github.com:renatoathaydes/spock-reports.git'
-            developerConnection 'git@github.com:renatoathaydes/spock-reports.git'
-            url 'https://github.com/renatoathaydes/spock-reports'
-        }
-
-        licenses {
-            license {
-                name 'The Apache License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-            }
-        }
-
-        developers {
-            developer {
-                id 'renatoathaydes'
-                name 'Renato Athaydes'
-                email 'renato@athaydes.com'
-            }
-        }
+javadoc {
+    if ( JavaVersion.current().isJava9Compatible() ) {
+        options.addBooleanOption( 'html5', true )
     }
 }
 
@@ -119,33 +81,61 @@ def getProjectProperty = { String propertyName ->
     project.properties[ propertyName ]
 }
 
-bintray {
-    user = getProjectProperty "bintrayUserName"
-    key = getProjectProperty "bintrayApiKey"
-    configurations = [ 'archives' ]
-    publish = true
-    pkg {
-        repo = 'maven'
-        name = 'spock-reports'
-        licenses = [ 'Apache-2.0' ]
-        labels = [ 'groovy', 'java', 'spock', 'bdd', 'test', 'report' ]
-        publicDownloadNumbers = true
-
-        //noinspection GroovyAssignabilityCheck
-        version {
-            name = project.version
-            vcsTag = project.version
-            gpg {
-                sign = true
+publishing {
+    publications {
+        mavenJava( MavenPublication ) {
+            artifactId = 'spock-reports'
+            from components.java
+            versionMapping {
+                usage( 'java-api' ) {
+                    fromResolutionOf( 'runtimeClasspath' )
+                }
+                usage( 'java-runtime' ) {
+                    fromResolutionResult()
+                }
             }
-            mavenCentralSync {
-                sync = true
-                user = getProjectProperty 'ossrhUsername'
-                password = getProjectProperty 'ossrhPassword'
-                close = '1' // '0' to NOT close
+            pom {
+                inceptionYear = '2013'
+                name = project.name
+                packaging = 'jar'
+                description = project.description
+
+                url = 'https://github.com/renatoathaydes/spock-reports'
+
+                scm {
+                    connection = 'git@github.com:renatoathaydes/spock-reports.git'
+                    developerConnection = 'git@github.com:renatoathaydes/spock-reports.git'
+                    url = 'https://github.com/renatoathaydes/spock-reports'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'renatoathaydes'
+                        name = 'Renato Athaydes'
+                        email = 'renato@athaydes.com'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username getProjectProperty( 'ossrhUsername' )?.toString()
+                password getProjectProperty( 'ossrhPassword' )?.toString()
             }
         }
     }
 }
 
-bintrayUpload.dependsOn build, sourcesJar
+signing {
+    sign publishing.publications.mavenJava
+}
