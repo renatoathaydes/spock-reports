@@ -263,6 +263,9 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def aggregator = new HtmlReportAggregator(
                 specSummaryNameOption: SpecSummaryNameOption.valueOf( summarySetting.toUpperCase() ) )
 
+        and: 'Setting Default-Locale to en_US to be independent from System-Locale for this test.'
+        Locale.setDefault(new Locale("en","US"))
+
         and: 'A MarkupBuilder'
         def writer = new StringWriter()
         def builder = new MarkupBuilder( writer )
@@ -290,7 +293,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 'Spec A'                                |
                 'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a><div class='spec-title'>Spec A</div>" +
-                "</td><td>5</td><td>8</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+                "</td><td>5</td><td>8</td><td>1</td><td>0</td><td>2</td><td>25.00%</td><td>0</td></tr>"
 
         [ failures     : 1,
           errors       : 0,
@@ -303,7 +306,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 ''                                      |
                 'class_name_and_title'                                   |
                 "<tr class='failure'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>5</td><td>6</td><td>1</td><td>0</td><td>2</td><td>25.0%</td><td>0</td></tr>"
+                "</td><td>5</td><td>6</td><td>1</td><td>0</td><td>2</td><td>25.00%</td><td>0</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
@@ -316,7 +319,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 'Spec A'                                |
                 'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'><div class='spec-title'>Spec A</div></a>" +
-                "</td><td>7</td><td>5</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>5</td><td>2</td><td>4</td><td>1</td><td>33.00%</td><td>1,000 seconds</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
@@ -329,7 +332,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 ''                                      |
                 'title'                                                  |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.00%</td><td>1,000 seconds</td></tr>"
 
         [ failures     : 2,
           errors       : 4,
@@ -342,7 +345,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
                 'Spec A'                                |
                 'class_name'                                             |
                 "<tr class='failure error'><td><a href='abc.SpecA.html'>abc.SpecA</a>" +
-                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.0%</td><td>1.000 seconds</td></tr>"
+                "</td><td>7</td><td>3</td><td>2</td><td>4</td><td>1</td><td>33.00%</td><td>1,000 seconds</td></tr>"
     }
 
     private static Process executeMainInForkedProcess( Class mainClass, String... args ) {
