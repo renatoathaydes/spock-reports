@@ -10,6 +10,7 @@ import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
@@ -260,9 +261,10 @@ class SpecInfoListener implements IRunListener {
         featureInfo.metaClass.getName = { "[${ EmptyInitializationException.INIT_ERROR }] ${ originalGetName() }" }
     }
 
+    @CompileStatic
     private IterationInfo dummySpecIteration() {
         def currentRun = currentRun()
-        def iteration = new IterationInfo( currentRun.feature, [ ] as Object[], 1 )
+        def iteration = new IterationInfo( currentRun.feature, 0, new Object[] {}, 0 )
         iteration.name = '<No Iteration!>'
         currentRun.failuresByIteration.put( iteration, [ ] )
         iteration

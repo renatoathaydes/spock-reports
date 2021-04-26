@@ -1,3 +1,8 @@
+2.0-RC4 - 2021 April 26
+
+* Upgrade to Spock 2.0-M5-groovy-3.0.
+* Fixed issue #212 - error can happen when iteration fails before spec even gets initiated.
+
 2.0.1-RC3 - 2021 February 13
 
 * Fixes the POM published to Maven Central, which was incorrect in the previous version.
