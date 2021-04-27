@@ -289,6 +289,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 }
             }
         }
+
+        if ( data.cleanupSpecError ) {
+            problemWriter.problemsContainer( builder ) {
+                problemWriter.writeProblemMsgs( builder, [ data.cleanupSpecError.exception ] )
+            }
+        }
     }
 
 

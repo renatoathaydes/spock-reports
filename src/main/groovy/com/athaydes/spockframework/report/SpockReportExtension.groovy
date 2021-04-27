@@ -10,7 +10,6 @@ import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
-import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
@@ -44,13 +43,13 @@ class SpockReportExtension implements IGlobalExtension {
     void start() {
         if ( !initialized.getAndSet( true ) ) {
             log.info( "Got configuration from Spock: {}", configuration )
-            log.debug "Configuring ${ this.class.name }"
+            log.debug "Configuring ${this.class.name}"
             def config = configLoader.loadConfig( configuration )
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
             if ( !commaListOfReportClasses ) {
-                log.warn( "Missing property: ${ IReportCreator.name } - no report classes defined" )
+                log.warn( "Missing property: ${IReportCreator.name} - no report classes defined" )
                 return
             }
 
@@ -78,7 +77,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.warn "Not creating report for ${ specInfo.name } as reportCreator is null"
+            log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
         }
     }
 
@@ -188,7 +187,7 @@ class SpecInfoListener implements IRunListener {
         try {
             def errorInInitialization = ( specData == null )
             log.debug( "Error on spec: {}", errorInInitialization ?
-                    "<${ EmptyInitializationException.INIT_ERROR }>" :
+                    "<${EmptyInitializationException.INIT_ERROR}>" :
                     Utils.getSpecClassName( specData ) )
 
             if ( errorInInitialization ) {
@@ -221,8 +220,12 @@ class SpecInfoListener implements IRunListener {
                 // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
                 afterSpec specData.info
             } else {
-                def iteration = currentIteration ?: dummySpecIteration()
-                currentRun().failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
+                if ( currentIteration != null ) {
+                    currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( errorInfo )
+                } else {
+                    log.debug( "Error in cleanupSpec method: {}", errorInfo.exception?.toString() )
+                    specData.cleanupSpecError = errorInfo
+                }
             }
         } catch ( Throwable e ) {
             // nothing we can do here
@@ -258,16 +261,7 @@ class SpecInfoListener implements IRunListener {
 
     private void markWithInitializationError( FeatureInfo featureInfo ) {
         def originalGetName = featureInfo.&getName
-        featureInfo.metaClass.getName = { "[${ EmptyInitializationException.INIT_ERROR }] ${ originalGetName() }" }
-    }
-
-    @CompileStatic
-    private IterationInfo dummySpecIteration() {
-        def currentRun = currentRun()
-        def iteration = new IterationInfo( currentRun.feature, 0, new Object[] {}, 0 )
-        iteration.name = '<No Iteration!>'
-        currentRun.failuresByIteration.put( iteration, [ ] )
-        iteration
+        featureInfo.metaClass.getName = { "[${EmptyInitializationException.INIT_ERROR}] ${originalGetName()}" }
     }
 
     private static FeatureInfo dummyFeature() {

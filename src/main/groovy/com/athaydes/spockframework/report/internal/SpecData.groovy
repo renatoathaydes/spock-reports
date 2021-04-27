@@ -14,6 +14,7 @@ class SpecData {
     List<FeatureRun> featureRuns = [ ]
     long totalTime
     ErrorInfo initializationError
+    ErrorInfo cleanupSpecError
 }
 
 /**
