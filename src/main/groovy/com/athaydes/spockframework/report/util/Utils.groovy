@@ -5,6 +5,7 @@ import com.athaydes.spockframework.report.internal.FailureKind
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
+import groovy.transform.CompileStatic
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -51,21 +52,42 @@ class Utils {
         reportsDir
     }
 
+    @CompileStatic
     static double successRate( int total, int reproved ) {
-        double dTotal = total
-        double dReproved = reproved
-        Math.min( 1.0D, Math.max( 0.0D, ( dTotal > 0D ? ( dTotal - dReproved ) / total : 1.0D ) ) )
+        if ( total == 0 && reproved == 0 ) return 1.0D
+        if ( total == 0 ) return 0.0D
+        double passed = total - reproved
+        Math.min( 1.0D, Math.max( 0.0D, ( passed / total ) as double ) )
     }
 
     static Map stats( SpecData data ) {
-        def failures = countProblems( data.featureRuns, this.&isFailure )
-        def errors = countProblems( data.featureRuns, this.&isError )
-        def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
         def total = data.info.allFeatures.size()
+
+        def failures = countProblems( data.featureRuns, this.&isFailure )
+        def errors = computeErrorCount( data )
+        def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
         def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
-        def successRate = totalExecuted == 0 ? 1.0D : successRate( totalExecuted, ( errors + failures ).toInteger() )
-        [ failures: failures, errors: errors, skipped: skipped, totalRuns: totalExecuted, totalFeatures: total,
-          passed  : totalExecuted - failures - errors, successRate: successRate, time: data.totalTime ]
+        def successRate = computeSuccessRate( data, totalExecuted, errors, failures )
+
+        [ failures: failures, errors: errors,
+          skipped : skipped, totalRuns: totalExecuted, totalFeatures: total,
+          passed  : Math.max( 0, totalExecuted - failures - errors ), successRate: successRate, time: data.totalTime ]
+    }
+
+    private static int computeErrorCount( SpecData data ) {
+        if ( data.initializationError ) return 1
+        def executionErrors = countProblems( data.featureRuns, this.&isError )
+        if ( data.cleanupSpecError && executionErrors == 0 ) {
+            // at least one error is needed to mark the spec as having failed due to the cleanupSpec error
+            return 1
+        }
+        return executionErrors
+    }
+
+    private static double computeSuccessRate( SpecData data, int totalExecuted, int errors, int failures ) {
+        if ( data.initializationError || data.cleanupSpecError ) return 0.0D
+        if ( totalExecuted == 0 ) return 1.0D
+        successRate( totalExecuted, ( errors + failures ).toInteger() )
     }
 
     static Map aggregateStats( Map<String, Map> aggregatedData ) {
@@ -240,7 +262,7 @@ class Utils {
         def lastDotInFileName = fileName.lastIndexOf( '.' )
         def name = lastDotInFileName > 0 ? fileName.substring( 0, lastDotInFileName ) : fileName
 
-        return (specInfo.package ? specInfo.package + '.' : '') + name
+        return ( specInfo.package ? specInfo.package + '.' : '' ) + name
     }
 
     @Nullable

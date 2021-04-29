@@ -6,9 +6,7 @@ import groovy.xml.MarkupBuilder
 import spock.lang.Title
 
 import static com.athaydes.spockframework.report.internal.ReportDataAggregator.getAllAggregatedDataAndPersistLocalData
-import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.CLASS_NAME
-import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.CLASS_NAME_AND_TITLE
-import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.TITLE
+import static com.athaydes.spockframework.report.internal.SpecSummaryNameOption.*
 
 /**
  *
@@ -151,12 +149,9 @@ class HtmlReportAggregator extends AbstractHtmlCreator<Map> {
 
     protected void writeSpecSummary( MarkupBuilder builder, Map stats, String specName, String title ) {
         def cssClasses = [ ]
-        if ( stats.totalRuns == 0 ) {
-            cssClasses << 'ignored'
-        } else {
-            if ( stats.failures ) cssClasses << 'failure'
-            if ( stats.errors ) cssClasses << 'error'
-        }
+        if ( stats.errors ) cssClasses << 'error'
+        else if ( stats.failures ) cssClasses << 'failure'
+        else if ( stats.totalRuns == 0 ) cssClasses << 'ignored'
         builder.tr( cssClasses ? [ 'class': cssClasses.join( ' ' ) ] : null ) {
             td {
                 switch ( specSummaryNameOption ) {

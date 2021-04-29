@@ -237,10 +237,11 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private void writeFeature( MarkupBuilder builder, SpecData data ) {
         if ( data.initializationError ) {
-            problemWriter.problemsContainer( builder ) {
-                problemWriter.writeProblemMsgs( builder, [ data.initializationError.exception ] )
+            problemWriter.problemsContainer( builder, 'Initialization error:' ) {
+                problemWriter.writeProblemMsgs( builder, [
+                        data.initializationError.exception
+                ] )
             }
-            return
         }
 
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
@@ -291,8 +292,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
 
         if ( data.cleanupSpecError ) {
-            problemWriter.problemsContainer( builder ) {
-                problemWriter.writeProblemMsgs( builder, [ data.cleanupSpecError.exception ] )
+            problemWriter.problemsContainer( builder, 'Cleanup Error:' ) {
+                problemWriter.writeProblemMsgs( builder, [
+                       data.cleanupSpecError.exception
+                ] )
             }
         }
     }
