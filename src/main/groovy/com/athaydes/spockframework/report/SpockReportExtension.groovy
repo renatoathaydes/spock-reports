@@ -2,11 +2,9 @@ package com.athaydes.spockframework.report
 
 import com.athaydes.spockframework.report.extension.InfoContainer
 import com.athaydes.spockframework.report.internal.ConfigLoader
-import com.athaydes.spockframework.report.internal.EmptyInitializationException
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.MultiReportCreator
 import com.athaydes.spockframework.report.internal.SpecData
-import com.athaydes.spockframework.report.internal.SpecInitializationError
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
@@ -16,6 +14,7 @@ import org.spockframework.runtime.extension.IGlobalExtension
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
+import org.spockframework.runtime.model.MethodKind
 import org.spockframework.runtime.model.SpecInfo
 import org.spockframework.util.Nullable
 
@@ -43,13 +42,13 @@ class SpockReportExtension implements IGlobalExtension {
     void start() {
         if ( !initialized.getAndSet( true ) ) {
             log.info( "Got configuration from Spock: {}", configuration )
-            log.debug "Configuring ${ this.class.name }"
+            log.debug "Configuring ${this.class.name}"
             def config = configLoader.loadConfig( configuration )
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
             if ( !commaListOfReportClasses ) {
-                log.warn( "Missing property: ${ IReportCreator.name } - no report classes defined" )
+                log.warn( "Missing property: ${IReportCreator.name} - no report classes defined" )
                 return
             }
 
@@ -77,7 +76,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.warn "Not creating report for ${ specInfo.name } as reportCreator is null"
+            log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
         }
     }
 
@@ -125,7 +124,7 @@ class SpecInfoListener implements IRunListener {
     synchronized void beforeSpec( SpecInfo spec ) {
         if ( specData != null ) {
             log.debug( 'Unexpected state: Current specData is {}, not done yet and already started with {}',
-                    specData?.info?.name, spec.name )
+                    specData.info?.name, spec.name )
         }
         specData = new SpecData( info: spec )
         log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
@@ -178,50 +177,38 @@ class SpecInfoListener implements IRunListener {
         assert specData.info == spec
         log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - startT
-        reportCreator.createReportFor specData
-        specData = null
+        try {
+            reportCreator.createReportFor specData
+        } finally {
+            specData = null
+        }
     }
 
     @Override
     void error( ErrorInfo errorInfo ) {
         try {
-            def errorInInitialization = ( specData == null )
-            log.debug( "Error on spec: {}", errorInInitialization ?
-                    "<${ EmptyInitializationException.INIT_ERROR }>" :
-                    Utils.getSpecClassName( specData ) )
+            log.debug( "Error on spec {}, feature {}", specData == null
+                    ? "<INITIALIZATION ERROR>"
+                    : Utils.getSpecClassName( specData ),
+                    errorInfo.method?.feature?.name ?: '<none>'
+            )
 
-            if ( errorInInitialization ) {
-                // call beforeSpec because Spock does not do it in this case
-                def specInfo = errorInfo.method.parent
-                beforeSpec specInfo
+            def noSpecData = specData == null
+            def setupSpecError = !noSpecData && errorInfo.method?.kind == MethodKind.SETUP_SPEC
 
-                def currentError = new ErrorInfo( errorInfo.method, new SpecInitializationError( errorInfo.exception ) )
-                def features = specInfo.allFeaturesInExecutionOrder
-
-                // simulate all features failing
-                if ( features ) for ( featureInfo in features ) {
-                    markWithInitializationError featureInfo
-                    beforeFeature featureInfo
-                    error currentError
-                    afterFeature featureInfo
-
-                    // only the first error needs to be complete, use a dummy error for the next features
-                    currentError = new ErrorInfo( errorInfo.method, EmptyInitializationException.instance )
-                } else {
-                    // the error occurred before even the features could be initialized,
-                    // make up a fake failed feature to show in the report
-                    specData.initializationError = currentError
-                    def featureInfo = dummyFeature()
-                    beforeFeature featureInfo
-                    error currentError
-                    afterFeature featureInfo
-                }
-
-                // Spock will not call afterSpec in this case as of version 1.0-groovy-2.4
-                afterSpec specData.info
+            if ( setupSpecError ) {
+                log.debug( 'Error in setupSpec method' )
+                specData.initializationError = errorInfo
+            } else if ( noSpecData ) {
+                log.debug( 'Error before Spec could be instantiated' )
+                specData.initializationError = errorInfo
             } else {
-                def iteration = currentIteration ?: dummySpecIteration()
-                currentRun().failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
+                if ( currentIteration != null ) {
+                    currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( errorInfo )
+                } else {
+                    log.debug( "Error in cleanupSpec method: {}", errorInfo.exception?.toString() )
+                    specData.cleanupSpecError = errorInfo
+                }
             }
         } catch ( Throwable e ) {
             // nothing we can do here
@@ -253,19 +240,6 @@ class SpecInfoListener implements IRunListener {
             specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
         }
         specData.featureRuns.last()
-    }
-
-    private void markWithInitializationError( FeatureInfo featureInfo ) {
-        def originalGetName = featureInfo.&getName
-        featureInfo.metaClass.getName = { "[${ EmptyInitializationException.INIT_ERROR }] ${ originalGetName() }" }
-    }
-
-    private IterationInfo dummySpecIteration() {
-        def currentRun = currentRun()
-        def iteration = new IterationInfo( currentRun.feature, [ ] as Object[], 1 )
-        iteration.name = '<No Iteration!>'
-        currentRun.failuresByIteration.put( iteration, [ ] )
-        iteration
     }
 
     private static FeatureInfo dummyFeature() {

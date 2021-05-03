@@ -33,10 +33,14 @@ class ProblemBlockWriter {
     }
 
     void problemsContainer( MarkupBuilder builder, Runnable createProblemList ) {
+        problemsContainer( builder, 'The following problems occurred:', createProblemList )
+    }
+
+    void problemsContainer( MarkupBuilder builder, String header, Runnable createProblemList ) {
         builder.tr {
             td( colspan: '10' ) {
                 div( 'class': 'problem-description' ) {
-                    div( 'class': 'problem-header', 'The following problems occurred:' )
+                    div( 'class': 'problem-header', header )
                     div( 'class': 'problem-list' ) {
                         createProblemList.run()
                     }
@@ -87,9 +91,6 @@ class ProblemBlockWriter {
     protected String formatProblemMessage( message ) {
         if ( printThrowableStackTrace && message instanceof Throwable ) {
             def writer = new StringWriter()
-            if ( message instanceof SpecInitializationError ) {
-                message = message.cause
-            }
             message.printStackTrace( new PrintWriter( writer ) )
             return writer.toString()
         } else if ( message == null ) {
