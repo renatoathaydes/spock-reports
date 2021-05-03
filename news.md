@@ -2,7 +2,7 @@
 
 > Most recent first
 
-* `26th of April 2021`
+* `03rd of May 2021`
 
 Another minor release to keep up with Spock release candidates: spock-reports `2.0-RC4` is compatible with
 Spock `2.0-M5-groovy-3.0`.
@@ -10,6 +10,8 @@ Spock `2.0-M5-groovy-3.0`.
 This release does fix one minor issue, #212, which could cause a spock-reports Exception when a Spec failed in a certain
 way due to a previous update to keep up with Spock in which a constructor call for a constructor that has changed was
 missed.
+
+It also improves the computation of errors and failures counts, as well as success rate.
 
 * `13th of February 2021`
 

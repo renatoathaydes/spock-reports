@@ -1,7 +1,9 @@
-2.0-RC4 - 2021 April 26
+2.0-RC4 - 2021 May 03
 
 * Upgrade to Spock 2.0-M5-groovy-3.0.
 * Fixed issue #212 - error can happen when iteration fails before spec even gets initiated.
+* Improved reporting of cleanupSpec errors.
+* Better computation of errors and failures counts, as well as success rate.
 
 2.0.1-RC3 - 2021 February 13
 
