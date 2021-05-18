@@ -4,7 +4,7 @@
 Check out [the latest news](news.md) about this project!
 
 [![Actions Status](https://github.com/renatoathaydes/spock-reports/workflows/Build%20And%20Test%20on%20All%20OSs/badge.svg)](https://github.com/renatoathaydes/spock-reports/actions)
-[ ![Download](https://api.bintray.com/packages/renatoathaydes/maven/spock-reports/images/download.svg) ](https://bintray.com/renatoathaydes/maven/spock-reports/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/com.athaydes/spock-reports.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.athaydes%22%20AND%20a:%22spock-reports%22)
 
 ## What it is
 
@@ -35,8 +35,8 @@ Version compatibility:
 
 | Java | Groovy | Spock | spock-reports |
 |------|--------|-------|---------------|
-| 11+  | 3.0+   | 2.0-M5-groovy-3.0 | <b>2.0-RC4</b> |
-| 7, 8 | 2.4+   | 1.3+              | <b>1.8.0</b> |
+| 11+  | 3.0+   | 2.0-groovy-3.0 | <b>2.0-groovy-3.0</b> |
+| 7, 8 | 2.4+   | 1.3+  | <b>1.8.0</b> |
 
 
 ### If you are using Maven
