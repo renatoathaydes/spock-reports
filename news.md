@@ -5,7 +5,7 @@
 * `18th of May 2021`
 
 Spock `2.0` has been released!!! This spock-reports release has no functional changes, it just upgrades to Spock
-`2.0-groovy-3.0`.
+`2.0-groovy-2.5`.
 
 * `03rd of May 2021`
 
