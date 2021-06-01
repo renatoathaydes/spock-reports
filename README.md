@@ -29,7 +29,7 @@ If you don't like the styles, you can use your own css stylesheets (see the cust
 
 To enable this Spock extension, you only need to declare a dependency to it (if using Maven, Ivy, Gradle etc) or, just add the jar to the project's classpath.
 
-Spock-reports is available on Maven Central and on JCenter.
+Spock-reports is available on Maven Central.
 
 Version compatibility:
 
@@ -77,9 +77,8 @@ Add ``spock-reports`` to your ``<dependencies>``:
 ### If you are using Gradle
 
 ```groovy
-// make sure to enable jcenter() or mavenCentral()
 repositories {
-  jcenter()
+    mavenCentral()
 }
 
 test {
@@ -97,7 +96,7 @@ dependencies {
 }
 ```
 
-If you prefer, you can just download the jar directly from [JCenter](http://jcenter.bintray.com/com/athaydes/spock-reports/).
+If you prefer, you can just download the jar directly from [Maven Central](https://search.maven.org/artifact/com.athaydes/spock-reports/).
 
 The only dependencies this project has are Groovy (only the
 `groovy`, `groovy-templates`, `groovy-xml` and `groovy-json` modules are required)
