@@ -9,8 +9,12 @@ import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
 import groovy.util.logging.Slf4j
+import org.junit.AssumptionViolatedException
+import org.opentest4j.IncompleteExecutionException
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
+import org.spockframework.runtime.extension.IMethodInterceptor
+import org.spockframework.runtime.extension.IMethodInvocation
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -74,7 +78,11 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void visitSpec( SpecInfo specInfo ) {
         if ( reportCreator != null ) {
-            specInfo.addListener createListener()
+            def listener = createListener()
+            def abortionInterceptor = new AbortionInterceptor(listener)
+            specInfo.addListener listener
+            specInfo.allFeatures*.getFeatureMethod().each { it.addInterceptor(abortionInterceptor) }
+            specInfo.allFixtureMethods.each { it.addInterceptor(abortionInterceptor) }
         } else {
             log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
         }
@@ -104,6 +112,24 @@ class SpockReportExtension implements IGlobalExtension {
         new SpecInfoListener( reportCreator )
     }
 
+}
+
+class AbortionInterceptor implements IMethodInterceptor {
+    SpecInfoListener listener
+
+    AbortionInterceptor(SpecInfoListener listener) {
+        this.listener = listener
+    }
+
+    @Override
+    void intercept(IMethodInvocation invocation) throws Throwable {
+        try {
+            invocation.proceed()
+        } catch( AssumptionViolatedException | IncompleteExecutionException t ) {
+            listener.executionAborted new ErrorInfo( invocation.method, t )
+            throw t
+        }
+    }
 }
 
 @Slf4j
@@ -235,6 +261,13 @@ class SpecInfoListener implements IRunListener {
         // feature already knows if it's skipped
     }
 
+    void executionAborted( ErrorInfo error ) {
+        //properly handle aborted iteration or spec depending on ${error.method.kind}
+        //MethodKind.FEATURE for aborted features/iterations
+        //MethodKind.SETUP_SPEC for aborted setupSpec
+        //${error.error} holds the reason of abortion
+    }
+
     private FeatureRun currentRun() {
         if ( specData.featureRuns.empty ) {
             specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
@@ -245,5 +278,4 @@ class SpecInfoListener implements IRunListener {
     private static FeatureInfo dummyFeature() {
         new FeatureInfo( name: '<No Feature initialized!>' )
     }
-
 }
