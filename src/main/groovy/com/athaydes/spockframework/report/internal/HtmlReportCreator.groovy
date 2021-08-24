@@ -249,7 +249,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.featureRuns.find { it.feature == feature }
             if ( run && Utils.isUnrolled( feature ) ) {
-                run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
+                def iterations = run.failuresByIteration.keySet(  ).toList(  ).sort { it.iterationIndex }
+                for ( iteration in iterations ) {
+                    def problems = run.failuresByIteration[iteration]
+                    def index = iteration.iterationIndex
                     def extraInfo = Utils.nextSpecExtraInfo( data )
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
@@ -282,7 +285,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         featureAnnotation( feature, PendingFeature ),
                         extraInfo,
                         run?.feature )
-                def problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
+                List<SpecProblem> problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
+                problems.sort {it.failure.method?.iteration?.iterationIndex ?: 0 }
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
                     writeRun( builder, run )
