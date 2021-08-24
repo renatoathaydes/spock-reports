@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-
+import groovy.transform.CompileStatic
 import org.spockframework.runtime.model.ErrorInfo
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
@@ -9,21 +9,31 @@ import org.spockframework.runtime.model.SpecInfo
 /**
  * Data collected for a Spock Specification.
  */
+@CompileStatic
 class SpecData {
-    SpecInfo info
-    List<FeatureRun> featureRuns = [ ]
+    final SpecInfo info
+    final List<FeatureRun> featureRuns = [ ].asSynchronized() as List<FeatureRun>
     long totalTime
     ErrorInfo initializationError
     ErrorInfo cleanupSpecError
+
+    SpecData( SpecInfo info ) {
+        this.info = info
+    }
 }
 
 /**
  * Data related to a single feature run in a Specification.
  */
+@CompileStatic
 class FeatureRun {
-    FeatureInfo feature
-    Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ]
-    Map<IterationInfo, Long> timeByIteration = [ : ]
+    final FeatureInfo feature
+    final Map<IterationInfo, List<SpecProblem>> failuresByIteration = [ : ].asSynchronized()
+    final Map<IterationInfo, Long> timeByIteration = [ : ].asSynchronized()
+
+    FeatureRun( FeatureInfo feature ) {
+        this.feature = feature
+    }
 
     int iterationCount() {
         failuresByIteration.size()
@@ -33,6 +43,7 @@ class FeatureRun {
 /**
  * Information about an error that occurred within a feature run.
  */
+@CompileStatic
 class SpecProblem {
 
     final ErrorInfo failure

@@ -8,6 +8,7 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
 import org.spockframework.runtime.extension.IGlobalExtension
@@ -16,7 +17,6 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.MethodKind
 import org.spockframework.runtime.model.SpecInfo
-import org.spockframework.util.Nullable
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -38,6 +38,7 @@ class SpockReportExtension implements IGlobalExtension {
 
     IReportCreator reportCreator
 
+    @CompileStatic
     @Override
     void start() {
         if ( !initialized.getAndSet( true ) ) {
@@ -80,13 +81,16 @@ class SpockReportExtension implements IGlobalExtension {
         }
     }
 
+    @CompileStatic
     IReportCreator instantiateReportCreator( String reportCreatorClassName ) {
         def reportCreatorClass = Class.forName( reportCreatorClassName )
         reportCreatorClass
                 .asSubclass( IReportCreator )
+                .getDeclaredConstructor()
                 .newInstance()
     }
 
+    @CompileStatic
     IReportCreator instantiateReportCreatorAndApplyConfig( String reportCreatorClassName, Properties config ) {
         // Given the IReportCreator class name then create it and apply config properties
         try {
@@ -107,13 +111,11 @@ class SpockReportExtension implements IGlobalExtension {
 }
 
 @Slf4j
+@CompileStatic
 class SpecInfoListener implements IRunListener {
 
-    final IReportCreator reportCreator
-    @Nullable
-    SpecData specData
-    @Nullable
-    IterationInfo currentIteration
+    private final IReportCreator reportCreator
+    private final Map<SpecInfo, SpecData> specs = [ : ].asSynchronized()
     long startT
 
     SpecInfoListener( IReportCreator reportCreator ) {
@@ -122,11 +124,13 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     synchronized void beforeSpec( SpecInfo spec ) {
+        SpecData specData = specs[ spec ]
         if ( specData != null ) {
             log.debug( 'Unexpected state: Current specData is {}, not done yet and already started with {}',
                     specData.info?.name, spec.name )
         }
-        specData = new SpecData( info: spec )
+        specData = new SpecData( spec )
+        specs[ spec ] = specData
         log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
         startT = System.currentTimeMillis()
     }
@@ -134,24 +138,28 @@ class SpecInfoListener implements IRunListener {
     @Override
     void beforeFeature( FeatureInfo feature ) {
         log.debug( "Before feature: {}", feature.name )
-        specData.featureRuns << new FeatureRun( feature: feature )
+        SpecData specData = specs.find { info, data -> feature.spec == info }?.value
+        if ( specData ) {
+            specData.featureRuns << new FeatureRun( feature )
+        } else {
+            log.warn( "Unable to find feature" )
+        }
     }
 
     @Override
     void beforeIteration( IterationInfo iteration ) {
         log.debug( "Before iteration: {}", iteration.name )
-        currentRun().with {
+        featureRunFor( iteration ).with {
             failuresByIteration[ iteration ] = [ ]
             timeByIteration[ iteration ] = System.nanoTime()
         }
-        currentIteration = iteration
     }
 
     @Override
     void afterIteration( IterationInfo iteration ) {
         log.debug( "After iteration: {}", iteration.name )
-        currentRun().with {
-            def startTime = timeByIteration[ iteration ]
+        featureRunFor( iteration ).with {
+            Long startTime = timeByIteration[ iteration ]
             if ( !startTime ) {
                 timeByIteration[ iteration ] = 0L
             } else {
@@ -159,7 +167,7 @@ class SpecInfoListener implements IRunListener {
                 timeByIteration[ iteration ] = totalTime
             }
         }
-        currentIteration = null
+        SpecData specData = specs[ iteration.feature.spec ]
         InfoContainer.addSeparator( Utils.getSpecClassName( specData ) )
     }
 
@@ -170,22 +178,21 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void afterSpec( SpecInfo spec ) {
+        // we don't need the spec anymore
+        SpecData specData = specs.remove( spec )
         if ( specData == null ) {
-            log.debug( 'Unexpected state: running afterSpec without having a specData' )
+            log.debug( 'Unexpected state: running afterSpec without having a specData for {}', spec.name )
             return
         }
         assert specData.info == spec
         log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - startT
-        try {
-            reportCreator.createReportFor specData
-        } finally {
-            specData = null
-        }
+        reportCreator.createReportFor specData
     }
 
     @Override
     void error( ErrorInfo errorInfo ) {
+        SpecData specData = specs[ errorInfo.method.feature.spec ]
         try {
             log.debug( "Error on spec {}, feature {}", specData == null
                     ? "<INITIALIZATION ERROR>"
@@ -203,8 +210,9 @@ class SpecInfoListener implements IRunListener {
                 log.debug( 'Error before Spec could be instantiated' )
                 specData.initializationError = errorInfo
             } else {
-                if ( currentIteration != null ) {
-                    currentRun().failuresByIteration[ currentIteration ] << new SpecProblem( errorInfo )
+                def iteration = errorInfo.method.iteration
+                if ( iteration != null ) {
+                    featureRunFor( iteration ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
                 } else {
                     log.debug( "Error in cleanupSpec method: {}", errorInfo.exception?.toString() )
                     specData.cleanupSpecError = errorInfo
@@ -235,11 +243,14 @@ class SpecInfoListener implements IRunListener {
         // feature already knows if it's skipped
     }
 
-    private FeatureRun currentRun() {
-        if ( specData.featureRuns.empty ) {
-            specData.featureRuns.add new FeatureRun( feature: specData.info.features?.first() ?: dummyFeature() )
+    private FeatureRun featureRunFor( IterationInfo iteration ) {
+        def targetFeature = iteration.feature
+        SpecData specData = specs[ targetFeature.spec ]
+        def run = specData.featureRuns.find { it.feature == targetFeature }
+        if ( run == null ) {
+            return new FeatureRun( specData.info.features?.first() ?: dummyFeature() )
         }
-        specData.featureRuns.last()
+        return run
     }
 
     private static FeatureInfo dummyFeature() {

@@ -2,11 +2,13 @@ package com.athaydes.spockframework.report.vivid
 
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.util.Nullable
 
 @Slf4j
+@CompileStatic
 class SpecSourceCodeReader {
 
     String testSourceRoots = 'src/test/groovy'

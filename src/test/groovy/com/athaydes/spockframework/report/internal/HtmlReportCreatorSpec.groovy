@@ -24,7 +24,7 @@ import static com.athaydes.spockframework.report.internal.TestHelper.minify
  */
 @Unroll
 class HtmlReportCreatorSpec extends ReportSpec
-implements CanRunSpockSpecs {
+        implements CanRunSpockSpecs {
 
     static final String UNKNOWN = 'Unknown'
     static final char DS = StringFormatHelper.ds
@@ -136,9 +136,8 @@ implements CanRunSpockSpecs {
 
         and:
         "A mock report aggregator, a stubbed SpecData and an injected MarkupBuilder"
-        def stubSpecData = Stub( SpecData )
         def stubInfo = Stub( SpecInfo )
-        stubSpecData.info >> stubInfo
+        def stubSpecData = new SpecData( stubInfo )
         stubInfo.description >> Description.createTestDescription( this.class, 'ignore' )
         def builder = new MarkupBuilder( Stub( Writer ) )
 

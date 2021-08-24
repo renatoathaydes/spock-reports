@@ -28,7 +28,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "A clean output directory"
-        def outputDir = "build/${ this.class.simpleName }"
+        def outputDir = "build/${this.class.simpleName}"
         def outputDirFile = new File( outputDir )
         if ( outputDirFile.directory ) {
             assert outputDirFile.deleteDir()
@@ -51,11 +51,9 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         when:
         "The spec data is provided to the HtmlReportAggregator"
-        def specDataStub = Stub( SpecData ) {
-            getInfo() >> Stub( SpecInfo ) {
-                getFilename() >> 'Spec1'
-            }
-        }
+        def specDataStub = new SpecData( Stub( SpecInfo ) {
+            getFilename() >> 'Spec1'
+        } )
         aggregator.aggregateReport( specDataStub, stats )
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
@@ -80,7 +78,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "A clean output directory"
-        def outputDir = "build/${ this.class.simpleName }"
+        def outputDir = "build/${this.class.simpleName}"
         def outputDirFile = new File( outputDir )
         if ( outputDirFile.directory ) {
             assert outputDirFile.deleteDir()
@@ -108,11 +106,9 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         when:
         "The spec data is provided to the HtmlReportAggregator"
-        def specDataStub = Stub( SpecData ) {
-            getInfo() >> Stub( SpecInfo ) {
-                getFilename() >> 'Spec1'
-            }
-        }
+        def specDataStub = new SpecData( Stub( SpecInfo ) {
+            getFilename() >> 'Spec1'
+        } )
         aggregator.aggregateReport( specDataStub, stats )
         aggregator.writeOut()
         def reportFile = new File( outputDir, 'index.html' )
@@ -125,8 +121,8 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         "The contents are functionally the same as expected"
         def expectedProjectHeader = """
         <div class='project-header'>
-          <span class='project-name'>Project: ${ aggregator.projectName }</span>
-          <span class='project-version'>Version: ${ aggregator.projectVersion }</span>
+          <span class='project-name'>Project: ${aggregator.projectName}</span>
+          <span class='project-version'>Version: ${aggregator.projectVersion}</span>
         </div>"""
 
 
@@ -151,7 +147,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
 
         and:
         "An output directory"
-        def outputDir = "build/${ this.class.simpleName }"
+        def outputDir = "build/${this.class.simpleName}"
 
         and:
         "A HtmlReportAggregator with mocked dependencies and the test css style"
@@ -163,12 +159,10 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         allSpecs.each { String name, Map stats ->
             def pkg = name.contains( '.' ) ? name.substring( 0, name.lastIndexOf( '.' ) ) : ''
             def filename = name.contains( '.' ) ? name.substring( name.lastIndexOf( '.' ) + 1 ) : name
-            def specDataStub = Stub( SpecData ) {
-                getInfo() >> Stub( SpecInfo ) {
-                    getFilename() >> filename
-                    getPackage() >> pkg
-                }
-            }
+            def specDataStub = new SpecData( Stub( SpecInfo ) {
+                getFilename() >> filename
+                getPackage() >> pkg
+            } )
             aggregator.aggregateReport( specDataStub, stats )
         }
         aggregator.writeOut()
@@ -190,28 +184,26 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         def aggregator = new HtmlReportAggregator( css: 'spock-feature-report.css', outputDirectory: 'out' )
 
         and: 'Some realistic, mocked out specData'
-        def data = Stub( SpecData ) {
-            getInfo() >> Stub( SpecInfo ) {
-                getFilename() >> 'myClass'
-                getAllFeaturesInExecutionOrder() >> [
-                        Stub( FeatureInfo ) {
-                            isSkipped() >> false
-                            getName() >> 'cFeature'
-                            getFeatureMethod() >> Mock( MethodInfo )
-                        },
-                        Stub( FeatureInfo ) {
-                            isSkipped() >> true
-                            getName() >> 'aFeature'
-                            getFeatureMethod() >> Mock( MethodInfo )
-                        },
-                        Stub( FeatureInfo ) {
-                            isSkipped() >> false
-                            getName() >> 'bFeature'
-                            getFeatureMethod() >> Mock( MethodInfo )
-                        }
-                ]
-            }
-        }
+        def data = new SpecData( Stub( SpecInfo ) {
+            getFilename() >> 'myClass'
+            getAllFeaturesInExecutionOrder() >> [
+                    Stub( FeatureInfo ) {
+                        isSkipped() >> false
+                        getName() >> 'cFeature'
+                        getFeatureMethod() >> Mock( MethodInfo )
+                    },
+                    Stub( FeatureInfo ) {
+                        isSkipped() >> true
+                        getName() >> 'aFeature'
+                        getFeatureMethod() >> Mock( MethodInfo )
+                    },
+                    Stub( FeatureInfo ) {
+                        isSkipped() >> false
+                        getName() >> 'bFeature'
+                        getFeatureMethod() >> Mock( MethodInfo )
+                    }
+            ]
+        } )
 
         and: 'Some statistics'
         def stats = [ x: 1, y: 2 ]
