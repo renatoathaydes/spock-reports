@@ -137,5 +137,7 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.mavenJava
+    if (project.hasProperty( 'sign' )) {
+        sign publishing.publications.mavenJava
+    }
 }
