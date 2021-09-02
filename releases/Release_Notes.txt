@@ -1,3 +1,7 @@
+2.1-groovy-3.0 - 2021 Sep 02
+
+* #215 Support parallel execution of features.
+
 2.0-groovy-3.0 - 2021 May 18
 
 * Upgrade to Spock 2.0-groovy-3.0.

@@ -2,6 +2,11 @@
 
 > Most recent first
 
+* `2nd of September 2021`
+
+Release `2.1-groovy-3.0` fixes problem with reports when running
+[test features in parallel](https://spockframework.org/spock/docs/2.0/parallel_execution.html).
+
 * `18th of May 2021`
 
 Spock `2.0` has been released!!! This spock-reports release has no functional changes, it just upgrades to Spock
