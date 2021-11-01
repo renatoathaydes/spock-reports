@@ -133,7 +133,7 @@ class TemplateReportCreator implements IReportCreator {
         return [ eachFeature: { Closure callback ->
             for ( feature in data.info.allFeaturesInExecutionOrder ) {
                 callback.delegate = feature
-                FeatureRun run = data.featureRuns.find { it.feature == feature }
+                FeatureRun run = data.withFeatureRuns { it.find { it.feature == feature } }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     handleUnrolledFeature( run, feature, callback )
                 } else {
@@ -148,18 +148,18 @@ class TemplateReportCreator implements IReportCreator {
         final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
         final isSkipped = !run || Utils.isSkipped( feature )
         final result = errors ? 'ERROR' : failures ? 'FAIL' : isSkipped ? 'IGNORED' : 'PASS'
-        final problemsByIteration = run ? Utils.iterationData( run.failuresByIteration, run.timeByIteration ) : [ : ]
+        final problemsByIteration = run ? Utils.iterationData( run.copyFailuresByIteration(), run.copyTimeByIteration() ) : [ : ]
         callback.call( feature.name, result, processedBlocks( feature ), problemsByIteration, feature.parameterNames )
     }
 
     protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
-        run.failuresByIteration.eachWithIndex { iteration, problems, index ->
+        run.copyFailuresByIteration().eachWithIndex { iteration, problems, index ->
             final name = Utils.featureNameFrom( feature, iteration, index )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAILURE' :
                             Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'
             final time = run.timeByIteration.get( iteration, 0L )
-            final problemsByIteration = Utils.iterationData( [ ( iteration ): problems ], [ (iteration ) : time ] )
+            final problemsByIteration = Utils.iterationData( [ ( iteration ): problems ], [ ( iteration ): time ] )
             callback.call( name, result, processedBlocks( feature, iteration ), problemsByIteration, feature.parameterNames )
         }
     }

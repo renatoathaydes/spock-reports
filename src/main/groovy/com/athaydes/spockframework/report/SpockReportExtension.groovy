@@ -138,9 +138,12 @@ class SpecInfoListener implements IRunListener {
     @Override
     void beforeFeature( FeatureInfo feature ) {
         log.debug( "Before feature: {}", feature.name )
-        SpecData specData = specs.find { info, data -> feature.spec == info }?.value
+        SpecData specData
+        synchronized ( specs ) {
+            specData = specs.find { info, data -> feature.spec == info }?.value
+        }
         if ( specData ) {
-            specData.featureRuns << new FeatureRun( feature )
+            specData.withFeatureRuns { it << new FeatureRun( feature ) }
         } else {
             log.warn( "Unable to find feature" )
         }
@@ -229,10 +232,13 @@ class SpecInfoListener implements IRunListener {
         beforeSpec( spec )
         log.debug( "Skipping specification {}", Utils.getSpecClassName( spec ) )
 
-        spec.features.each { feature ->
-            feature.skipped = true
-            beforeFeature( feature )
-            afterFeature( feature )
+        def specFeatures = spec.features
+        synchronized ( specFeatures ) {
+            specFeatures.each { feature ->
+                feature.skipped = true
+                beforeFeature( feature )
+                afterFeature( feature )
+            }
         }
 
         afterSpec( spec )
@@ -246,7 +252,7 @@ class SpecInfoListener implements IRunListener {
     private FeatureRun featureRunFor( IterationInfo iteration ) {
         def targetFeature = iteration.feature
         SpecData specData = specs[ targetFeature.spec ]
-        def run = specData.featureRuns.find { it.feature == targetFeature }
+        def run = specData.withFeatureRuns { it.find { it.feature == targetFeature } }
         if ( run == null ) {
             return new FeatureRun( specData.info.features?.first() ?: dummyFeature() )
         }

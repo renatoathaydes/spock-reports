@@ -16,7 +16,7 @@ class ProblemBlockWriter {
     void writeProblemBlockForAllIterations( MarkupBuilder builder, FeatureRun run, boolean isError, boolean isFailure ) {
         if ( isError || isFailure ) {
             problemsContainer( builder ) {
-                writeProblems( builder, problemsByIteration( run.failuresByIteration, run.timeByIteration ) )
+                writeProblems( builder, problemsByIteration( run.copyFailuresByIteration(), run.copyTimeByIteration() ) )
             }
         }
     }

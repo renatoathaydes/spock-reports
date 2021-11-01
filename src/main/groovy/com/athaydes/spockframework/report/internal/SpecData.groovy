@@ -6,19 +6,27 @@ import org.spockframework.runtime.model.FeatureInfo
 import org.spockframework.runtime.model.IterationInfo
 import org.spockframework.runtime.model.SpecInfo
 
+import java.util.function.Function
+
 /**
  * Data collected for a Spock Specification.
  */
 @CompileStatic
 class SpecData {
+    private final List<FeatureRun> featureRuns = [ ].asSynchronized() as List<FeatureRun>
     final SpecInfo info
-    final List<FeatureRun> featureRuns = [ ].asSynchronized() as List<FeatureRun>
     long totalTime
     ErrorInfo initializationError
     ErrorInfo cleanupSpecError
 
     SpecData( SpecInfo info ) {
         this.info = info
+    }
+
+    def <T> T withFeatureRuns( Function<List<FeatureRun>, T> action ) {
+        synchronized ( featureRuns ) {
+            return action.apply( featureRuns )
+        }
     }
 }
 
@@ -37,6 +45,29 @@ class FeatureRun {
 
     int iterationCount() {
         failuresByIteration.size()
+    }
+
+    /**
+     * Copy the failuresByIteration Map.
+     * Use this method to be able to safely iterate over the Map.
+     * @return a copy of the failuresByIteration.
+     */
+    Map<IterationInfo, List<SpecProblem>> copyFailuresByIteration() {
+        failuresByIteration
+        synchronized ( failuresByIteration ) {
+            return new LinkedHashMap<>( failuresByIteration )
+        }
+    }
+
+    /**
+     * Copy the timeByIteration Map.
+     * Use this method to be able to safely iterate over the Map.
+     * @return a copy of the timeByIteration.
+     */
+    Map<IterationInfo, Long> copyTimeByIteration() {
+        synchronized ( timeByIteration ) {
+            return new LinkedHashMap<>( timeByIteration )
+        }
     }
 }
 

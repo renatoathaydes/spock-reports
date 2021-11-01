@@ -63,10 +63,12 @@ class Utils {
     static Map stats( SpecData data ) {
         def total = data.info.allFeatures.size()
 
-        def failures = countProblems( data.featureRuns, this.&isFailure )
+        def failures = data.withFeatureRuns { countProblems( it, this.&isFailure ) }
         def errors = computeErrorCount( data )
         def skipped = data.info.allFeaturesInExecutionOrder.count { FeatureInfo f -> isSkipped( f ) }
-        def totalExecuted = countFeatures( data.featureRuns ) { FeatureRun run -> !isSkipped( run.feature ) }
+        def totalExecuted = data.withFeatureRuns {
+            countFeatures( it ) { FeatureRun run -> !isSkipped( run.feature ) }
+        }
         def successRate = computeSuccessRate( data, totalExecuted, errors, failures )
 
         [ failures: failures, errors: errors,
@@ -76,7 +78,7 @@ class Utils {
 
     private static int computeErrorCount( SpecData data ) {
         if ( data.initializationError ) return 1
-        def executionErrors = countProblems( data.featureRuns, this.&isError )
+        def executionErrors = data.withFeatureRuns { countProblems( it, this.&isError ) }
         if ( data.cleanupSpecError && executionErrors == 0 ) {
             // at least one error is needed to mark the spec as having failed due to the cleanupSpec error
             return 1
@@ -148,7 +150,7 @@ class Utils {
         runs.inject( 0 ) { int count, FeatureRun fr ->
             // count how many iterations had one or more failures... a single iteration may
             // fail many times!
-            def allProblems = fr.failuresByIteration.values().count { iterationFailures ->
+            def allProblems = fr.copyFailuresByIteration().values().count { iterationFailures ->
                 iterationFailures.any( problemFilter )
             }
             count + ( allProblems > 0
@@ -159,7 +161,7 @@ class Utils {
     }
 
     static String iterationsResult( FeatureRun run ) {
-        def totalErrors = run.failuresByIteration.values().count { List it -> !it.empty }
+        def totalErrors = run.copyFailuresByIteration().values().count { List it -> !it.empty }
         "${run.iterationCount() - totalErrors}/${run.iterationCount()} passed"
     }
 

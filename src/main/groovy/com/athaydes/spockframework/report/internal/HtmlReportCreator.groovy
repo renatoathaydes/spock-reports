@@ -212,7 +212,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     private void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
         builder.ul( id: 'toc' ) {
             for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
-                FeatureRun run = data.featureRuns.find { it.feature == feature }
+                FeatureRun run = data.withFeatureRuns { it.find { it.feature == feature } }
                 if ( run && Utils.isUnrolled( feature ) ) {
                     run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
                         final String name = Utils.featureNameFrom( feature, iteration, index )
@@ -247,9 +247,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( excludeToc.toLowerCase() != 'true' ) writeFeatureToc( builder, data )
 
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
-            FeatureRun run = data.featureRuns.find { it.feature == feature }
+            FeatureRun run = data.withFeatureRuns { it.find { it.feature == feature } }
             if ( run && Utils.isUnrolled( feature ) ) {
-                def iterations = run.failuresByIteration.keySet(  ).toList(  ).sort { it.iterationIndex }
+                def iterations = run.copyFailuresByIteration().keySet(  ).toList(  ).sort { it.iterationIndex }
                 for ( iteration in iterations ) {
                     def problems = run.failuresByIteration[iteration]
                     def index = iteration.iterationIndex
@@ -285,7 +285,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         featureAnnotation( feature, PendingFeature ),
                         extraInfo,
                         run?.feature )
-                List<SpecProblem> problems = run ? run.failuresByIteration.values().collectMany { it } : [ ]
+                List<SpecProblem> problems = run ? run.copyFailuresByIteration().values().collectMany { it } : [ ]
                 problems.sort {it.failure.method?.iteration?.iterationIndex ?: 0 }
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
@@ -490,7 +490,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                             if ( iterationInfo ) {
                                 writeIteration( builder, iterationInfo, run.failuresByIteration[ iterationInfo ] )
                             } else {
-                                run.failuresByIteration.each { iteration, errors ->
+                                run.copyFailuresByIteration().each { iteration, errors ->
                                     writeIteration( builder, iteration, errors )
                                 }
                             }
