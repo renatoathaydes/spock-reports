@@ -463,6 +463,6 @@ But if your Pull Request is about a new feature, please make sure to create an i
 we can all discuss whether it's a good idea and what's the best way to go about it.
 
 Also, please notice that the master branch is supposed to contain only releases... the development branch
-is called `next`, so *all PRs should be submitted against `next`*, not master.
+is called `dev`, so *all PRs should be submitted against `dev`*, not master.
 
 Thank you.
