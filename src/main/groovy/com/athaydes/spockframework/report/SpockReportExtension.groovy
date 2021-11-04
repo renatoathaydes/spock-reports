@@ -195,7 +195,8 @@ class SpecInfoListener implements IRunListener {
 
     @Override
     void error( ErrorInfo errorInfo ) {
-        SpecData specData = specs[ errorInfo.method.feature.spec ]
+        def spec = errorInfo.method?.feature?.spec
+        SpecData specData = spec == null ? null : specs[ spec ]
         try {
             log.debug( "Error on spec {}, feature {}", specData == null
                     ? "<INITIALIZATION ERROR>"
@@ -213,7 +214,7 @@ class SpecInfoListener implements IRunListener {
                 log.debug( 'Error before Spec could be instantiated' )
                 specData.initializationError = errorInfo
             } else {
-                def iteration = errorInfo.method.iteration
+                def iteration = errorInfo.method?.iteration
                 if ( iteration != null ) {
                     featureRunFor( iteration ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
                 } else {
