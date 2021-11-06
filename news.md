@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `06th of November 2021`
+
+Minor bug fix release `2.1.1-groovy-3.0`.
+
 * `2nd of September 2021`
 
 Release `2.1-groovy-3.0` fixes problem with reports when running

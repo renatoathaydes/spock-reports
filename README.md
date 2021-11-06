@@ -35,7 +35,7 @@ Version compatibility:
 
 | Java | Groovy | Spock | spock-reports |
 |------|--------|-------|---------------|
-| 11+  | 3.0+   | 2.0-groovy-3.0 | <b>2.1-groovy-3.0</b> |
+| 11+  | 3.0+   | 2.0-groovy-3.0 | <b>2.1.1-groovy-3.0</b> |
 | 8+   | 2.5+   | 2.0-groovy-2.5 | <b>2.0-groovy-2.5</b> |
 | 7, 8 | 2.4+   | 1.3+  | <b>1.8.0</b> |
 

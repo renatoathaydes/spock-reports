@@ -1,3 +1,8 @@
+2.1.1-groovy-3.0 - 2021 Nov 06
+
+* #217 Fixed concurrency bug when executing parallel tests.
+* #218 Fixed regression #212, null-pointer error on setup test failure.
+
 2.1-groovy-3.0 - 2021 Sep 02
 
 * #215 Support parallel execution of features.
