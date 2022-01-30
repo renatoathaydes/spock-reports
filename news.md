@@ -4,7 +4,7 @@
 
 * `30th of January 2022`
 
-This release has a couple of bug fixes and was tested against the latest milestone version of Spock,
+This release, `2.2.0-groovy-3.0` has a couple of bug fixes and was tested against the latest milestone version of Spock,
 `2.1-M2-groovy-3.0`, as well as Java 8, 11 and new in this release: Java 17.
 
 > Notice that the minimum Groovy version required to run on Java 17 appears to be Groovy `3.0.9`.
