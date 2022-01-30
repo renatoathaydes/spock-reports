@@ -66,15 +66,15 @@
 ### $name
 <%
  writePendingFeature( featureMethod.getAnnotation( spock.lang.PendingFeature ) )
- writeTagOrAttachment( delegate )
+ def feature = delegate
+ writeTagOrAttachment( feature )
  if (result != "IGNORED") {
-      if ( utils.isUnrolled( delegate ) ) {
-          writeExtraInfo( utils.nextSpecExtraInfo( data ) )
-      } else {
-          // collapse all iterations
-          (1..iterations.size()).each {
-              writeExtraInfo( utils.nextSpecExtraInfo( data ) )
+      if ( utils.isUnrolled( feature ) ) {
+          iterations.each { iter ->
+              writeExtraInfo( utils.nextSpecExtraInfo( data, feature, iter.info ) )
           }
+      } else {
+          writeExtraInfo( utils.nextSpecExtraInfo( data, feature ) )
      }
  }
  def iterationTimes = iterations.collect { it.time ?: 0L }

@@ -277,7 +277,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
                 // collapse the information for all iterations
                 def extraInfo = run ? ( 1..run.failuresByIteration.size() ).collectMany {
-                    Utils.nextSpecExtraInfo( data, feature, null )
+                    Utils.nextSpecExtraInfo( data, feature )
                 } : [ ]
 
                 writeFeatureDescription( builder, feature.name, cssClass,

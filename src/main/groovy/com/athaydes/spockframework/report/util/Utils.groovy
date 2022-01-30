@@ -169,7 +169,7 @@ class Utils {
         failures.inject( [ ] ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
             def time = times.get( iteration, 0L )
-            acc << [ dataValues: iteration.dataValues, errors: allErrors, time: time ]
+            acc << [ dataValues: iteration.dataValues, errors: allErrors, time: time, info: iteration ]
         }
     }
 
@@ -185,9 +185,17 @@ class Utils {
                 : null
     }
 
+    static List nextSpecExtraInfo( SpecData data ) {
+        throw new UnsupportedOperationException( "This method has been removed in spock-reports 2.2.0-groovy-3.0. " +
+                "If you are calling this method from a template report, please replace your " +
+                "`utils.nextSpecExtraInfo( data )` invocation with " +
+                "`utils.nextSpecExtraInfo( data, feature, iteration )`. For more details, see " +
+                "https://github.com/renatoathaydes/spock-reports/issues/219" )
+    }
+
     static List nextSpecExtraInfo( SpecData data,
                                    FeatureInfo feature,
-                                   IterationInfo iteration ) {
+                                   IterationInfo iteration = null ) {
         InfoContainer.getNextInfoFor( getSpecClassName( data ), feature, iteration )
     }
 
