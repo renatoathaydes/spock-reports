@@ -1,3 +1,9 @@
+2.2.0-groovy-3.0 - 2022 ...
+
+* #219 concurrent test execution caused reportInfo to put information in wrong feature/iteration.
+* #219 **breaking change** on report templates. Please see this [commit](https://github.com/renatoathaydes/spock-reports/commit/d59834e3917725f70c63871d86975702b9b496ab) if your template breaks.
+* #220 allow `testSourceRoots` to take not only String, but also File and Iterable or Closure providing String/File's.
+
 2.1.1-groovy-3.0 - 2021 Nov 06
 
 * #217 Fixed concurrency bug when executing parallel tests.
