@@ -253,7 +253,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 for ( iteration in iterations ) {
                     def problems = run.failuresByIteration[iteration]
                     def index = iteration.iterationIndex
-                    def extraInfo = Utils.nextSpecExtraInfo( data )
+                    def extraInfo = Utils.nextSpecExtraInfo( data, feature, iteration )
                     String name = Utils.featureNameFrom( feature, iteration, index )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
@@ -277,7 +277,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
                 // collapse the information for all iterations
                 def extraInfo = run ? ( 1..run.failuresByIteration.size() ).collectMany {
-                    Utils.nextSpecExtraInfo( data )
+                    Utils.nextSpecExtraInfo( data, feature, null )
                 } : [ ]
 
                 writeFeatureDescription( builder, feature.name, cssClass,

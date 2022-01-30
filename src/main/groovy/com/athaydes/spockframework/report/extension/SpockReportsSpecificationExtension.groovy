@@ -1,7 +1,11 @@
 package com.athaydes.spockframework.report.extension
 
+import com.athaydes.spockframework.report.util.Utils
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import groovy.util.logging.Slf4j
+import org.spockframework.runtime.model.FeatureInfo
+import org.spockframework.runtime.model.IterationInfo
 import spock.lang.Specification
 
 @CompileStatic
@@ -19,7 +23,7 @@ class SpockReportsSpecificationExtension {
      * @param info to include in the feature report
      */
     static void reportInfo( Specification self, info ) {
-        InfoContainer.add self.class.name, info
+        InfoContainer.add self, info
     }
 
     /**
@@ -32,66 +36,57 @@ class SpockReportsSpecificationExtension {
      * @param header to include in the Specification report
      */
     static void reportHeader( Specification self, header ) {
-        InfoContainer.addHeader self.class.name, header
+        InfoContainer.addHeader self, header
     }
 
 }
 
+@Slf4j
 @CompileStatic
 class InfoContainer {
 
-    private static final ITERATION_SEPARATOR = new Object()
     private static final Map<String, List> headerBySpecName = [ : ].asSynchronized()
     private static final Map<String, List> infoBySpecName = [ : ].asSynchronized()
 
-    @PackageScope
-    static void addHeader( String name, item ) {
-        headerBySpecName.get( name, [ ] ) << item
+    private static String keyFor( String specName,
+                                  FeatureInfo feature,
+                                  IterationInfo iteration ) {
+        def index = Utils.isUnrolled( feature ) ? iteration.iterationIndex : -1
+        "$specName${feature?.name}$index"
     }
 
     @PackageScope
-    static void add( String name, item ) {
-        infoBySpecName.get( name, [ ] ) << item
+    static void addHeader( Specification spec, item ) {
+        headerBySpecName.get( spec.class.name, [ ] ) << item
     }
 
-    static void addSeparator( String name ) {
-        add name, ITERATION_SEPARATOR
+    @PackageScope
+    static void add( Specification spec, item ) {
+        try {
+            def key = keyFor( spec.class.name,
+                    spec.specificationContext.currentFeature,
+                    spec.specificationContext.currentIteration )
+            infoBySpecName.get( key, [ ] ) << item
+        } catch ( e ) {
+            log.debug( "Unable to add info to report, will add it as header instead: {}. " +
+                    "Problem: {}", item, e )
+            addHeader( spec, item )
+        }
     }
 
     static List getHeadersFor( String specName ) {
         headerBySpecName.remove( specName ) ?: [ ]
     }
 
-    static List getNextInfoFor( String specName ) {
-        def info = infoBySpecName[ specName ]
-        if ( info == null ) {
-            return [ ]
-        }
-        def result = [ ]
-        def iterator = info.iterator()
-
-        while ( iterator.hasNext() ) {
-            def item = iterator.next()
-            iterator.remove()
-            if ( item == ITERATION_SEPARATOR ) {
-                break
-            } else {
-                result << item
-            }
-        }
-        if ( info.isEmpty() ) {
-            infoBySpecName.remove( specName )
-        }
-        result
+    static List getNextInfoFor( String specName,
+                                FeatureInfo feature,
+                                IterationInfo iteration ) {
+        def key = keyFor( specName, feature, iteration )
+        infoBySpecName.remove( key ) ?: [ ]
     }
 
-    static List getAllExtraInfoFor( String specName ) {
-        infoBySpecName.remove( specName ) ?: [ ]
-    }
-
-    static void resetSpecData( String specName, List headers, List extraInfo ) {
+    static void resetSpecData( String specName, List headers ) {
         headerBySpecName[ specName ] = headers
-        infoBySpecName[ specName ] = extraInfo
     }
 
 }

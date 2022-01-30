@@ -21,12 +21,8 @@ class MultiReportCreator implements IReportCreator {
     void createReportFor( SpecData data ) {
         def specName = getSpecClassName( data )
         def headers = InfoContainer.getHeadersFor( specName ).asImmutable()
-        def extraInfo = InfoContainer.getAllExtraInfoFor( specName ).asImmutable()
         reportCreators.each {
-            InfoContainer.resetSpecData( specName,
-                    headers.collect(),
-                    extraInfo.collect() )
-
+            InfoContainer.resetSpecData( specName, headers.collect() )
             it.createReportFor( data )
         }
     }

@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report
 
-import com.athaydes.spockframework.report.extension.InfoContainer
+
 import com.athaydes.spockframework.report.internal.ConfigLoader
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.MultiReportCreator
@@ -170,8 +170,6 @@ class SpecInfoListener implements IRunListener {
                 timeByIteration[ iteration ] = totalTime
             }
         }
-        SpecData specData = specs[ iteration.feature.spec ]
-        InfoContainer.addSeparator( Utils.getSpecClassName( specData ) )
     }
 
     @Override
@@ -212,14 +210,13 @@ class SpecInfoListener implements IRunListener {
                 specData.initializationError = errorInfo
             } else if ( noSpecData ) {
                 log.debug( 'Error before Spec could be instantiated' )
-                specData.initializationError = errorInfo
             } else {
                 def iteration = errorInfo.method?.iteration
                 if ( iteration != null ) {
                     featureRunFor( iteration ).failuresByIteration[ iteration ] << new SpecProblem( errorInfo )
                 } else {
                     log.debug( "Error in cleanupSpec method: {}", errorInfo.exception?.toString() )
-                    specData.cleanupSpecError = errorInfo
+                    specData?.cleanupSpecError = errorInfo
                 }
             }
         } catch ( Throwable e ) {

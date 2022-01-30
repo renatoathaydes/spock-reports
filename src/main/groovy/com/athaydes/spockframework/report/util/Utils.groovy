@@ -185,8 +185,10 @@ class Utils {
                 : null
     }
 
-    static List nextSpecExtraInfo( SpecData data ) {
-        InfoContainer.getNextInfoFor( getSpecClassName( data ) )
+    static List nextSpecExtraInfo( SpecData data,
+                                   FeatureInfo feature,
+                                   IterationInfo iteration ) {
+        InfoContainer.getNextInfoFor( getSpecClassName( data ), feature, iteration )
     }
 
     static List specHeaders( SpecData data ) {
