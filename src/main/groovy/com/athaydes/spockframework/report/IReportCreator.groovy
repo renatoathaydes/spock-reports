@@ -17,7 +17,7 @@ interface IReportCreator {
 
     void setShowCodeBlocks( boolean show )
 
-    void setTestSourceRoots( String roots )
+    void setTestSourceRoots( roots )
 
     void setProjectName( String projectName )
 

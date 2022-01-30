@@ -42,7 +42,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     @Override
-    void setTestSourceRoots( String roots ) {
+    void setTestSourceRoots( roots ) {
         if ( roots ) {
             codeReader.testSourceRoots = roots
         }

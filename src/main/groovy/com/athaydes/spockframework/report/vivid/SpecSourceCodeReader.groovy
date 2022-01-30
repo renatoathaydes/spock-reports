@@ -11,7 +11,7 @@ import org.spockframework.util.Nullable
 @CompileStatic
 class SpecSourceCodeReader {
 
-    String testSourceRoots = 'src/test/groovy'
+    def testSourceRoots = ['src/test/groovy']
 
     @Nullable
     private SpecSourceCode specSourceCode

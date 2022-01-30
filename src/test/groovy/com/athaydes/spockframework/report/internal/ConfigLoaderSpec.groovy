@@ -214,13 +214,11 @@ class ReportCreatorWithManyProperties implements IReportCreator {
     @Override
     void setShowCodeBlocks( boolean show ) {
         methodCalls << [ 'showCodeBlocks': show ]
-
     }
 
     @Override
-    void setTestSourceRoots( String roots ) {
+    void setTestSourceRoots( roots ) {
         methodCalls << [ 'testSourceRoots': roots ]
-
     }
 
     @Override

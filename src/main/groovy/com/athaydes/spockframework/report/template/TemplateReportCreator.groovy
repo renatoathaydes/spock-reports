@@ -42,7 +42,7 @@ class TemplateReportCreator implements IReportCreator {
     private final SpecSourceCodeReader codeReader = new SpecSourceCodeReader()
 
     @Override
-    void setTestSourceRoots( String roots ) {
+    void setTestSourceRoots( roots ) {
         if ( roots ) {
             codeReader.testSourceRoots = roots
         }

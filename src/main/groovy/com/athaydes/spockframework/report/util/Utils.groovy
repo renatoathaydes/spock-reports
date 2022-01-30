@@ -277,17 +277,46 @@ class Utils {
         return ( specInfo.package ? specInfo.package + '.' : '' ) + name
     }
 
+    private static void collectRoots( root, List<String> result ) {
+        switch ( root ) {
+            case File:
+                result.add( root.path )
+                break
+            case String:
+                result.add( root )
+                break
+            case Iterable:
+                root.each { r -> collectRoots( r, result ) }
+                break
+            case Closure:
+                collectRoots( root(), result )
+                break
+            default:
+                throw new IllegalArgumentException( "Cannot use object as a sourceRoot " +
+                        "(acceptable types are String, File, Iterables of those, Closures providing those): $root" )
+        }
+    }
+
     @Nullable
-    static File getSpecFile( String testSourceRoots, SpecData data ) {
-        def existingRoots = testSourceRoots.split( File.pathSeparator ).collect { testRoot ->
-            if ( testRoot ) {
-                def dir = new File( testRoot )
-                if ( dir.isDirectory() ) {
-                    return dir
+    static File getSpecFile( Object testSourceRoots, SpecData data ) {
+        List<String> roots = [ ]
+        collectRoots( testSourceRoots, roots )
+        getSpecFile( roots, data )
+    }
+
+    @Nullable
+    static File getSpecFile( List<String> testSourceRoots, SpecData data ) {
+        List<File> existingRoots = testSourceRoots.collectMany {
+            it.split( File.pathSeparator ).collect { testRoot ->
+                if ( testRoot ) {
+                    def dir = new File( testRoot )
+                    if ( dir.isDirectory() ) {
+                        return dir
+                    }
                 }
-            }
-            null
-        }.findAll { it != null }
+                null
+            }.findAll { it != null }
+        }
 
         def className = getSpecClassName( data )
 

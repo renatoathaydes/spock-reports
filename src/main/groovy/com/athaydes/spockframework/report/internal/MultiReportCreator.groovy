@@ -48,7 +48,7 @@ class MultiReportCreator implements IReportCreator {
     }
 
     @Override
-    void setTestSourceRoots( String roots ) {
+    void setTestSourceRoots( roots ) {
         throw new OperationNotSupportedException( "No modifications after construction" )
     }
 
