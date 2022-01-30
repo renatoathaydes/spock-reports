@@ -48,7 +48,7 @@ test {
     systemProperty 'org.slf4j.simpleLogger.defaultLogLevel', 'debug'
     testLogging.showStandardStreams = true
     beforeTest { descriptor ->
-        logger.lifecycle( "Running test: " + descriptor )
+        logger.lifecycle( "Running test [{}]: {}", Thread.currentThread().id, descriptor )
     }
     testLogging {
         events "failed"
@@ -137,7 +137,7 @@ publishing {
 }
 
 signing {
-    if (project.hasProperty( 'sign' )) {
+    if ( project.hasProperty( 'sign' ) ) {
         sign publishing.publications.mavenJava
     }
 }
