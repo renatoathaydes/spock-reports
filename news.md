@@ -5,7 +5,13 @@
 * `30th of January 2022`
 
 This release has a couple of bug fixes and was tested against the latest milestone version of Spock,
-`2.1-M2-groovy-3.0`.
+`2.1-M2-groovy-3.0`, as well as Java 8, 11 and new in this release: Java 17.
+
+> Notice that the minimum Groovy version required to run on Java 17 appears to be Groovy `3.0.9`.
+
+Spock and spock-reports even work on the newly released Groovy 4! But notice that this is still unsupported,
+officially, both by Spock and by spock-reports... if you want to try anyway, check this blog post
+for more details: https://blog.solidsoft.pl/2021/11/19/running-spock-with-unsupported-groovy-version-gradle-maven/
 
 Issue #219 related to parallel builds again: the spock-reports extension methods on `Specification` were not yet
 adapted to support parallel builds. This was fixed and spock-reports now probably has full support for Spock
