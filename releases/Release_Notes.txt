@@ -1,4 +1,4 @@
-2.2.0-groovy-3.0 - 2022 ...
+2.2.0-groovy-3.0 - 2022 Jan 30
 
 * #219 concurrent test execution caused reportInfo to put information in wrong feature/iteration.
 * #219 **breaking change** on report templates. Please see this [commit](https://github.com/renatoathaydes/spock-reports/commit/d59834e3917725f70c63871d86975702b9b496ab) if your template breaks.

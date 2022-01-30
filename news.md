@@ -2,6 +2,25 @@
 
 > Most recent first
 
+* `30th of January 2022`
+
+This release has a couple of bug fixes and was tested against the latest milestone version of Spock,
+`2.1-M2-groovy-3.0`.
+
+Issue #219 related to parallel builds again: the spock-reports extension methods on `Specification` were not yet
+adapted to support parallel builds. This was fixed and spock-reports now probably has full support for Spock
+parallel builds! Let me know if you find any issues when using this new feature.
+
+Issue #220 is a minor improvement: the `ReportCreator`'s property `testSourceRoots`, which allows spock-reports to find
+Groovy source code so that it can embed it in reports, only accepted `String` values, with different paths separated by
+the Operating System's path separator. That was difficult to discover, so from now on, this property accepts any of the
+following types:
+
+* `String` - same behaviour as before, accepts more than one path separated by `;` on Windows or `:` on other systems.
+* `File` - the file's path will be used.
+* `Iterable` - each item will be converted to one of the other types.
+* `Closure` - callback that may produce a value of the supported types.
+
 * `06th of November 2021`
 
 Minor bug fix release `2.1.1-groovy-3.0`.
