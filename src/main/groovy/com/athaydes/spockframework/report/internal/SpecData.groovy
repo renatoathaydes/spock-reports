@@ -15,12 +15,14 @@ import java.util.function.Function
 class SpecData {
     private final List<FeatureRun> featureRuns = [ ].asSynchronized() as List<FeatureRun>
     final SpecInfo info
+    final long startTime
     long totalTime
     ErrorInfo initializationError
     ErrorInfo cleanupSpecError
 
     SpecData( SpecInfo info ) {
         this.info = info
+        this.startTime = System.currentTimeMillis()
     }
 
     def <T> T withFeatureRuns( Function<List<FeatureRun>, T> action ) {
