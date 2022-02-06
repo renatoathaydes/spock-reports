@@ -640,7 +640,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private void writeLinkBackToTopAndTime( MarkupBuilder builder, Long time = null ) {
-        builder.span( style: 'float: right; font-size: 60%;' ) {
+        builder.span( 'class': 'return-toc' ) {
             a( href: '#toc', 'Return' )
             if ( time != null ) {
                 div( 'class': 'ex-time', "(${stringFormatter.toTimeDuration( time )})" )

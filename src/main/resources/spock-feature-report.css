@@ -24,6 +24,10 @@ div.date-test-ran {
   font-style: italic;
 }
 
+.return-toc {
+    float: right; font-size: 60%;
+}
+
 table.features-table {
   width: 800px;
 }
