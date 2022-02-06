@@ -24,6 +24,10 @@ div.date-test-ran {
   font-style: italic;
 }
 
+.return-toc {
+    float: right; font-size: 60%;
+}
+
 table.features-table {
   width: 800px;
 }
@@ -186,6 +190,11 @@ div.spec-status {
 td.ex-result {
   text-align: center;
   background: white !important;
+}
+
+.ex-time {
+  font-style: italic;
+  font-size: smaller;
 }
 
 .ex-pass {

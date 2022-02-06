@@ -8,6 +8,7 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
@@ -115,33 +116,29 @@ class SpockReportExtension implements IGlobalExtension {
 class SpecInfoListener implements IRunListener {
 
     private final IReportCreator reportCreator
-    private final Map<SpecInfo, SpecData> specs = [ : ].asSynchronized()
-    long startT
+
+    // synchronization is done on access
+    private final Map<SpecInfo, SpecData> specs = [ : ]
+
+    // no iteration required, so this is enough
+    private final Map<FeatureInfo, SpecData> features = [ : ].asSynchronized()
 
     SpecInfoListener( IReportCreator reportCreator ) {
         this.reportCreator = reportCreator
     }
 
     @Override
-    synchronized void beforeSpec( SpecInfo spec ) {
-        SpecData specData = specs[ spec ]
-        if ( specData != null ) {
-            log.debug( 'Unexpected state: Current specData is {}, not done yet and already started with {}',
-                    specData.info?.name, spec.name )
+    void beforeSpec( SpecInfo spec ) {
+        synchronized ( specs ) {
+            specs[ spec ] = new SpecData( spec )
         }
-        specData = new SpecData( spec )
-        specs[ spec ] = specData
-        log.debug( "Before spec: {}", Utils.getSpecClassName( specData ) )
-        startT = System.currentTimeMillis()
+        log.debug( "Before spec: {}", Utils.getSpecClassName( spec ) )
     }
 
     @Override
     void beforeFeature( FeatureInfo feature ) {
         log.debug( "Before feature: {}", feature.name )
-        SpecData specData
-        synchronized ( specs ) {
-            specData = specs.find { info, data -> feature.spec == info }?.value
-        }
+        SpecData specData = specFor( feature )
         if ( specData ) {
             specData.withFeatureRuns { it << new FeatureRun( feature ) }
         } else {
@@ -163,10 +160,12 @@ class SpecInfoListener implements IRunListener {
         log.debug( "After iteration: {}", iteration.name )
         featureRunFor( iteration ).with {
             Long startTime = timeByIteration[ iteration ]
-            if ( !startTime ) {
+            if ( startTime == null ) {
+                log.info( "Could not find startTime for iteration, times in report may be misleading." )
                 timeByIteration[ iteration ] = 0L
             } else {
                 long totalTime = ( ( System.nanoTime() - startTime ) / 1_000_000L ).toLong()
+                log.debug( "Iteration totalTime: {}", totalTime )
                 timeByIteration[ iteration ] = totalTime
             }
         }
@@ -175,26 +174,30 @@ class SpecInfoListener implements IRunListener {
     @Override
     void afterFeature( FeatureInfo feature ) {
         log.debug( "After feature: {}", feature.name )
+        features.remove( feature )
     }
 
     @Override
     void afterSpec( SpecInfo spec ) {
         // we don't need the spec anymore
-        SpecData specData = specs.remove( spec )
+        SpecData specData
+        synchronized ( specs ) {
+            specData = specs.remove( spec )
+        }
         if ( specData == null ) {
-            log.debug( 'Unexpected state: running afterSpec without having a specData for {}', spec.name )
+            // we already handled this spec
             return
         }
         assert specData.info == spec
         log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
-        specData.totalTime = System.currentTimeMillis() - startT
-        reportCreator.createReportFor specData
+        specData.totalTime = System.currentTimeMillis() - specData.startTime
+        createReport( specData )
     }
 
     @Override
     void error( ErrorInfo errorInfo ) {
-        def spec = errorInfo.method?.feature?.spec
-        SpecData specData = spec == null ? null : specs[ spec ]
+        def feature = errorInfo.method?.feature
+        SpecData specData = feature == null ? null : specFor( feature )
         try {
             log.debug( "Error on spec {}, feature {}", specData == null
                     ? "<INITIALIZATION ERROR>"
@@ -247,12 +250,48 @@ class SpecInfoListener implements IRunListener {
         // feature already knows if it's skipped
     }
 
+    private SpecData specFor( FeatureInfo feature ) {
+        synchronized ( specs ) {
+            SpecData result = specs[ feature.spec ]
+            if ( result ) return result
+
+            // check the cache
+            result = features[ feature ]
+            if ( result ) {
+                log.debug( "Found spec data in cache for feature: {}", feature.name )
+                return result
+            }
+
+            // try the hard way... Spock won't always give us the "right" spec as it seems...
+            // inherited spec feature methods come with the "wrong" spec, for example.
+            log.debug( "Unable to find spec data for feature, falling back on exhaustive search: '{}'", feature.name )
+            for ( candidate in specs.values() ) {
+                def spec = candidate.info.specsTopToBottom.find { it == feature.spec }
+                if ( spec ) {
+                    log.debug( 'Found spec the hard way: {}', spec.name )
+                    features[ feature ] = candidate
+                    return candidate
+                }
+            }
+        }
+        return null
+    }
+
+    // allow test categories to mock functionality
+    @CompileDynamic
+    private void createReport( SpecData specData ) {
+        reportCreator.createReportFor specData
+    }
+
     private FeatureRun featureRunFor( IterationInfo iteration ) {
         def targetFeature = iteration.feature
-        SpecData specData = specs[ targetFeature.spec ]
-        def run = specData.withFeatureRuns { it.find { it.feature == targetFeature } }
+        def specData = specFor( targetFeature )
+        def run = specData?.withFeatureRuns { it.find { it.feature == targetFeature } }
+
         if ( run == null ) {
-            return new FeatureRun( specData.info.features?.first() ?: dummyFeature() )
+            log.warn( "Could not find feature for current iteration, iteration will not appear in reports: {}",
+                    targetFeature.name )
+            return new FeatureRun( specData?.info?.features?.first() ?: dummyFeature() )
         }
         return run
     }
