@@ -130,10 +130,7 @@ class SpecInfoListener implements IRunListener {
     @Override
     void beforeSpec( SpecInfo spec ) {
         synchronized ( specs ) {
-            // spock sends the same spec more than once if the spec has parents
-            if ( !specs.containsKey( spec ) ) {
-                specs[ spec ] = new SpecData( spec )
-            }
+            specs[ spec ] = new SpecData( spec )
         }
         log.debug( "Before spec: {}", Utils.getSpecClassName( spec ) )
     }
@@ -185,7 +182,7 @@ class SpecInfoListener implements IRunListener {
         // we don't need the spec anymore
         SpecData specData
         synchronized ( specs ) {
-            specData = specs[ spec ]
+            specData = specs.remove( spec )
         }
         if ( specData == null ) {
             // we already handled this spec
