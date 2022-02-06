@@ -8,6 +8,7 @@ import com.athaydes.spockframework.report.SpockReportExtension
 import com.athaydes.spockframework.report.UnrolledSpec
 import com.athaydes.spockframework.report.VividFakeTest
 import com.athaydes.spockframework.report.engine.CanRunSpockSpecs
+import com.athaydes.spockframework.report.util.Hasher
 import groovy.xml.MarkupBuilder
 import org.junit.runner.Description
 import org.spockframework.runtime.model.SpecInfo
@@ -327,19 +328,19 @@ class HtmlReportCreatorSpec extends ReportSpec
     }
 
     @Category( StringFormatHelper )
-    class PredictableTimeResponse {
+    static class PredictableTimeResponse {
         String toTimeDuration( timeInMs ) { HtmlReportCreatorSpec.UNKNOWN }
     }
 
     @Category( KnowsWhenAndWhoRanTest )
-    class FakeKnowsWhenAndWhoRanTest {
+    static class FakeKnowsWhenAndWhoRanTest {
         String whenAndWhoRanTest( StringFormatHelper stringFormatter ) {
             "Created on ${ReportSpec.DATE_TEST_RAN} by ${ReportSpec.TEST_USER_NAME}"
         }
     }
 
     @Category( HtmlReportCreator )
-    class NoTocGenerated {
+    static class NoTocGenerated {
 
         void writeFeatureToc( MarkupBuilder builder, SpecData data ) {
             builder.div( 'TOC' )
@@ -347,24 +348,24 @@ class HtmlReportCreatorSpec extends ReportSpec
     }
 
     @Category( HtmlReportCreator )
-    class ConfigOutputDir {
+    static class ConfigOutputDir {
 
         String getOutputDir() {
             System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports'
         }
     }
 
-    @Category( String )
-    class PredictableStringHashCode {
-        static code = 0
+    @Category( Hasher )
+    static class PredictableStringHashCode {
+        static int code = 0
 
-        int hashCode() {
-            code++
+        String hash( String text ) {
+            ( code++ ).toString()
         }
     }
 
     @Category( SpockReportExtension )
-    class ShowCodeBlocksEnabled {
+    static class ShowCodeBlocksEnabled {
         static final htmlReportCreator = new HtmlReportCreator(
                 outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
                 featureReportCss: 'spock-feature-report.css',
@@ -377,7 +378,7 @@ class HtmlReportCreatorSpec extends ReportSpec
     }
 
     @Category( SpockReportExtension )
-    class ShowCodeBlocksDisabled {
+    static class ShowCodeBlocksDisabled {
         static final htmlReportCreator = new HtmlReportCreator(
                 outputDir: System.getProperty( 'project.buildDir', 'build' ) + '/spock-reports',
                 featureReportCss: 'spock-feature-report.css',

@@ -8,6 +8,7 @@ import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
 import com.athaydes.spockframework.report.internal.SpockReportsConfiguration
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.IRunListener
@@ -193,7 +194,7 @@ class SpecInfoListener implements IRunListener {
         assert specData.info == spec
         log.debug( "After spec: {}", Utils.getSpecClassName( specData ) )
         specData.totalTime = System.currentTimeMillis() - specData.startTime
-        reportCreator.createReportFor specData
+        createReport( specData )
     }
 
     @Override
@@ -277,6 +278,12 @@ class SpecInfoListener implements IRunListener {
             }
         }
         return null
+    }
+
+    // allow test categories to mock functionality
+    @CompileDynamic
+    private void createReport( SpecData specData ) {
+        reportCreator.createReportFor specData
     }
 
     private FeatureRun featureRunFor( IterationInfo iteration ) {

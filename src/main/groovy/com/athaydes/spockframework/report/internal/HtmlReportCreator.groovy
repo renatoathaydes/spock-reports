@@ -1,6 +1,7 @@
 package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
+import com.athaydes.spockframework.report.util.Hasher
 import com.athaydes.spockframework.report.util.Utils
 import com.athaydes.spockframework.report.vivid.BlockCode
 import com.athaydes.spockframework.report.vivid.SpecSourceCodeReader
@@ -220,7 +221,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         Utils.isSkipped( feature ) ? 'ignored' : 'pass'
                         li {
-                            a( href: "#${name.hashCode()}", 'class': "feature-toc-$cssClass", name )
+                            a( href: "#${Hasher.instance.hash( name )}", 'class': "feature-toc-$cssClass", name )
                         }
                     }
                 } else {
@@ -228,7 +229,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     final errors = run ? Utils.countProblems( [ run ], Utils.&isError ) : 0
                     final cssClass = errors ? 'error' : failures ? 'failure' : !run ? 'ignored' : 'pass'
                     li {
-                        a( href: "#${feature.name.hashCode()}", 'class': "feature-toc-$cssClass", feature.name )
+                        a( href: "#${Hasher.instance.hash( feature.name )}", 'class': "feature-toc-$cssClass", feature.name )
                     }
                 }
             }
@@ -249,9 +250,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
             FeatureRun run = data.withFeatureRuns { it.find { it.feature == feature } }
             if ( run && Utils.isUnrolled( feature ) ) {
-                def iterations = run.copyFailuresByIteration().keySet(  ).toList(  ).sort { it.iterationIndex }
+                def iterations = run.copyFailuresByIteration().keySet().toList().sort { it.iterationIndex }
                 for ( iteration in iterations ) {
-                    def problems = run.failuresByIteration[iteration]
+                    def problems = run.failuresByIteration[ iteration ]
                     def index = iteration.iterationIndex
                     def extraInfo = Utils.nextSpecExtraInfo( data, feature, iteration )
                     String name = Utils.featureNameFrom( feature, iteration, index )
@@ -286,7 +287,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         extraInfo,
                         run?.feature )
                 List<SpecProblem> problems = run ? run.copyFailuresByIteration().values().collectMany { it } : [ ]
-                problems.sort {it.failure.method?.iteration?.iterationIndex ?: 0 }
+                problems.sort { it.failure.method?.iteration?.iterationIndex ?: 0 }
                 writeFeatureBlocks( builder, feature, problems )
                 if ( run ) {
                     writeRun( builder, run )
@@ -298,7 +299,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         if ( data.cleanupSpecError ) {
             problemWriter.problemsContainer( builder, 'Cleanup Error:' ) {
                 problemWriter.writeProblemMsgs( builder, [
-                       data.cleanupSpecError.exception
+                        data.cleanupSpecError.exception
                 ] )
             }
         }
@@ -539,7 +540,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
         builder.tr {
             td( colspan: '10' ) {
-                div( 'class': 'feature-description' + cssClass, id: name.hashCode() ) {
+                div( 'class': 'feature-description' + cssClass, id: Hasher.instance.hash( name ) ) {
                     span name
                     writeLinkBackToTop builder
                     if ( ignoreReason ) {
