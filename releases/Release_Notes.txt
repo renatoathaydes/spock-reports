@@ -1,3 +1,9 @@
+2.3.0-groovy-3.0 - 2022 Feb 06
+
+* #222 fixed null-pointer when executing child specification (bug introduced in version `2.1-groovy-3.0`).
+* execution times were added to every feature and iteration.
+* styles for TOC-Return link were moved from HTML to CSS (`return-toc` CSS class).
+
 2.2.0-groovy-3.0 - 2022 Jan 30
 
 * #219 concurrent test execution caused reportInfo to put information in wrong feature/iteration.

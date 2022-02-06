@@ -9,7 +9,7 @@ plugins {
 defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.2.0-groovy-3.0"
+version = "2.3.0-groovy-3.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 sourceCompatibility = '1.8'

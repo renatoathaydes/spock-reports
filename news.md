@@ -2,6 +2,22 @@
 
 > Most recent first
 
+* `06th of February 2022`
+
+One bug fix and one new, small feature make up this release.
+
+The bug #222 was pretty embarrassing, with a null-pointer Exception being
+thrown on any inherited specification. Luckily, it's not very common to use inheritance between specs in Spock
+(using that has some weird effects, such as overridden methods running in both the parent and child specs!) so no one
+seems to have noticed that since version `2.1-groovy-3.0`!
+
+The new feature, to compensate: spock-reports now shows the execution time for every feature and iteration
+(on example-based features), instead of only for each specification.
+This information is helpful to find slow test features.
+
+If you don't want to see the execution times for some reason, use a custom CSS stylesheet to make `.ex-time`
+elements invisible.
+
 * `30th of January 2022`
 
 This release, `2.2.0-groovy-3.0` has a couple of bug fixes and was tested against the latest milestone version of Spock,
