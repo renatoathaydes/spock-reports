@@ -61,7 +61,7 @@ jar {
     manifest {
         attributes(
                 "Implementation-Title": "Athaydes-Spock-Reports",
-                "Implementation-Version": version,
+                "Implementation-Version": project.version,
                 "Automatic-Module-Name": 'com.athaydes.spock.reports' )
     }
 }
