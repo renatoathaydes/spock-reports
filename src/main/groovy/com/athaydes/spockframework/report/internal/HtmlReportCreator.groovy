@@ -259,14 +259,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     Utils.isSkipped( feature ) ? 'ignored' : ''
+                    def time = run.timeByIteration.get( iteration, 0L )
                     writeFeatureDescription( builder, name, cssClass,
                             featureAnnotation( feature, Ignore ),
                             featureAnnotation( feature, PendingFeature ),
                             extraInfo,
-                            run.feature )
+                            run.feature,
+                            time )
                     writeFeatureBlocks( builder, feature, problems, iteration )
                     writeRun( builder, run, iteration )
-                    def time = run.timeByIteration.get( iteration, 0L )
                     problemWriter.writeProblemBlockForIteration( builder, iteration, problems, time )
                 }
             } else {
@@ -281,11 +282,15 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     Utils.nextSpecExtraInfo( data, feature )
                 } : [ ]
 
+                Long time = run == null ? null : run.timeByIteration.values().sum()
+
                 writeFeatureDescription( builder, feature.name, cssClass,
                         featureAnnotation( feature, Ignore ),
                         featureAnnotation( feature, PendingFeature ),
                         extraInfo,
-                        run?.feature )
+                        run?.feature,
+                        time
+                )
                 List<SpecProblem> problems = run ? run.copyFailuresByIteration().values().collectMany { it } : [ ]
                 problems.sort { it.failure.method?.iteration?.iterationIndex ?: 0 }
                 writeFeatureBlocks( builder, feature, problems )
@@ -489,10 +494,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         }
                         tbody {
                             if ( iterationInfo ) {
-                                writeIteration( builder, iterationInfo, run.failuresByIteration[ iterationInfo ] )
+                                writeIteration( builder, iterationInfo,
+                                        run.timeByIteration[ iterationInfo ],
+                                        run.failuresByIteration[ iterationInfo ] )
                             } else {
                                 run.copyFailuresByIteration().each { iteration, errors ->
-                                    writeIteration( builder, iteration, errors )
+                                    writeIteration( builder, iteration, run.timeByIteration[ iteration ], errors )
                                 }
                             }
                         }
@@ -509,6 +516,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
     }
 
     private void writeIteration( MarkupBuilder builder, IterationInfo iteration,
+                                 Long time,
                                  List<SpecProblem> errors ) {
         builder.tr( 'class': errors ? 'ex-fail' : 'ex-pass' ) {
             for ( value in iteration.dataValues ) {
@@ -517,7 +525,10 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         ( value == null ? '<null>' : value.toString() )
                 td( 'class': 'ex-value', writableValue )
             }
-            td( 'class': 'ex-result', iterationResult( errors ) )
+            td( 'class': 'ex-result' ) {
+                span( iterationResult( errors ) )
+                span( 'class': 'ex-time', time == null ? "" : "(${stringFormatter.toTimeDuration( time )})" )
+            }
         }
     }
 
@@ -530,7 +541,8 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                                           Ignore ignoreAnnotation,
                                           PendingFeature pendingFeature,
                                           List extraInfo,
-                                          SpecElementInfo feature ) {
+                                          SpecElementInfo feature,
+                                          Long time = null ) {
         def ignoreReason = ''
         if ( cssClass == 'ignored' && ignoreAnnotation ) {
             ignoreReason = ignoreAnnotation.value()
@@ -542,7 +554,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             td( colspan: '10' ) {
                 div( 'class': 'feature-description' + cssClass, id: Hasher.instance.hash( name ) ) {
                     span name
-                    writeLinkBackToTop builder
+                    writeLinkBackToTopAndTime builder, time
                     if ( ignoreReason ) {
                         div()
                         span( 'class': 'reason', ignoreReason )
@@ -627,9 +639,12 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
-    private void writeLinkBackToTop( MarkupBuilder builder ) {
+    private void writeLinkBackToTopAndTime( MarkupBuilder builder, Long time = null ) {
         builder.span( style: 'float: right; font-size: 60%;' ) {
             a( href: '#toc', 'Return' )
+            if ( time != null ) {
+                div( 'class': 'ex-time', "(${stringFormatter.toTimeDuration( time )})" )
+            }
         }
     }
 

@@ -188,6 +188,11 @@ td.ex-result {
   background: white !important;
 }
 
+.ex-time {
+  font-style: italic;
+  font-size: smaller;
+}
+
 .ex-pass {
   color: darkgreen;
 }

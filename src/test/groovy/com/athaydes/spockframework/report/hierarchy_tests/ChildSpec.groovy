@@ -11,4 +11,12 @@ class ChildSpec extends ParentSpec {
         true
     }
 
+    def 'examples'() {
+        expect:
+        true
+
+        where:
+        a << (1..10)
+    }
+
 }
