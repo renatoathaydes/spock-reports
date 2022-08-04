@@ -379,4 +379,35 @@ class VividAstInspectorSpec extends Specification {
         blocks[ 2 ].text == 'the result is right'
     }
 
+    def "Vivid AST Inspector can ignore annotations."() {
+        given: 'A Groovy source file with an annotated feature'
+        def groovySource = '''|
+        |class Abc extends Specification {
+        |  @IgnoreIf({something==true})
+        |  def "my annotated feature"() {
+        |    expect: 'the result is right!'
+        |    42 == 42
+        |  }
+        |}'''.stripMargin()
+
+        def groovyFile = File.createTempFile( 'spock-reports', 'groovy' )
+        groovyFile << groovySource
+
+        when: 'The Groovy file is loaded by the inspector'
+        def result = inspector.load( groovyFile, 'Abc' )
+
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my annotated feature' )
+
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 1
+
+        and: 'The inspector should be able to provide the source code for each block'
+        blocks[ 0 ].statements == [ '42 == 42' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'expect'
+        blocks[ 0 ].text == 'the result is right!'
+    }
+
 }
