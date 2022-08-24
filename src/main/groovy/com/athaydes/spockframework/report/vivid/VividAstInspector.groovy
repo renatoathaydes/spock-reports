@@ -154,12 +154,7 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
 
     @Override // This is overridden to avoid visiting annotations.
     void visitAnnotations(AnnotatedNode node) {
-        for (AnnotationNode annotation : node.getAnnotations()) {
-            // skip built-in properties
-            if (!annotation.isBuiltIn()) {
-                //visitAnnotation(annotation);
-            }
-        }
+        // do nothing - we don't want to visit annotations (see #231)
     }
 
     @Override
