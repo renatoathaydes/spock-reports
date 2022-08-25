@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.internal
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 
@@ -16,12 +17,13 @@ import java.util.regex.Pattern
  * This is necessary to support parallel builds.
  */
 @Slf4j
+@CompileStatic
 class ReportDataAggregator {
 
-    static final AGGREGATED_DATA_FILE = 'aggregated_report.json'
+    static final String AGGREGATED_DATA_FILE = 'aggregated_report.json'
 
-    static final charset = Charset.forName( 'utf-8' )
-    static final jsonParser = new JsonSlurper()
+    static final Charset charset = Charset.forName( 'utf-8' )
+    static final JsonSlurper jsonParser = new JsonSlurper()
 
     static Map<String, Map> getAllAggregatedDataAndPersistLocalData( File dir, Map localData ) {
         if ( dir != null && !dir.exists() ) {
@@ -41,7 +43,7 @@ class ReportDataAggregator {
 
         return withFileLock( dataFile ) {
             def persistedData = readTextFrom( dataFile ) ?: '{}'
-            def allData = jsonParser.parseText( persistedData ) + localData
+            Map allData = jsonParser.parseText( persistedData ) as Map + localData
             appendDataToFile( dataFile, localData )
             allData.asImmutable() as Map<String, Map>
         }
@@ -87,14 +89,9 @@ class ReportDataAggregator {
 
     @PackageScope
     static String readTextFrom( RandomAccessFile file ) {
-        def buffer = new byte[8]
-        def result = new StringBuilder( file.length() as int )
-
-        int bytesRead
-        while ( ( bytesRead = file.read( buffer ) ) > 0 ) {
-            result.append( new String( buffer[ 0..( bytesRead - 1 ) ] as byte[], charset ) )
-        }
-        return result.toString()
+        def buffer = new byte[file.length()]
+        file.readFully( buffer )
+        new String( buffer, charset )
     }
 
 }
