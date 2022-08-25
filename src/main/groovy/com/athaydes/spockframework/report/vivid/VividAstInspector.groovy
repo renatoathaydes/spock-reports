@@ -1,18 +1,12 @@
 package com.athaydes.spockframework.report.vivid
 
-import com.athaydes.spockframework.report.vivid.VividAstInspector.AstSuccessfullyCaptured
+
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.ast.ClassCodeVisitorSupport
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
-import org.codehaus.groovy.control.CompilationFailedException
-import org.codehaus.groovy.control.CompilationUnit
-import org.codehaus.groovy.control.CompilePhase
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.control.*
 import org.spockframework.util.Nullable
 import org.spockframework.util.inspector.AstInspectorException
 
@@ -156,6 +150,11 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
         codeCollector.method = null
 
         visitStatements = previousIsTestMethod
+    }
+
+    @Override // This is overridden to avoid visiting annotations.
+    void visitAnnotations(AnnotatedNode node) {
+        // do nothing - we don't want to visit annotations (see #231)
     }
 
     @Override
