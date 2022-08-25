@@ -16,7 +16,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 def groovyVersion = '3.0.9'
-def spockVersion = '2.0-groovy-3.0'
+def spockVersion = '2.1-groovy-3.0'
 
 repositories {
     mavenCentral()
