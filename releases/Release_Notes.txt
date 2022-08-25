@@ -1,3 +1,9 @@
+2.3.1-groovy-3.0 - 2022 Aug 25
+
+* #231 fixed disappearing blocks in vivid reports when spec uses annotations (thanks to @ArkiMargust).
+* #228 more efficient generation of aggregated report.
+* upgraded Spock to 2.1-groovy-3.0.
+
 2.3.0-groovy-3.0 - 2022 Feb 06
 
 * #222 fixed null-pointer when executing child specification (bug introduced in version `2.1-groovy-3.0`).

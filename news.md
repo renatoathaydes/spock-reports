@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `25th of August 2022`
+
+Minor bug fixes release. See release notes.
+
 * `06th of February 2022`
 
 One bug fix and one new, small feature make up this release.
