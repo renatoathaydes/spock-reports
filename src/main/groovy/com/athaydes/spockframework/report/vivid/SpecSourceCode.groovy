@@ -24,10 +24,10 @@ class SpecSourceCode {
         sourceCodeByFeatureName.get( feature.name, new FeatureSourceCode() ).startBlock( label, text )
     }
 
-    void addStatement( MethodNode feature, String statement, int lineNumber ) {
+    void addStatement( MethodNode feature, String statement, int lineNumber, int commonIndent ) {
         def currentFeature = sourceCodeByFeatureName[ feature.name ]
         if ( currentFeature ) {
-            statement = removeIndent( statement )
+            statement = removeIndent( statement, commonIndent )
             currentFeature.addStatement( statement, lineNumber )
         } else {
             log.debug( "Skipping statement on method {}, not a test method?", feature?.name )
@@ -52,18 +52,19 @@ class SpecSourceCode {
         return result ?: [ ]
     }
 
-    static String removeIndent( String code ) {
+    static String removeIndent( String code, int commonIndent = Integer.MAX_VALUE ) {
+
+        if ( code.isEmpty() ) return code
+
         def lines = code.readLines()
-        if ( lines.size() < 2 ) {
-            return code
-        }
 
         // do not use the first line because the first line never gets any indentation
-        def firstTextIndexes = lines[ 1..-1 ].collect { String line -> line.findIndexOf { it != ' ' } }
+        def firstTextIndexes = lines[ 0..-1 ].collect { String line -> line.findIndexOf { it != ' ' } }
         def minIndent = firstTextIndexes.min()
+        minIndent = Math.min( minIndent, commonIndent )
 
         if ( minIndent > 0 ) {
-            def resultLines = [ lines[ 0 ] ] + lines[ 1..-1 ].collect { String line -> line.substring( minIndent ) }
+            def resultLines = lines[ 0..-1 ].collect { String line -> line.substring( minIndent ) }
             return resultLines.join( '\n' )
         } else {
             return code

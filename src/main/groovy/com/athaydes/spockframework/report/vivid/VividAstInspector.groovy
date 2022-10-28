@@ -160,25 +160,50 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     @Override
     void visitStatement( Statement node ) {
         if ( visitStatements && node instanceof BlockStatement ) {
-            def stmts = ( node as BlockStatement ).statements
-            def waitForNextBlock = false
-            if ( stmts ) for ( statement in stmts ) {
-                if ( waitForNextBlock && !statement.statementLabel ) {
-                    continue // skip statements in this block
-                } else {
-                    waitForNextBlock = false
-                }
+            def statements = filterStatements( ( node as BlockStatement ).statements )
+            /*
+                First we find the smallest common indent level for all
+                code lines (excluding block statements),
+                which will be trimmed from all lines later on.
+             */
+            int commonIndent = Integer.MAX_VALUE // start with the maximum possible indent.
 
-                codeCollector.add( statement )
-
-                if ( statement.statementLabel == 'where' ) {
-                    waitForNextBlock = true
+            for ( statement in statements ) {
+                if ( statement.statementLabel ) {
+                    def labelText = SpecSourceCodeCollector.stringConstant( statement )
+                    if ( labelText )
+                        continue // we don't want the block (label) to be determining the common indent level
                 }
+                if ( statement.columnNumber < commonIndent )
+                    commonIndent = statement.columnNumber
             }
+
+            for ( statement in statements )
+                codeCollector.add(statement, commonIndent - 1)
+
             visitStatements = false
         }
 
         super.visitStatement( node )
+    }
+
+    private static List<Statement> filterStatements( List<Statement> statements ) {
+        def filtered = []
+        def waitForNextBlock = false
+        if ( statements )
+            for (statement in statements) {
+                if (waitForNextBlock && !statement.statementLabel)
+                    continue // skip statements in this block
+                else
+                    waitForNextBlock = false
+
+                filtered << statement
+
+                if (statement.statementLabel == 'where')
+                    waitForNextBlock = true
+            }
+
+        return filtered
     }
 
     @Override

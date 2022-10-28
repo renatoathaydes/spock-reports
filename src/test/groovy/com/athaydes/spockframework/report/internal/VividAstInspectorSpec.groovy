@@ -229,7 +229,7 @@ class VividAstInspectorSpec extends Specification {
         blocks.size() == 4
 
         and: 'The inspector should be able to provide the source code for each block'
-        blocks[ 0 ].statements == [ 'def x = 10 +', '20 +', '30' ]
+        blocks[ 0 ].statements == [ 'def x = 10 +', '  20 +', '  30' ]
         blocks[ 1 ].statements == [ 'def y = """',
                                     '  hello',
                                     '  world',
@@ -408,6 +408,40 @@ class VividAstInspectorSpec extends Specification {
         and: 'The blocks should have the expected label and text'
         blocks[ 0 ].label == 'expect'
         blocks[ 0 ].text == 'the result is right!'
+    }
+
+    def "Vivid AST Inspector preserves relative indents."() {
+        given: 'A Groovy source file with an annotated feature'
+        def groovySource = '''|
+        |class Xyz extends Specification {
+        |  def "my indented feature"() {
+        |    expect: 'some statements are true'
+        |       "42" ==
+        |         String.valueOf(
+        |           40 + 2
+        |         )
+        |      5 == 2*2+1
+        |  }
+        |}'''.stripMargin()
+
+        def groovyFile = File.createTempFile( 'spock-reports', 'groovy' )
+        groovyFile << groovySource
+
+        when: 'The Groovy file is loaded by the inspector'
+        def result = inspector.load( groovyFile, 'Xyz' )
+
+        and: 'The code blocks are requested'
+        def blocks = result.getBlocks( 'my indented feature' )
+
+        then: 'The correct number of blocks is parsed'
+        blocks.size() == 1
+
+        and: 'The found source code lines have the correct relative indents!'
+        blocks[ 0 ].statements == [ ' "42" ==', '   String.valueOf(', '     40 + 2', '   )', '5 == 2*2+1' ]
+
+        and: 'The blocks should have the expected label and text'
+        blocks[ 0 ].label == 'expect'
+        blocks[ 0 ].text == 'some statements are true'
     }
 
 }
