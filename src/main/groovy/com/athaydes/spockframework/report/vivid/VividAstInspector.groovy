@@ -162,9 +162,9 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
         if ( visitStatements && node instanceof BlockStatement ) {
             def statements = filterStatements( ( node as BlockStatement ).statements )
             /*
-                First we find the smallest common indent level for all
-                code lines (excluding block statements),
-                which will be trimmed from all lines later on.
+                First we find the smallest common indent levels for all
+                code lines within a code block (excluding block statements),
+                which will be trimmed from the block lines when added to the code collector.
              */
             int blockIndent = Integer.MAX_VALUE // start with the maximum possible indent.
             List<Statement> blockStatements = [] // the statements of a block (given, when, then, etc.)
