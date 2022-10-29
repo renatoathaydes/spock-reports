@@ -411,7 +411,7 @@ class VividAstInspectorSpec extends Specification {
     }
 
     def "Vivid AST Inspector preserves relative indents."() {
-        given: 'A Groovy source file with an annotated feature'
+        given: 'A Groovy source file with weired indents'
         def groovySource = '''|
         |class Xyz extends Specification {
         |  def "my indented feature"() {
