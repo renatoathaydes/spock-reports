@@ -166,24 +166,34 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
                 code lines (excluding block statements),
                 which will be trimmed from all lines later on.
              */
-            int commonIndent = Integer.MAX_VALUE // start with the maximum possible indent.
+            int blockIndent = Integer.MAX_VALUE // start with the maximum possible indent.
+            List<Statement> blockStatements = [] // the statements of a block (given, when, then, etc.)
 
             for ( statement in statements ) {
+                boolean updateIndent = true // Only update indent if the statement is not the block statement itself
                 if ( statement.statementLabel ) {
                     def labelText = SpecSourceCodeCollector.stringConstant( statement )
-                    if ( labelText )
-                        continue // we don't want the block (label) to be determining the common indent level
+                    if ( labelText ) {
+                        for ( blockStatement in blockStatements )
+                            codeCollector.add( blockStatement, blockIndent - 1 )
+
+                        blockStatements.clear() // The block code was collected, we clear it for the next block.
+                        blockIndent = Integer.MAX_VALUE // The block statements are over, reset indent.
+                        updateIndent = false // we also don't want the block (label) to be determining the common indent level
+                    }
                 }
-                if ( statement.columnNumber < commonIndent )
-                    commonIndent = statement.columnNumber
+                blockStatements << statement // we add the statement to the block statements
+
+                if ( updateIndent )
+                    blockIndent = Math.min( blockIndent, statement.columnNumber )
             }
 
-            for ( statement in statements )
-                codeCollector.add(statement, commonIndent - 1)
+            // We collect the last block of statements:
+            for ( blockStatement in blockStatements )
+                codeCollector.add( blockStatement, blockIndent - 1 )
 
             visitStatements = false
         }
-
         super.visitStatement( node )
     }
 
