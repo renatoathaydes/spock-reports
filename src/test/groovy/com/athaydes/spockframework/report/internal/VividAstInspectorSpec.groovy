@@ -229,7 +229,7 @@ class VividAstInspectorSpec extends Specification {
         blocks.size() == 4
 
         and: 'The inspector should be able to provide the source code for each block'
-        blocks[ 0 ].statements == [ 'def x = 10 +', '20 +', '30' ]
+        blocks[ 0 ].statements == [ 'def x = 10 +', '  20 +', '  30' ]
         blocks[ 1 ].statements == [ 'def y = """',
                                     '  hello',
                                     '  world',

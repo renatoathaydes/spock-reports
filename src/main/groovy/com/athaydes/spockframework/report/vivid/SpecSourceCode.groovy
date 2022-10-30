@@ -54,20 +54,21 @@ class SpecSourceCode {
 
     static String removeIndent( String code ) {
         def lines = code.readLines()
-        if ( lines.size() < 2 ) {
-            return code
-        }
 
-        // do not use the first line because the first line never gets any indentation
-        def firstTextIndexes = lines[ 1..-1 ].collect { String line -> line.findIndexOf { it != ' ' } }
+        def firstTextIndexes = lines.collect { String line -> line.findIndexOf { it != ' ' } }
         def minIndent = firstTextIndexes.min()
 
         if ( minIndent > 0 ) {
-            def resultLines = [ lines[ 0 ] ] + lines[ 1..-1 ].collect { String line -> line.substring( minIndent ) }
+            def resultLines = lines.collect { String line -> trimLine( line, minIndent ) }
             return resultLines.join( '\n' )
         } else {
             return code
         }
+    }
+
+    private static String trimLine( String line, int minIndent ) {
+        def lastIndex = line.findLastIndexOf { it != ' ' }
+        line[minIndent..lastIndex]
     }
 
 }

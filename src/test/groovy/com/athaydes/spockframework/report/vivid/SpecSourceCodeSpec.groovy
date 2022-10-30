@@ -21,12 +21,11 @@ class SpecSourceCodeSpec extends Specification {
         |  println 2 * i
         |}'''.stripMargin() | 'for (i in x) {\n  println i\n  println 2 * i\n}'
 
-        '''for (i in x) {
+        '''\
+        for (i in x) {
           println i
           println 2 * i
         }'''                | 'for (i in x) {\n  println i\n  println 2 * i\n}'
-
-
     }
 
 }

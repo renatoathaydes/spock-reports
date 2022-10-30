@@ -8,17 +8,19 @@ import org.codehaus.groovy.ast.ModuleNode
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.control.Janitor
 import org.codehaus.groovy.control.SourceUnit
-import org.spockframework.compiler.SourceLookup
 import org.spockframework.util.Nullable
 
 import java.util.concurrent.ConcurrentHashMap
 
 @Slf4j
 @CompileStatic
-class SpecSourceCodeCollector {
+class SpecSourceCodeCollector implements  AutoCloseable {
 
-    final SourceLookup sourceLookup
+    private final SourceUnit sourceUnit
+    private final Janitor janitor = new Janitor()
+
     final ModuleNode module
 
     private static final Map<String, SpecSourceCode> specSourceCodeByClassName = [ : ] as ConcurrentHashMap
@@ -29,7 +31,7 @@ class SpecSourceCodeCollector {
     private MethodNode method
 
     SpecSourceCodeCollector( SourceUnit sourceUnit ) {
-        this.sourceLookup = new SourceLookup( sourceUnit )
+        this.sourceUnit = sourceUnit
         this.module = sourceUnit.AST
     }
 
@@ -62,7 +64,7 @@ class SpecSourceCodeCollector {
         assert className && method
 
         def label = statement.statementLabel
-        def code = sourceLookup.lookup( statement )
+        def code = lookupCode( statement )
         def specCode = specSourceCodeByClassName[ className ]
 
         if ( !specCode ) {
@@ -85,6 +87,15 @@ class SpecSourceCodeCollector {
         }
     }
 
+    private String lookupCode( Statement statement) {
+        def text = new StringBuilder()
+        for (int i = statement.getLineNumber(); i <= statement.getLastLineNumber(); i++) {
+            def line = sourceUnit.getSample( i, 0, janitor )
+            text.append( line ).append( '\n' )
+        }
+        text.toString()
+    }
+
     @Nullable
     private static String stringConstant( Statement statement ) {
         if ( statement instanceof ExpressionStatement ) {
@@ -97,4 +108,8 @@ class SpecSourceCodeCollector {
         null
     }
 
+    @Override
+    void close() {
+        janitor.cleanup()
+    }
 }

@@ -78,17 +78,19 @@ class VividAstInspector {
         final visitor = new VividASTVisitor( codeCollector )
         final module = codeCollector.module
 
-        visitor.visitBlockStatement( module.statementBlock )
+        codeCollector.withCloseable {
+            visitor.visitBlockStatement( module.statementBlock )
 
-        for ( MethodNode method in module.methods ) {
-            visitor.visitMethod( method )
+            for ( MethodNode method in module.methods ) {
+                visitor.visitMethod( method )
+            }
+
+            for ( ClassNode clazz in module.classes ) {
+                visitor.visitClass( clazz )
+            }
+
+            codeCollector
         }
-
-        for ( ClassNode clazz in module.classes ) {
-            visitor.visitClass( clazz )
-        }
-
-        codeCollector
     }
 
     private class VividClassLoader extends GroovyClassLoader {
