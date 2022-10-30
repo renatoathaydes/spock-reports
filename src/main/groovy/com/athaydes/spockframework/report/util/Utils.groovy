@@ -386,6 +386,7 @@ class Utils {
             case boolean:
                 return Boolean.parseBoolean( value as String )
             case Character:
+                // fallthrough
             case char:
                 char convertedValue
                 if ( value instanceof Character ) {
@@ -400,8 +401,10 @@ class Utils {
                 } else {
                     return Character.valueOf( convertedValue )
                 }
+            case Object:
+                return value
             default:
-                throw new IllegalArgumentException( "Cannot convert to type: " + type )
+                throw new IllegalArgumentException( "Cannot convert to type " + type.name + ": " + value )
         }
     }
 
