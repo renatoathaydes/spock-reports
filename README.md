@@ -35,7 +35,8 @@ Version compatibility:
 
 | Java  | Groovy | Spock          | spock-reports           |
 |-------|--------|----------------|-------------------------|
-| 17+   | 3.0.9+ | 2.1-groovy-3.0 | <b>2.3.1-groovy-3.0</b> |
+| 8+    | 4.0+   | 2.3-groovy-4.0 | <b>2.4.0-groovy-4.0</b> |
+| 17+   | 3.0.9+ | 2.1-groovy-3.0 | <b>2.3.2-groovy-3.0</b> |
 | 11-16 | 3.0+   | 2.0-groovy-3.0 | <b>2.1.1-groovy-3.0</b> |
 | 8+    | 2.5+   | 2.0-groovy-2.5 | <b>2.0-groovy-2.5</b>   |
 | 7, 8  | 2.4+   | 1.3+           | <b>1.8.0</b>            |
@@ -64,13 +65,13 @@ Add ``spock-reports`` to your ``<dependencies>``:
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-api</artifactId>
-  <version>1.7.30</version>
+  <version>1.7.36</version>
   <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-simple</artifactId>
-  <version>1.7.30</version>
+  <version>1.7.36</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -92,8 +93,8 @@ dependencies {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
-    testImplementation 'org.slf4j:slf4j-api:1.7.30'
-    testRuntimeClasspath 'org.slf4j:slf4j-simple:1.7.30'
+    testImplementation 'org.slf4j:slf4j-api:1.7.36'
+    testRuntimeClasspath 'org.slf4j:slf4j-simple:1.7.36'
 }
 ```
 
