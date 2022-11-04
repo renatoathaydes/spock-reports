@@ -177,10 +177,6 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
                 }
 
                 codeCollector.add( statement )
-
-                if ( statement.statementLabel == 'where' ) {
-                    waitForNextBlock = true
-                }
             }
             visitStatements = false
         }
