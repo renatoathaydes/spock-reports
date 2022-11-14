@@ -391,7 +391,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind,
                                     BlockCode code, text, int failureLineNumber ) {
-        def statements = code.statements
+        def statements = ( blockKind == 'where' ? [] : code.statements )
         def lineNumbers = code.lineNumbers
 
         if ( text ) {

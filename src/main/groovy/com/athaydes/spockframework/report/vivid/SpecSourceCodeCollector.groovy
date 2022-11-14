@@ -81,10 +81,8 @@ class SpecSourceCodeCollector implements  AutoCloseable {
                 return // don't add the text to the code
             }
         }
-
-        if ( label != 'where' ) { // the where statement must not be added to the code in the report
-            specCode.addStatement( method, code, statement.lineNumber )
-        }
+        // All statements must be added to the code in the report
+        specCode.addStatement( method, code, statement.lineNumber )
     }
 
     private String lookupCode( Statement statement) {

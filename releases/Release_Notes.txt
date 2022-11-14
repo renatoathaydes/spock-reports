@@ -3,9 +3,10 @@
 * Upgrade Groovy version to 4.0.6.
 * Minor performance improvements and quieter logging.
 
-2.3.2-groovy-3.0 - 2022 Oct 30
+2.3.2-groovy-3.0 - 2022 Nov 14
 
-* #235 Maintain source code indentation in Vivid report.
+* #235 fixed indentation of source code in vivid reports.
+* #237 keep `where` block source code available for inclusion in template reports (thanks to @Gleethos).
 
 2.3.1-groovy-3.0 - 2022 Aug 25
 
