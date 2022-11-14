@@ -170,23 +170,12 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     void visitStatement( Statement node ) {
         if ( visitStatements && node instanceof BlockStatement ) {
             def stmts = ( node as BlockStatement ).statements
-            def waitForNextBlock = false
-            if ( stmts ) for ( statement in stmts ) {
-                if ( waitForNextBlock && !statement.statementLabel ) {
-                    continue // skip statements in this block
-                } else {
-                    waitForNextBlock = false
+            if ( stmts )
+                for ( statement in stmts ) {
+                    codeCollector.add( statement )
                 }
-
-                codeCollector.add( statement )
-
-                if ( statement.statementLabel == 'where' ) {
-                    waitForNextBlock = true
-                }
-            }
             visitStatements = false
         }
-
         super.visitStatement( node )
     }
 

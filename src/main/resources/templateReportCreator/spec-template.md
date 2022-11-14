@@ -87,7 +87,7 @@ Time: $totalTime
  %>
 * ${block.kind} ${block.text}
 <%
-          if ( block.sourceCode ) {
+          if ( block.sourceCode && block.kind != 'Where:' ) {
               out << "\n```\n"
               block.sourceCode.each { codeLine ->
                   out << codeLine << '\n'
