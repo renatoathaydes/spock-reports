@@ -1,6 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-import junit.framework.ComparisonFailure
+import org.junit.jupiter.api.AssertionFailureBuilder
 import spock.lang.Narrative
 import spock.lang.Specification
 import spock.lang.Title
@@ -40,7 +40,11 @@ class TestHelper extends Specification {
             def error = "\n\"$aPart\" != \"$bPart\"\n" +
                     "${' ' * ( errorIndex + 1 )}^${' ' * ( aPart.size() + 5 )}^"
 
-            throw new ComparisonFailure( error, expected, actual )
+            throw AssertionFailureBuilder.assertionFailure()
+                    .message( error )
+                    .expected( expected )
+                    .actual( actual )
+                    .build()
         }
 
         assert expected == actual

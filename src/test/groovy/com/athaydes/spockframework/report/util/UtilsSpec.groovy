@@ -3,6 +3,8 @@ package com.athaydes.spockframework.report.util
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static org.junit.jupiter.api.Assertions.assertEquals
+
 class UtilsSpec extends Specification {
 
     def "The success rate for all specs should be correctly calculated given all results"() {
@@ -12,7 +14,7 @@ class UtilsSpec extends Specification {
 
         then:
         "The expected result is obtained"
-        GroovyTestCase.assertEquals result, expectedSuccessRate, 1E-9
+        assertEquals( result, expectedSuccessRate, 1E-9 )
 
         where:
         total | reproved | expectedSuccessRate

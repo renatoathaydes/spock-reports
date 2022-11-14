@@ -2,6 +2,8 @@ package com.athaydes.spockframework.report.internal
 
 import com.athaydes.spockframework.report.IReportCreator
 import com.athaydes.spockframework.report.util.Utils
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.spockframework.runtime.RunContext
 import org.spockframework.util.Nullable
@@ -11,11 +13,12 @@ import org.spockframework.util.Nullable
  * User: Renato
  */
 @Slf4j
+@CompileStatic
 class ConfigLoader {
 
     static final String SYS_PROPERTY_PREFIX = 'com.athaydes.spockframework.report.'
 
-    static final CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
+    static final String CUSTOM_CONFIG = "META-INF/services/${IReportCreator.class.name}.properties"
 
     Properties loadConfig( @Nullable SpockReportsConfiguration spockConfig = null ) {
         def props = loadSystemProperties(
@@ -23,14 +26,15 @@ class ConfigLoader {
                         loadCustomProperties(
                                 loadDefaultProperties() ) ) )
 
-        log.info( "SpockReports config loaded: {}", props )
+        log.debug( "SpockReports config loaded: {}", props )
 
         props
     }
 
     void apply( IReportCreator reportCreator, Properties config ) {
 
-        config.each { String key, value ->
+        config.each { keyObject, value ->
+            String key = keyObject.toString()
             int lastDotIndex = key.lastIndexOf( '.' )
 
             if ( lastDotIndex > 0 && lastDotIndex + 1 < key.size() ) {
@@ -42,14 +46,9 @@ class ConfigLoader {
 
                     if ( metaProperty ) {
                         def propertyType = metaProperty.type
-                        try {
-                            reportCreator."$propertyName" = Utils.convertProperty( value, propertyType )
-                            log.debug( "Property $propertyName set to $value" )
-                        } catch ( ignore ) {
-                            log.warn( "Invalid property value for property '{}'", propertyName )
-                        }
+                        setDynamic( reportCreator, propertyName, Utils.convertProperty( value, propertyType ) )
                     } else {
-                        log.warn( "Property [{}] not acceptable by IReportCreator of type {}",
+                        log.warn( "Property '{}' not acceptable by IReportCreator of type {}",
                                 propertyName, reportCreator.class.name )
                     }
                 } else {
@@ -57,6 +56,16 @@ class ConfigLoader {
                             propertyName, reportCreator.class.name )
                 }
             }
+        }
+    }
+
+    @CompileDynamic
+    private static void setDynamic( receiver, String propertyName, value ) {
+        try {
+            receiver."$propertyName" = value
+            log.debug( "Property '{}' set to '{}'", propertyName, value )
+        } catch ( ignore ) {
+            log.warn( "Invalid property value for property '{}'", propertyName )
         }
     }
 
@@ -74,7 +83,7 @@ class ConfigLoader {
             System.properties.findAll { entry ->
                 def key = entry.key
                 key instanceof String && key.startsWith( reportClassPrefix )
-            }.each { String key, value ->
+            }.each { key, value ->
                 filteredProps[ key ] = value
             }
         }

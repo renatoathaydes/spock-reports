@@ -43,14 +43,14 @@ class SpockReportExtension implements IGlobalExtension {
     @Override
     void start() {
         if ( !initialized.getAndSet( true ) ) {
-            log.info( "Got configuration from Spock: {}", configuration )
-            log.debug "Configuring ${this.class.name}"
+            log.debug( "Got configuration from Spock: {}", configuration )
+            log.debug 'Configuring {}', this.class.name
             def config = configLoader.loadConfig( configuration )
 
             // Read the class report property and exit if its not set
             String commaListOfReportClasses = config.remove( IReportCreator.name )
             if ( !commaListOfReportClasses ) {
-                log.warn( "Missing property: ${IReportCreator.name} - no report classes defined" )
+                log.warn( 'Missing property: {} - no report classes defined', IReportCreator.name )
                 return
             }
 
@@ -78,7 +78,7 @@ class SpockReportExtension implements IGlobalExtension {
         if ( reportCreator != null ) {
             specInfo.addListener createListener()
         } else {
-            log.warn "Not creating report for ${specInfo.name} as reportCreator is null"
+            log.warn 'Not creating report for {} as reportCreator is null', specInfo.name
         }
     }
 

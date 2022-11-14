@@ -9,34 +9,34 @@ plugins {
 defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.3.2-groovy-3.0"
+version = "2.4.0-groovy-4.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-def groovyVersion = '3.0.9'
-def spockVersion = '2.1-groovy-3.0'
+def groovyVersion = '4.0.6'
+def spockVersion = '2.3-groovy-4.0'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    api "org.codehaus.groovy:groovy:${groovyVersion}"
-    implementation "org.codehaus.groovy:groovy-xml:${groovyVersion}"
-    implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
-    implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
-    api "org.spockframework:spock-core:${spockVersion}", {
+    api "org.apache.groovy:groovy:${groovyVersion}"
+    implementation "org.apache.groovy:groovy-xml:${groovyVersion}"
+    implementation "org.apache.groovy:groovy-json:${groovyVersion}"
+    implementation "org.apache.groovy:groovy-templates:${groovyVersion}"
+    implementation platform( "org.spockframework:spock-bom:$spockVersion" )
+    api "org.spockframework:spock-core", {
         exclude group: 'org.codehaus.groovy'
     }
-    implementation 'org.slf4j:slf4j-api:1.7.30'
-    testImplementation platform( 'org.junit:junit-bom:5.7.0' )
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    testImplementation platform( 'org.junit:junit-bom:5.9.1' )
     testImplementation 'org.junit.platform:junit-platform-testkit'
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
     testImplementation "cglib:cglib-nodep:3.3.0"
-    testImplementation "org.slf4j:slf4j-simple:1.7.30"
+    testImplementation "org.slf4j:slf4j-simple:1.7.36"
 }
 
 test {

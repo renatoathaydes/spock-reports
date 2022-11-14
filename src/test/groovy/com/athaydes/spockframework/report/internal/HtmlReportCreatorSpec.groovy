@@ -10,7 +10,6 @@ import com.athaydes.spockframework.report.VividFakeTest
 import com.athaydes.spockframework.report.engine.CanRunSpockSpecs
 import com.athaydes.spockframework.report.util.Hasher
 import groovy.xml.MarkupBuilder
-import org.junit.runner.Description
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Unroll
 
@@ -19,10 +18,6 @@ import java.nio.file.Paths
 import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
-/**
- *
- * User: Renato
- */
 @Unroll
 class HtmlReportCreatorSpec extends ReportSpec
         implements CanRunSpockSpecs {
@@ -139,7 +134,6 @@ class HtmlReportCreatorSpec extends ReportSpec
         "A mock report aggregator, a stubbed SpecData and an injected MarkupBuilder"
         def stubInfo = Stub( SpecInfo )
         def stubSpecData = new SpecData( stubInfo )
-        stubInfo.description >> Description.createTestDescription( this.class, 'ignore' )
         def builder = new MarkupBuilder( Stub( Writer ) )
 
         when:

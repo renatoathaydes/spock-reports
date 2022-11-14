@@ -13,10 +13,6 @@ import java.util.concurrent.TimeUnit
 import static com.athaydes.spockframework.report.internal.TestHelper.assertVerySimilar
 import static com.athaydes.spockframework.report.internal.TestHelper.minify
 
-/**
- *
- * User: Renato
- */
 class HtmlReportAggregatorSpec extends ReportSpec {
 
     def """When a single spec data is provided to the HtmlReportAggregator it
