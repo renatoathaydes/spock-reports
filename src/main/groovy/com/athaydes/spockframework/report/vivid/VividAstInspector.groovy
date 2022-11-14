@@ -78,17 +78,19 @@ class VividAstInspector {
         final visitor = new VividASTVisitor( codeCollector )
         final module = codeCollector.module
 
-        visitor.visitBlockStatement( module.statementBlock )
+        codeCollector.withCloseable {
+            visitor.visitBlockStatement( module.statementBlock )
 
-        for ( MethodNode method in module.methods ) {
-            visitor.visitMethod( method )
+            for ( MethodNode method in module.methods ) {
+                visitor.visitMethod( method )
+            }
+
+            for ( ClassNode clazz in module.classes ) {
+                visitor.visitClass( clazz )
+            }
+
+            codeCollector
         }
-
-        for ( ClassNode clazz in module.classes ) {
-            visitor.visitClass( clazz )
-        }
-
-        codeCollector
     }
 
     private class VividClassLoader extends GroovyClassLoader {
@@ -168,23 +170,12 @@ class VividASTVisitor extends ClassCodeVisitorSupport {
     void visitStatement( Statement node ) {
         if ( visitStatements && node instanceof BlockStatement ) {
             def stmts = ( node as BlockStatement ).statements
-            def waitForNextBlock = false
-            if ( stmts ) for ( statement in stmts ) {
-                if ( waitForNextBlock && !statement.statementLabel ) {
-                    continue // skip statements in this block
-                } else {
-                    waitForNextBlock = false
+            if ( stmts )
+                for ( statement in stmts ) {
+                    codeCollector.add( statement )
                 }
-
-                codeCollector.add( statement )
-
-                if ( statement.statementLabel == 'where' ) {
-                    waitForNextBlock = true
-                }
-            }
             visitStatements = false
         }
-
         super.visitStatement( node )
     }
 

@@ -96,7 +96,7 @@ class VividAstInspectorSpec extends Specification {
         blocks[ 1 ].statements.isEmpty()
         blocks[ 2 ].statements.isEmpty()
         blocks[ 3 ].statements == [ 'x == y' ]
-        blocks[ 4 ].statements.isEmpty() // where statements are not captured
+        blocks[ 4 ].statements == [ "x | y", "'a' | 'a'", "'b' | 'c'" ]
 
         and: 'The blocks should have the expected label and text'
         blocks[ 0 ].label == 'given'
@@ -229,7 +229,7 @@ class VividAstInspectorSpec extends Specification {
         blocks.size() == 4
 
         and: 'The inspector should be able to provide the source code for each block'
-        blocks[ 0 ].statements == [ 'def x = 10 +', '20 +', '30' ]
+        blocks[ 0 ].statements == [ 'def x = 10 +', '  20 +', '  30' ]
         blocks[ 1 ].statements == [ 'def y = """',
                                     '  hello',
                                     '  world',
@@ -282,8 +282,8 @@ class VividAstInspectorSpec extends Specification {
         and: 'The inspector should be able to provide the source code for each block'
         blocks[ 0 ].statements == [ 'x < y' ]
 
-        and: 'The where block is not captured'
-        blocks[ 1 ].statements.isEmpty()
+        and: 'The where block is captured'
+        blocks[ 1 ].statements == ['x   | y', '20  | 30', '100 | 2000']
 
         and: 'The cleanup block is captured'
         blocks[ 2 ].statements == [ 'x = null' ]

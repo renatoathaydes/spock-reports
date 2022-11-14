@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `14th of November 2022`
+
+A couple of nice improvements to "vivid" reports (that include source code).
+
 * `25th of August 2022`
 
 Minor bug fixes release. See release notes.

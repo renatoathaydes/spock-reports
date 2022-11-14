@@ -1,3 +1,8 @@
+2.3.2-groovy-3.0 - 2022 Nov 14
+
+* #235 fixed indentation of source code in vivid reports.
+* #237 keep `where` block source code available for inclusion in template reports (thanks to @Gleethos).
+
 2.3.1-groovy-3.0 - 2022 Aug 25
 
 * #231 fixed disappearing blocks in vivid reports when spec uses annotations (thanks to @ArkiMargust).
