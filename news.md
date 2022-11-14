@@ -4,7 +4,13 @@
 
 * `14th of November 2022`
 
-A couple of nice improvements to "vivid" reports (that include source code).
+Finally! Groovy 4 support is here!!
+
+spock-reports version `2.4.0-groovy-4.0` has just been released.
+No major changes are included in this release, but it's nice to be able to use the latest and greatest Groovy version.
+
+On another note: version `2.3.2-groovy-3.0` was just released as well... it includes a couple of nice improvements
+to "vivid" reports (reports that include source code). The Groovy 4 version also includes these improvements.
 
 * `25th of August 2022`
 
