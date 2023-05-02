@@ -1,16 +1,13 @@
 package com.athaydes.spockframework.report
 
-import spock.lang.Issue
-import spock.lang.Narrative
-import spock.lang.See
-import spock.lang.Specification
-import spock.lang.Unroll
+import spock.lang.*
 
 @Narrative( """
 As a developer
 I want to see my code""" )
 class VividFakeTest extends Specification {
 
+    @Rollup
     def "A first test with Then code block"() {
         given:
         "we have x and y"

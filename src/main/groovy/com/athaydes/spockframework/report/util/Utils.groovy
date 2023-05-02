@@ -5,6 +5,7 @@ import com.athaydes.spockframework.report.internal.FailureKind
 import com.athaydes.spockframework.report.internal.FeatureRun
 import com.athaydes.spockframework.report.internal.SpecData
 import com.athaydes.spockframework.report.internal.SpecProblem
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.spockframework.runtime.model.BlockKind
 import org.spockframework.runtime.model.FeatureInfo
@@ -13,12 +14,12 @@ import org.spockframework.runtime.model.SpecInfo
 import org.spockframework.util.Nullable
 import spock.lang.PendingFeature
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import java.lang.annotation.Annotation
 import java.nio.file.Paths
 import java.util.regex.Pattern
 
+@CompileStatic
 class Utils {
 
     public static final Map block2String = [
@@ -92,6 +93,7 @@ class Utils {
         successRate( totalExecuted, ( errors + failures ).toInteger() )
     }
 
+    @CompileDynamic
     static Map aggregateStats( Map<String, Map> aggregatedData ) {
         def result = [ total : 0, executed: 0, passed: 0, failed: 0, skipped: 0,
                        fTotal: 0, fExecuted: 0, fPassed: 0, fSkipped: 0, fFails: 0, fErrors: 0, time: 0.0 ]
@@ -122,12 +124,7 @@ class Utils {
     }
 
     static boolean isUnrolled( FeatureInfo feature ) {
-        if ( feature.iterationNameProvider != null ) {
-            // the Unrolled name provider has a delegate property of type Unroll...
-            def delegate = feature.iterationNameProvider[ 'delegate' ]
-            return delegate != null && delegate.class.simpleName.contains( 'Unroll' )
-        }
-        return false
+        feature.reportIterations
     }
 
     static boolean isFailure( SpecProblem problem ) {
@@ -233,7 +230,7 @@ class Utils {
             def nameMatcher = name =~ /(.*)\[\d+\]$/
             if ( nameMatcher.matches() ) {
                 def rawName = nameMatcher.group( 1 )
-                return "$rawName [$index]"
+                return "$rawName[$index]"
             } else {
                 return name
             }
@@ -251,7 +248,7 @@ class Utils {
     }
 
     static List<String> getParentSpecNames( String className ) {
-        def result = [ ]
+        List<String> result = new ArrayList<>( 2 )
         Class<?> type
         try {
             type = Class.forName( className )

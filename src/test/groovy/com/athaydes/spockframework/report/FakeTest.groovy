@@ -1,13 +1,6 @@
 package com.athaydes.spockframework.report
 
-import spock.lang.Ignore
-import spock.lang.Issue
-import spock.lang.Narrative
-import spock.lang.PendingFeature
-import spock.lang.See
-import spock.lang.Specification
-import spock.lang.Title
-import spock.lang.Unroll
+import spock.lang.*
 
 /**
  *
@@ -20,6 +13,7 @@ I want foo
 So that bar""" )
 class FakeTest extends Specification {
 
+    @Rollup
     def "A first test"() {
         given:
         "we have x and y"

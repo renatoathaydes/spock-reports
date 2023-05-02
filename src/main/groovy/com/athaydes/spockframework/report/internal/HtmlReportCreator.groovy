@@ -131,7 +131,6 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             } catch ( e ) {
                 log.warn( "Failed to create report for $specClassName", e )
             }
-
         } else {
             log.warn "Cannot create output directory: {}", reportsDir?.absolutePath
         }
@@ -280,7 +279,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                 List<IterationInfo> iterations = run
                         ? run.copyFailuresByIteration().keySet()
                         .toList().sort { it.iterationIndex }
-                        : Collections.emptyList()
+                        : Collections.<IterationInfo> emptyList()
                 def extraInfo = Collections.emptyList()
                 def multipleIterations = iterations.size() > 1
                 if ( run && multipleIterations ) {

@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report
 
 import org.spockframework.runtime.model.parallel.ExecutionMode
 import spock.lang.Execution
+import spock.lang.Rollup
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -35,6 +36,7 @@ class SpecIncludingExtraInfo extends Specification {
     }
 
     @Execution( ExecutionMode.CONCURRENT )
+    @Rollup
     def "Non-unrolled example-based feature adding info"() {
         when: 'Info is added on each iteration'
         sleep 5
