@@ -279,10 +279,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
                 List<IterationInfo> iterations = run
                         ? run.copyFailuresByIteration().keySet()
-                        .toList().findAll { it.iterationIndex >= 0 }
-                        .sort { it.iterationIndex }
-                        : List.of()
-                def extraInfo = List.of()
+                        .toList().sort { it.iterationIndex }
+                        : Collections.emptyList()
+                def extraInfo = Collections.emptyList()
                 def multipleIterations = iterations.size() > 1
                 if ( run && multipleIterations ) {
                     extraInfo = iterations.collectMany {

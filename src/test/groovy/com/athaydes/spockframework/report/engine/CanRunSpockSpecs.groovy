@@ -17,14 +17,14 @@ trait CanRunSpockSpecs {
         else execute( selectClass( specClass ) )
     }
 
-    private static void execute( DiscoverySelector selector, Consumer<EventStatistics> statisticsConsumer ) {
+    private void execute( DiscoverySelector selector, Consumer<EventStatistics> statisticsConsumer ) {
         execute( selector )
                 .testEvents()
                 .debug()
                 .assertStatistics( statisticsConsumer )
     }
 
-    private static EngineExecutionResults execute( DiscoverySelector selector ) {
+    private EngineExecutionResults execute( DiscoverySelector selector ) {
         return EngineTestKit
                 .engine( "spock" )
                 .selectors( selector )
