@@ -122,8 +122,12 @@ class Utils {
     }
 
     static boolean isUnrolled( FeatureInfo feature ) {
-        feature.spec?.isAnnotationPresent( Unroll ) ||
-                featureAnnotation( feature, Unroll ) != null
+        if ( feature.iterationNameProvider != null ) {
+            // the Unrolled name provider has a delegate property of type Unroll...
+            def delegate = feature.iterationNameProvider[ 'delegate' ]
+            return delegate != null && delegate.class.simpleName.contains( 'Unroll' )
+        }
+        return false
     }
 
     static boolean isFailure( SpecProblem problem ) {

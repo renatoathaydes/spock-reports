@@ -51,7 +51,7 @@ class InfoContainer {
     private static String keyFor( String specName,
                                   FeatureInfo feature,
                                   IterationInfo iteration ) {
-        def index = Utils.isUnrolled( feature ) || ( iteration != null && iteration.estimatedNumIterations < 0 ) ? iteration.iterationIndex : -1
+        def index = iteration && Utils.isUnrolled( feature ) ? iteration.iterationIndex : -1
         "$specName${feature?.name}$index"
     }
 

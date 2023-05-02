@@ -277,15 +277,18 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         failures ? 'failure' :
                                 ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
 
-                def iterations = run ? run.copyFailuresByIteration().keySet().toList().sort { it.iterationIndex } : []
-                // Link each iteration's extra info to itself when there is no @Unroll
-                def extraInfo = []
+                List<IterationInfo> iterations = run
+                        ? run.copyFailuresByIteration().keySet()
+                        .toList().findAll { it.iterationIndex >= 0 }
+                        .sort { it.iterationIndex }
+                        : List.of()
+                def extraInfo = List.of()
                 def multipleIterations = iterations.size() > 1
-                if (run && multipleIterations) {
+                if ( run && multipleIterations ) {
                     extraInfo = iterations.collectMany {
-                        Utils.nextSpecExtraInfo(data, feature, it).collect { info -> "Iteration ${it.iterationIndex} extra info: $info" }
+                        Utils.nextSpecExtraInfo( data, feature, it )
                     }
-                } else if (run) {
+                } else if ( run ) {
                     extraInfo = ( 1..run.failuresByIteration.size() ).collectMany {
                         Utils.nextSpecExtraInfo( data, feature )
                     }
@@ -400,7 +403,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
 
     private writeBlockRowsFromCode( MarkupBuilder builder, cssClass, blockKind,
                                     BlockCode code, text, int failureLineNumber ) {
-        def statements = ( blockKind == 'where' ? [] : code.statements )
+        def statements = ( blockKind == 'where' ? [ ] : code.statements )
         def lineNumbers = code.lineNumbers
 
         if ( text ) {
