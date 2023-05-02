@@ -277,10 +277,19 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                         failures ? 'failure' :
                                 ( !run || Utils.isSkipped( feature ) ) ? 'ignored' : ''
 
-                // collapse the information for all iterations
-                def extraInfo = run ? ( 1..run.failuresByIteration.size() ).collectMany {
-                    Utils.nextSpecExtraInfo( data, feature )
-                } : [ ]
+                def iterations = run ? run.copyFailuresByIteration().keySet().toList().sort { it.iterationIndex } : []
+                // Link each iteration's extra info to itself when there is no @Unroll
+                def extraInfo = []
+                def multipleIterations = iterations.size() > 1
+                if (run && multipleIterations) {
+                    extraInfo = iterations.collectMany {
+                        Utils.nextSpecExtraInfo(data, feature, it).collect { info -> "Iteration ${it.iterationIndex} extra info: $info" }
+                    }
+                } else if (run) {
+                    extraInfo = ( 1..run.failuresByIteration.size() ).collectMany {
+                        Utils.nextSpecExtraInfo( data, feature )
+                    }
+                }
 
                 Long time = run == null ? null : run.timeByIteration.values().sum()
 
