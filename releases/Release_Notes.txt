@@ -1,7 +1,8 @@
 2.5.0-groovy-4 -
 
 * Fixed how Unrolled feature is determined (changed in Spock 2 to be the default).
-* #244 `reportInfo` added to the correct iteration on `@RollUp` test.
+* Fixed #244 `reportInfo` added to the correct iteration on `@RollUp` test.
+* Fixed feature header to stop showing iteration values, as values as shown in a table already.
 
 2.4.0-groovy-4 - 2022 Oct 30
 
