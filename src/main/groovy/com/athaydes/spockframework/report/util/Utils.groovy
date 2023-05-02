@@ -281,16 +281,16 @@ class Utils {
     private static void collectRoots( root, List<String> result ) {
         switch ( root ) {
             case File:
-                result.add( root.path )
+                result.add( ( ( File ) root ).path )
                 break
             case String:
-                result.add( root )
+                result.add( ( String ) root )
                 break
             case Iterable:
-                root.each { r -> collectRoots( r, result ) }
+                ( root as Iterable ).each { r -> collectRoots( r, result ) }
                 break
             case Closure:
-                collectRoots( root(), result )
+                collectRoots( ( root as Closure ).call(), result )
                 break
             default:
                 throw new IllegalArgumentException( "Cannot use object as a sourceRoot " +
@@ -334,7 +334,7 @@ class Utils {
             }
             pathParts << data.info.filename
 
-            def specFile = Paths.get( root.absolutePath, *pathParts ).toFile()
+            def specFile = Paths.get( root.absolutePath, pathParts.toArray( new String[0] ) ).toFile()
 
             if ( specFile.isFile() ) {
                 return specFile
