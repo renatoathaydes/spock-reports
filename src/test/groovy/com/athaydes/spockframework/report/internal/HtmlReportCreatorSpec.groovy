@@ -1,12 +1,6 @@
 package com.athaydes.spockframework.report.internal
 
-import com.athaydes.spockframework.report.FakeTest
-import com.athaydes.spockframework.report.ReportSpec
-import com.athaydes.spockframework.report.SpecIncludingExtraInfo
-import com.athaydes.spockframework.report.SpecInfoListener
-import com.athaydes.spockframework.report.SpockReportExtension
-import com.athaydes.spockframework.report.UnrolledSpec
-import com.athaydes.spockframework.report.VividFakeTest
+import com.athaydes.spockframework.report.*
 import com.athaydes.spockframework.report.engine.CanRunSpockSpecs
 import com.athaydes.spockframework.report.util.Hasher
 import groovy.xml.MarkupBuilder
@@ -35,6 +29,7 @@ class HtmlReportCreatorSpec extends ReportSpec
             skipped         : 2,
             successRate     : "50${DS}0%"
     ]
+
     static final Map vividFakeTestBinding = [
             narrative       : '\nAs a developer\nI want to see my code',
             executedFeatures: 9,
@@ -43,6 +38,15 @@ class HtmlReportCreatorSpec extends ReportSpec
             errors          : 2,
             skipped         : 0,
             successRate     : "44${DS}44%"
+    ]
+
+    static final Map fullyIgnoredSpecBinding = [
+            executedFeatures: 0,
+            passed          : 0,
+            failures        : 0,
+            errors          : 0,
+            skipped         : 2,
+            successRate     : "100%"
     ]
 
     @Unroll
@@ -100,6 +104,8 @@ class HtmlReportCreatorSpec extends ReportSpec
         specification | configShowCodeBlocks   | reportBinding
         FakeTest      | ShowCodeBlocksDisabled | fakeTestBinding
         VividFakeTest | ShowCodeBlocksEnabled  | vividFakeTestBinding
+        // FIXME https://github.com/renatoathaydes/spock-reports/issues/242
+        // FullyIgnoredSpec | ShowCodeBlocksDisabled | fullyIgnoredSpecBinding
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
