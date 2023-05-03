@@ -156,7 +156,7 @@ class TemplateReportCreator implements IReportCreator {
         run.copyFailuresByIteration().eachWithIndex { iteration, problems, index ->
             final name = Utils.featureNameFrom( feature, iteration, index )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
-                    problems.any( Utils.&isFailure ) ? 'FAILURE' :
+                    problems.any( Utils.&isFailure ) ? 'FAIL' :
                             Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'
             final time = run.timeByIteration.get( iteration, 0L )
             final problemsByIteration = Utils.iterationData( [ ( iteration ): problems ], [ ( iteration ): time ] )

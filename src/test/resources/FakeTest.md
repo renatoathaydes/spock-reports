@@ -177,7 +177,7 @@ Time: Unknown
 
 ### An @Unrolled spec with x=2 and y=3
 
-Result: **FAILURE**
+Result: **FAIL**
 Time: Unknown
 
 * Given: nothing
