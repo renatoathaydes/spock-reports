@@ -153,8 +153,10 @@ class TemplateReportCreator implements IReportCreator {
     }
 
     protected void handleUnrolledFeature( FeatureRun run, FeatureInfo feature, Closure callback ) {
-        run.copyFailuresByIteration().eachWithIndex { iteration, problems, index ->
-            final name = Utils.featureNameFrom( feature, iteration, index )
+        def iterations = run.copyFailuresByIteration()
+        def multipleIterations = iterations.size() > 1
+        iterations.eachWithIndex { iteration, problems, index ->
+            final name = Utils.featureNameFrom( feature, iteration, index, multipleIterations )
             final result = problems.any( Utils.&isError ) ? 'ERROR' :
                     problems.any( Utils.&isFailure ) ? 'FAIL' :
                             Utils.isSkipped( feature ) ? 'IGNORED' : 'PASS'

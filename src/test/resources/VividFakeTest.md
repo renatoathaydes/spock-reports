@@ -182,7 +182,7 @@ c == 2 * b
 c > 0
 ```
 
-### An @Unrolled spec with x=0 and y=1
+### An @Unrolled spec with x=0 and y=1 [0]
 
 Result: **PASS**
 Time: Unknown
@@ -209,7 +209,7 @@ if ( y == 5 ) {
  |---|---|---------|
  | 0 | 1 | Unknown | (PASS)
 
-### An @Unrolled spec with x=2 and y=3
+### An @Unrolled spec with x=2 and y=3 [1]
 
 Result: **FAIL**
 Time: Unknown
@@ -248,7 +248,7 @@ x == 0
 
 ```
 
-### An @Unrolled spec with x=0 and y=5
+### An @Unrolled spec with x=0 and y=5 [2]
 
 Result: **ERROR**
 Time: Unknown

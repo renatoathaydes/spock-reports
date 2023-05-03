@@ -55,7 +55,6 @@ class FeatureRun {
      * @return a copy of the failuresByIteration.
      */
     Map<IterationInfo, List<SpecProblem>> copyFailuresByIteration() {
-        failuresByIteration
         synchronized ( failuresByIteration ) {
             return new LinkedHashMap<>( failuresByIteration )
         }

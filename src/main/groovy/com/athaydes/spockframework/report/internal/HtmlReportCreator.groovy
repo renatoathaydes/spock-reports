@@ -214,8 +214,9 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
             for ( FeatureInfo feature in data.info.allFeaturesInExecutionOrder ) {
                 FeatureRun run = data.withFeatureRuns { it.find { it.feature == feature } }
                 if ( run && Utils.isUnrolled( feature ) ) {
+                    def multipleIterations = run.failuresByIteration.size() > 1
                     run.failuresByIteration.eachWithIndex { iteration, problems, int index ->
-                        final String name = Utils.featureNameFrom( feature, iteration, index )
+                        final String name = Utils.featureNameFrom( feature, iteration, index, multipleIterations )
                         final cssClass = problems.any( Utils.&isError ) ? 'error' :
                                 problems.any( Utils.&isFailure ) ? 'failure' :
                                         Utils.isSkipped( feature ) ? 'ignored' : 'pass'
@@ -254,7 +255,7 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
                     def problems = run.failuresByIteration[ iteration ]
                     def index = iteration.iterationIndex
                     def extraInfo = Utils.nextSpecExtraInfo( data, feature, iteration )
-                    String name = Utils.featureNameFrom( feature, iteration, index )
+                    String name = Utils.featureNameFrom( feature, iteration, index, iterations.size() > 1 )
                     final cssClass = problems.any( Utils.&isError ) ? 'error' :
                             problems.any( Utils.&isFailure ) ? 'failure' :
                                     Utils.isSkipped( feature ) ? 'ignored' : ''

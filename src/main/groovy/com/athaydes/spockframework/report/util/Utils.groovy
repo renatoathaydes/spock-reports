@@ -222,21 +222,16 @@ class Utils {
         ]
     }
 
-    static String featureNameFrom( FeatureInfo feature, IterationInfo iteration, int index ) {
-        if ( feature.iterationNameProvider && iteration.dataValues?.length > 0 ) {
-            def name = iteration.displayName
-
-            // reset the index instance to fix #70
-            def nameMatcher = name =~ /(.*)\[.*]$/
-            if ( nameMatcher.matches() ) {
-                def rawName = nameMatcher.group( 1 )
-                return "$rawName[$index]"
-            } else {
-                return name
+    static String featureNameFrom( FeatureInfo feature, IterationInfo iteration,
+                                   int index, boolean multipleIterations = false ) {
+        if ( feature.reportIterations && multipleIterations ) {
+            if ( feature.name.contains( '#' ) && feature.iterationNameProvider ) {
+                def name = feature.iterationNameProvider.getName( iteration )
+                return "$name [$index]"
             }
-        } else {
-            return feature.name
+            return "${feature.name} [$index]"
         }
+        return feature.name
     }
 
     static String getSpecClassName( SpecData data ) {

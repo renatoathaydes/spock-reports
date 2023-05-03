@@ -2,6 +2,7 @@ package com.athaydes.spockframework.report.internal
 
 import org.junit.jupiter.api.AssertionFailureBuilder
 import spock.lang.Narrative
+import spock.lang.Rollup
 import spock.lang.Specification
 import spock.lang.Title
 
@@ -11,6 +12,7 @@ import spock.lang.Title
  */
 @Title( "spock-reports TestHelper specification" )
 @Narrative( "This specification ensures the helper works" )
+@Rollup
 class TestHelper extends Specification {
 
     static String minify( String xml ) {
