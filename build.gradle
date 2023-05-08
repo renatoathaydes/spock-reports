@@ -9,24 +9,24 @@ plugins {
 defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.5.0-groovy-4.0"
+version = "2.5.0-groovy-3.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-def groovyVersion = '4.0.6'
-def spockVersion = '2.3-groovy-4.0'
+def groovyVersion = '3.0.17'
+def spockVersion = '2.3-groovy-3.0'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    api "org.apache.groovy:groovy:${groovyVersion}"
-    implementation "org.apache.groovy:groovy-xml:${groovyVersion}"
-    implementation "org.apache.groovy:groovy-json:${groovyVersion}"
-    implementation "org.apache.groovy:groovy-templates:${groovyVersion}"
+    api "org.codehaus.groovy:groovy:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-xml:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     implementation platform( "org.spockframework:spock-bom:$spockVersion" )
     api "org.spockframework:spock-core", {
         exclude group: 'org.codehaus.groovy'

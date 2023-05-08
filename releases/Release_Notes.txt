@@ -1,4 +1,8 @@
-2.5.0-groovy-4 - 2023 May 03
+2.5.0-groovy-3.0 - 2023 May 08
+
+* backport of release 2.5.0-groovy-4.0 for Groovy 3.
+
+2.5.0-groovy-4.0 - 2023 May 03
 
 * Fixed how Unrolled feature is determined (changed in Spock 2 to be the default).
 * Fixed #244 `reportInfo` added to the correct iteration on `@RollUp` test.

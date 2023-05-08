@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `08th of May 2023`
+
+Backported changes in the previous release, `2.5.0-groovy-4.0`, for Groovy 3 with the `2.5.0-groovy-3.0` version.
+
 * `03rd of May 2023`
 
 Bug fixes release sorting out an important change from Spock 2: `@Unrolled` became the default, so spock-reports
