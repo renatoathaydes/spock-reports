@@ -1,3 +1,7 @@
+2.5.1-groovy-3.0 - 2023 August 21
+
+* Fixed bug in default template report.
+
 2.5.0-groovy-3.0 - 2023 May 08
 
 * backport of release 2.5.0-groovy-4.0 for Groovy 3.

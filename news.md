@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `21st of August 2023`
+
+Very minor fix in template report.
+
 * `08th of May 2023`
 
 Backported changes in the previous release, `2.5.0-groovy-4.0`, for Groovy 3 with the `2.5.0-groovy-3.0` version.
