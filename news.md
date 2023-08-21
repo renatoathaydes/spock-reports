@@ -2,6 +2,10 @@
 
 > Most recent first
 
+* `21st of August 2023`
+
+Very minor fix in template report.
+
 * `03rd of May 2023`
 
 Bug fixes release sorting out an important change from Spock 2: `@Unrolled` became the default, so spock-reports
