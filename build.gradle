@@ -31,12 +31,12 @@ dependencies {
     api "org.spockframework:spock-core", {
         exclude group: 'org.codehaus.groovy'
     }
-    implementation 'org.slf4j:slf4j-api:1.7.36'
-    testImplementation platform( 'org.junit:junit-bom:5.9.1' )
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    testImplementation platform( 'org.junit:junit-bom:5.14.3' )
     testImplementation 'org.junit.platform:junit-platform-testkit'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "cglib:cglib-nodep:3.3.0"
-    testImplementation "org.slf4j:slf4j-simple:1.7.36"
+    testImplementation "org.slf4j:slf4j-simple:2.0.17"
 }
 
 test {
