@@ -1,6 +1,7 @@
 2.6.0-groovy-5.0 - 2026 March 15
 
 * upgraded to Groovy 5 (requires at least Java 11).
+* fixed `extraInfo` not being added in the right iteration (Pull Request #259).
 
 2.5.1-groovy-4 - 2023 August 21
 
