@@ -2,6 +2,12 @@
 
 > Most recent first
 
+* `15th of March 2026`
+
+Version `2.6.0-groovy-5.0` is an upgraded to Groovy 5 and the latest Spock version. Sorry for the delay!
+
+Notice that now, the minimum supported Java version is Java 11 (up to this point, Java 8+ was supported). 
+
 * `21st of August 2023`
 
 Very minor fix in template report.
