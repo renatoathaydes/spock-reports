@@ -9,14 +9,14 @@ plugins {
 defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.5.2-groovy-4.0"
+version = "2.6.0-groovy-5.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
-def groovyVersion = '4.0.13'
-def spockVersion = '2.3-groovy-4.0'
+def groovyVersion = '5.0.4'
+def spockVersion = '2.4-groovy-5.0'
 
 repositories {
     mavenCentral()

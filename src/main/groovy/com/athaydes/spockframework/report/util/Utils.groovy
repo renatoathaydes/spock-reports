@@ -167,7 +167,7 @@ class Utils {
     }
 
     static List<Map> iterationData( Map<IterationInfo, List<SpecProblem>> failures, Map<IterationInfo, Long> times ) {
-        failures.inject( [ ] ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
+        failures.inject( [ ] as List<Map> ) { List<Map> acc, IterationInfo iteration, List<SpecProblem> failureList ->
             def allErrors = failureList.collect { SpecProblem it -> it.failure.exception }
             def time = times.get( iteration, 0L )
             acc << [ dataValues: iteration.dataValues, errors: allErrors, time: time, info: iteration ]
