@@ -5,6 +5,7 @@ out/
 target/
 .gradle/
 .idea/
+.jb-cache/
 *.class
 *.iml
 *.ipr
