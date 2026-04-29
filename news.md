@@ -2,11 +2,16 @@
 
 > Most recent first
 
-* `15th of March 2026`
+* `29th of April 2026`
 
-Version `2.6.0-groovy-5.0` is an upgraded to Groovy 5 and the latest Spock version. Sorry for the delay!
+Version `2.6.0-groovy-5.0` is an upgrade to Groovy 5 and the latest Spock version. Sorry for the delay!
 
-Notice that now, the minimum supported Java version is Java 11 (up to this point, Java 8+ was supported). 
+To compensate for the wait, a nice new feature was added to HTML reports:
+allow adding a HTML snippet inside the report's `<head>` element (this can be used to give reports an icon, see issue #264)
+and changing the HTML footer (so you can remove the reference to spock-reports from the footer)! 
+
+Notice that now, the minimum supported Java version is Java 11 (up to this point, Java 8+ was supported).
+And Java 25 works fine with this version!
 
 * `21st of August 2023`
 
