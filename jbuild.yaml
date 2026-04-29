@@ -7,10 +7,10 @@ properties:
 
 group: com.athaydes
 module: spock-reports
+name: Athaydes Spock Reports
 version: 2.6.0-groovy-5.0
 
 description: This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.
-
 
 source-dirs: [ src/main/groovy ]
 resource-dirs: [ src/main/resources ]
