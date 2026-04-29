@@ -46,7 +46,7 @@ class HtmlReportCreatorSpec extends ReportSpec
             failures        : 0,
             errors          : 0,
             skipped         : 2,
-            successRate     : "100%"
+            successRate     : "100${DS}0%"
     ]
 
     @Unroll
@@ -101,11 +101,10 @@ class HtmlReportCreatorSpec extends ReportSpec
         assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
 
         where:
-        specification | configShowCodeBlocks   | reportBinding
-        FakeTest      | ShowCodeBlocksDisabled | fakeTestBinding
-        VividFakeTest | ShowCodeBlocksEnabled  | vividFakeTestBinding
-        // FIXME https://github.com/renatoathaydes/spock-reports/issues/242
-        // FullyIgnoredSpec | ShowCodeBlocksDisabled | fullyIgnoredSpecBinding
+        specification    | configShowCodeBlocks   | reportBinding
+        FakeTest         | ShowCodeBlocksDisabled | fakeTestBinding
+        VividFakeTest    | ShowCodeBlocksEnabled  | vividFakeTestBinding
+        FullyIgnoredSpec | ShowCodeBlocksDisabled | fullyIgnoredSpecBinding
     }
 
     def "The css file used should be loaded correctly from any file in the classpath"() {
