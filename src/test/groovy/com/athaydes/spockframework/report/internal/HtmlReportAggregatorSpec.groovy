@@ -171,7 +171,7 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         and:
         "The contents are functionally the same as expected"
         def minifiedActualReport = minify( reportFile.text )
-        def minifiedExpectedReport = minify( testSummaryExpectedHtml() )
+        def minifiedExpectedReport = minify( testSummaryExpectedHtml( aggregator ) )
         assertVerySimilar( minifiedActualReport, minifiedExpectedReport )
     }
 
@@ -339,11 +339,12 @@ class HtmlReportAggregatorSpec extends ReportSpec {
         [ "$java/bin/java", '-cp', cp, mainClass.name, *args ].execute()
     }
 
-    private String testSummaryExpectedHtml() {
+    private String testSummaryExpectedHtml( HtmlReportAggregator aggregator ) {
         def sf = new StringFormatHelper()
         def rawHtml = this.class.getResource( 'TestSummaryReport.html' ).text
         def binding = [
                 style       : defaultStyle(),
+                htmlFooter  : aggregator.htmlFooter,
                 dateTestRan : DATE_TEST_RAN,
                 username    : TEST_USER_NAME,
                 total       : 7,

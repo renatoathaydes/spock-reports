@@ -268,6 +268,14 @@ com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileNam
 com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
 ```
 
+Since version `2.6.0-groovy-5.0`, the following properties can also be set to customize the HTML report
+header and footer:
+
+```properties
+com.athaydes.spockframework.report.internal.HtmlReportCreator.htmlHeader=
+com.athaydes.spockframework.report.internal.HtmlReportCreator.htmlFooter=
+```
+
 ### Notes on `outputDir`
 
 Be aware that the `outputDir` property is relative to the working directory.
