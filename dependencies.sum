@@ -1,0 +1,16 @@
+io.leangen.geantyref:geantyref:1.3.16 177fe050a1ecc6f121bd3ffa511f2f5ce9099f00
+net.bytebuddy:byte-buddy:1.15.11 f61886478e0f9ee4c21d09574736f0ff45e0a46c
+org.apache.groovy:groovy-json:5.0.4 bb53f7c741b5271ef5ed50367197b6cbec1ec194
+org.apache.groovy:groovy-templates:5.0.4 2a86c4f378beb56e0a76db0d5a4cf9ef5d27a45e
+org.apache.groovy:groovy-xml:5.0.4 2a445495b25ec6b7585a51155fec1739e44254fb
+org.apache.groovy:groovy:5.0.4 624fd80e3b6234c89730901afffe9225c87f2535
+org.apiguardian:apiguardian-api:1.1.2 a231e0d844d2721b0fa1b238006d15c6ded6842a
+org.assertj:assertj-core:3.27.3 31f5d58a202bd5df4993fb10fa2cffd610c20d6f
+org.hamcrest:hamcrest:3.0 8fd9b78a8e6a6510a078a9e30e9e86a6035cfaf7
+org.junit.platform:junit-platform-commons:1.14.1 3d6d355ba36d7620bfef87b896708a975accc108
+org.junit.platform:junit-platform-engine:1.14.1 4fd44468a55879fd17ed015476717698f3cf5e85
+org.junit.platform:junit-platform-launcher:1.14.1 91426ba542c420b118debe53746609f29ac7f333
+org.junit.platform:junit-platform-testkit:1.14.1 6af77cce8623a9f7665cd05284f6e6a7387a7a47
+org.opentest4j:opentest4j:1.3.0 152ea56b3a72f655d4fd677fc0ef2596c3dd5e6e
+org.slf4j:slf4j-api:2.0.17 d9e58ac9c7779ba3bf8142aff6c830617a7fe60f
+org.spockframework:spock-core:2.4-groovy-5.0 d6c4b3a7b9475a8f0a0602559a005f9153a388d3
