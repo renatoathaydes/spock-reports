@@ -9,14 +9,14 @@ plugins {
 defaultTasks 'check'
 
 group = 'com.athaydes'
-version = "2.5.2-groovy-4.0"
+version = "2.6.0-groovy-5.0"
 description = 'This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
-def groovyVersion = '4.0.13'
-def spockVersion = '2.3-groovy-4.0'
+def groovyVersion = '5.0.4'
+def spockVersion = '2.4-groovy-5.0'
 
 repositories {
     mavenCentral()
@@ -31,12 +31,12 @@ dependencies {
     api "org.spockframework:spock-core", {
         exclude group: 'org.codehaus.groovy'
     }
-    implementation 'org.slf4j:slf4j-api:1.7.36'
-    testImplementation platform( 'org.junit:junit-bom:5.9.1' )
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    testImplementation platform( 'org.junit:junit-bom:5.14.3' )
     testImplementation 'org.junit.platform:junit-platform-testkit'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "cglib:cglib-nodep:3.3.0"
-    testImplementation "org.slf4j:slf4j-simple:1.7.36"
+    testImplementation "org.slf4j:slf4j-simple:2.0.17"
 }
 
 test {

@@ -83,6 +83,16 @@ class HtmlReportCreator extends AbstractHtmlCreator<SpecData>
         }
     }
 
+    void setHtmlHeader( String header ) {
+        super.htmlHeader = header
+        reportAggregator.htmlHeader = header
+    }
+
+    void setHtmlFooter( String footer ) {
+        super.htmlFooter = footer
+        reportAggregator.htmlFooter = footer
+    }
+
     @Override
     void setAggregatedJsonReportDir( String dir ) {
         reportAggregator?.aggregatedJsonReportDir = dir

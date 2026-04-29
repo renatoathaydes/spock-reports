@@ -1,0 +1,38 @@
+imports:
+  - build_properties.yaml
+
+group: com.athaydes
+module: spock-reports
+name: Athaydes Spock Reports
+version: "{{spockReportsVersion}}"
+
+description: This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.
+
+source-dirs: [ src/main/groovy ]
+resource-dirs: [ src/main/resources ]
+javac-args: [ "-J=--release={{javaMinVersion}}" ]
+
+dependencies:
+  org.apache.groovy:groovy:{{groovyVersion}}:
+  org.apache.groovy:groovy-xml:{{groovyVersion}}:
+  org.apache.groovy:groovy-json:{{groovyVersion}}:
+  org.apache.groovy:groovy-templates:{{groovyVersion}}:
+  org.spockframework:spock-core:{{spockVersion}}:
+    exclusions: [ org.apache.groovy:.* ]
+  org.junit.platform:junit-platform-testkit:{{junitPlatformVersion}}:
+  org.slf4j:slf4j-api:{{slf4jVersion}}:
+
+developers:
+  - name: Renato Athaydes
+    email: renato@athaydes.com
+    organization: athaydes.com
+    organization-url: https://renato.athaydes.com
+
+licenses: ["Apache-2.0"]
+
+scm:
+  connection: git@github.com:renatoathaydes/spock-reports.git
+  developer-connection: git@github.com:renatoathaydes/spock-reports.git
+  url: https://github.com/renatoathaydes/spock-reports
+
+url: https://github.com/renatoathaydes/spock-reports

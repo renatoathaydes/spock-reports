@@ -33,12 +33,13 @@ Spock-reports is available on Maven Central.
 
 Version compatibility:
 
-| Java  | Groovy | Spock          | spock-reports           |
-|-------|--------|----------------|-------------------------|
-| 8+    | 4.0+   | 2.3-groovy-4.0 | <b>2.5.1-groovy-4.0</b> |
-| 8+    | 3.0+   | 2.3-groovy-3.0 | <b>2.5.1-groovy-3.0</b> |
-| 8+    | 2.5+   | 2.0-groovy-2.5 | <b>2.0-groovy-2.5</b>   |
-| 7, 8  | 2.4+   | 1.3+           | <b>1.8.0</b>            |
+| Java | Groovy | Spock          | spock-reports           |
+|------|--------|----------------|-------------------------|
+| 11+  | 5.0+   | 2.4-groovy-5.0 | <b>2.6.0-groovy-5.0</b> |
+| 8+   | 4.0+   | 2.3-groovy-4.0 | <b>2.5.1-groovy-4.0</b> |
+| 8+   | 3.0+   | 2.3-groovy-3.0 | <b>2.5.1-groovy-3.0</b> |
+| 8+   | 2.5+   | 2.0-groovy-2.5 | <b>2.0-groovy-2.5</b>   |
+| 7, 8 | 2.4+   | 1.3+           | <b>1.8.0</b>            |
 
 
 ### If you are using Maven
@@ -265,6 +266,14 @@ com.athaydes.spockframework.report.template.TemplateReportCreator.reportFileExte
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryTemplateFile=/templateReportCreator/summary-template.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.summaryFileName=summary.md
 com.athaydes.spockframework.report.template.TemplateReportCreator.enabled=true
+```
+
+Since version `2.6.0-groovy-5.0`, the following properties can also be set to customize the HTML report
+header and footer:
+
+```properties
+com.athaydes.spockframework.report.internal.HtmlReportCreator.htmlHeader=
+com.athaydes.spockframework.report.internal.HtmlReportCreator.htmlFooter=
 ```
 
 ### Notes on `outputDir`
