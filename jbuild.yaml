@@ -1,14 +1,10 @@
-properties:
-  javaMinVersion: 11
-  groovyVersion: 5.0.4
-  spockVersion: 2.4-groovy-5.0
-  slf4jVersion: 2.0.17
-  junitPlatformVersion: 1.14.1
+imports:
+  - build_properties.yaml
 
 group: com.athaydes
 module: spock-reports
 name: Athaydes Spock Reports
-version: 2.6.0-groovy-5.0
+version: "{{spockReportsVersion}}"
 
 description: This project is a global extension for Spock to create test (or, in Spock terms, Specifications) reports.
 

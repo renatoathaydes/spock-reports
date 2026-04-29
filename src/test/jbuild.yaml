@@ -1,0 +1,22 @@
+imports:
+  - ../../build_properties.yaml
+
+group: com.athaydes
+module: spock-reports-tests
+version: "0"
+
+source-dirs: [ groovy ]
+resource-dirs: [ resources ]
+output-dir: build/classes
+
+test-java-args: [ "-Dproject.buildDir=build", "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug" ]
+
+dependencies:
+  com.athaydes:spock-reports:{{spockReportsVersion}}:
+    path: ../..
+    exclusions: [ org.junit.platform:junit-platform-commons:.* ]
+  org.spockframework:spock-core:{{spockVersion}}:
+    exclusions: [ org.apache.groovy:.*, org.junit.platform:junit-platform-commons:.* ]
+  org.junit.jupiter:junit-jupiter-api:{{junitJupiterApi}}:
+  org.slf4j:slf4j-simple:2.0.17:
+    scope: runtime-only

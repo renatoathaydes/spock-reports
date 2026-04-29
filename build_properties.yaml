@@ -1,0 +1,8 @@
+properties:
+  spockReportsVersion: 2.6.0-groovy-5.0
+  javaMinVersion: 11
+  groovyVersion: 5.0.4
+  spockVersion: 2.4-groovy-5.0
+  slf4jVersion: 2.0.17
+  junitPlatformVersion: 1.14.1
+  junitJupiterApi: 5.14.4
