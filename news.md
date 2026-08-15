@@ -2,6 +2,12 @@
 
 > Most recent first
 
+* `15th of August 2026`
+
+The jar with version `2.6.0-groovy-5.0` was accidentally compiled for Java 25.
+I apologize for the mistake! The build system was swapped and I did not properly check its configuration.
+Please switch to version `2.6.1-groovy-5.0` which only requires Java 11+.
+
 * `29th of April 2026`
 
 Version `2.6.0-groovy-5.0` is an upgrade to Groovy 5 and the latest Spock version. Sorry for the delay!

@@ -1,5 +1,5 @@
 properties:
-  spockReportsVersion: 2.6.0-groovy-5.0
+  spockReportsVersion: 2.6.1-groovy-5.0
   groovyVersion: 5.0.4
   spockVersion: 2.4-groovy-5.0
   slf4jVersion: 2.0.17
