@@ -10,7 +10,7 @@ description: This project is a global extension for Spock to create test (or, in
 
 source-dirs: [ src/main/groovy ]
 resource-dirs: [ src/main/resources ]
-javac-args: [ "-J=--release={{javaMinVersion}}" ]
+javac-args: [ "--configscript", "groovyc-config.groovy" ]
 
 dependencies:
   org.apache.groovy:groovy:{{groovyVersion}}:
